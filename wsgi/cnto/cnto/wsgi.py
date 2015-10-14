@@ -1,5 +1,5 @@
 """
-WSGI config for myproject project.
+WSGI config for cnto project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,7 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-# GETTING-STARTED: change 'myproject' to your project name:
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myproject.settings")
+# GETTING-STARTED: change 'cnto' to your project name:
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cnto.settings")
 
 application = get_wsgi_application()
