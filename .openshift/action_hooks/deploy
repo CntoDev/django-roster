@@ -9,12 +9,12 @@ if [ ! -f "$OPENSHIFT_DATA_DIR"secrets.json ]; then
 	python "$OPENSHIFT_REPO_DIR"libs/secrets.py > "$OPENSHIFT_DATA_DIR"secrets.json
 fi
 
-# GETTING-STARTED: change 'myproject' to your project name:
+# GETTING-STARTED: change 'cnto' to your project name:
 echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/myproject/manage.py migrate --noinput'"
-# GETTING-STARTED: change 'myproject' to your project name:
-python "$OPENSHIFT_REPO_DIR"wsgi/myproject/manage.py migrate --noinput
+# GETTING-STARTED: change 'cnto' to your project name:
+python "$OPENSHIFT_REPO_DIR"wsgi/cnto/manage.py migrate --noinput
 
-# GETTING-STARTED: change 'myproject' to your project name:
-echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/myproject/manage.py collectstatic --noinput'"
-# GETTING-STARTED: change 'myproject' to your project name:
-python "$OPENSHIFT_REPO_DIR"wsgi/myproject/manage.py collectstatic --noinput
+# GETTING-STARTED: change 'cnto' to your project name:
+echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/cnto/manage.py collectstatic --noinput'"
+# GETTING-STARTED: change 'cnto' to your project name:
+python "$OPENSHIFT_REPO_DIR"wsgi/cnto/manage.py collectstatic --noinput
