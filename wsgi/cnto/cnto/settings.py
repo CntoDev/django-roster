@@ -36,11 +36,50 @@ DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = [
     gethostname(), # For internal OpenShift load balancer security purposes.
-    os.environ.get('OPENSHIFT_APP_DNS'), # Dynamically map to the OpenShift gear name.
+    # os.environ.get('OPENSHIFT_APP_DNS'), # Dynamically map to the OpenShift gear name.
     #'example.com', # First DNS alias (set up in the app)
     #'www.example.com', # Second DNS alias (set up in the app)
 ]
+openshift_app_dns = os.environ.get('OPENSHIFT_APP_DNS')
+if openshift_app_dns is not None:
+    ALLOWED_HOSTS.append(openshift_app_dns)
+else:
+    ALLOWED_HOSTS.append("localhost")
+    ALLOWED_HOSTS.append("127.0.0.1")
 
+if openshift_app_dns is None:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+                'datefmt' : "%d/%b/%Y %H:%M:%S"
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            },
+        },
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'cnto.log'),
+                'formatter': 'verbose'
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers':['file'],
+                'propagate': True,
+                'level':'DEBUG',
+            },
+            'MYAPP': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+            },
+        }
+    }
 
 # Application definition
 
@@ -116,7 +155,7 @@ elif 'OPENSHIFT_POSTGRESQL_DB_URL' in os.environ:
 else:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.db',
+        'NAME': os.path.join(BASE_DIR, 'dev.db'),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
