@@ -8,13 +8,26 @@
 <script>
 $(document).ready(function() {
 
+    var eventsList = [];
+    var results = {{ event_data|safe }};
+    for (var dt_string in results) {
+        eventsList.push({
+            title  : results[dt_string],
+            start  : dt_string,
+            all_day: true
+        });
+    }
+
+
     // page is now ready, initialize the calendar...
     $('#calendar').fullCalendar({
         dayClick: function(date, jsEvent, view) {
             var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
-            window.location = "/view-date/" + dateComponent;
-        }
-    })
+            window.location = "/view-event/" + dateComponent;
+        },
+        events: eventsList
+    });
+
 });
 </script>
 

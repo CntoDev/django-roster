@@ -3,9 +3,10 @@ from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
 from libs.utils.attendance_scraper import get_all_event_attendances_between
+from ..models import Attendance, Event
 
 
-def view_date(request, year_string, month_string, day_string):
+def view_event(request, year_string, month_string, day_string):
     """Return the daily process main overview page.
     """
 
@@ -18,4 +19,20 @@ def view_date(request, year_string, month_string, day_string):
     context["date_string"] = selected_dt.strftime("%Y-%m-%d")
     context["return_url"] = reverse("scrape-selection")
 
-    return render(request, 'view-date.html', context)
+    attendance_values = []
+
+    try:
+        event = Event.objects.get(dt=selected_dt)
+        attendances = Attendance.objects.filter(event=event)
+
+        for attendance in attendances:
+            attendance_values.append((attendance.member.name, "%.2f" % (attendance.attendance * 100.0, )))
+
+        attendance_values.sort(key=lambda x: x[0])
+
+    except Event.DoesNotExist:
+        pass
+
+    context["attendance_values"] = attendance_values
+
+    return render(request, 'view-event.html', context)

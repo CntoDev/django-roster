@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^login/', login_user.login_user, name='login'),
     url(r'^scrape-selection/', scrape.scrape_selection, name='scrape-selection'),
     url(r'^scrape/(\w{4}-\w{2}-\w{2})/([0-9]{2})h/([0-9]{2})h/$', scrape.scrape, name='scrape'),
-    url(r'^view-date/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_date, name='view-date'),
+    url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
 
 ]

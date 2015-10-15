@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
 <h3>Event information for {{ date_string }}</h3>
-
+<ul>
+    {% for name, attendance_value in attendance_values %}
+        <li>{{ name }}: {{ attendance_value }} %</li>
+    {% endfor %}
+</ul>
 <form class="highlight">
   <h5>Provide information for new scrape:</h5>
 
