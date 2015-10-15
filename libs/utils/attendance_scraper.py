@@ -6,15 +6,15 @@ import threading
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-LOG = logging.getLogger("roster-tracker")
-LOG.setLevel(logging.DEBUG)
-
-FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-CH = logging.StreamHandler()
-CH.setLevel(logging.DEBUG)
-CH.setFormatter(FORMATTER)
-LOG.addHandler(CH)
+# LOG = logging.getLogger("roster-tracker")
+# LOG.setLevel(logging.DEBUG)
+#
+# FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#
+# CH = logging.StreamHandler()
+# CH.setLevel(logging.DEBUG)
+# CH.setFormatter(FORMATTER)
+# LOG.addHandler(CH)
 
 MINIMUM_ATTENDANCE_NUMBER = 5
 
@@ -59,7 +59,7 @@ def get_all_events_for_page(page_number=1):
     """
     """
     event_url = get_url_for_event_page(page_number)
-    LOG.info("Loading all events for page %s...", event_url)
+    # LOG.info("Loading all events for page %s...", event_url)
     page_file = urllib.urlopen(event_url)
     # page_file = open("temp.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
@@ -152,7 +152,7 @@ def get_all_events_from_start_to_end(start_dt, end_dt):
 def get_attendance_rates_from_event_url(event_url):
     """
     """
-    LOG.info("Loading event attendance rates from %s...", event_url)
+    # LOG.info("Loading event attendance rates from %s...", event_url)
     page_file = urllib.urlopen(event_url)
     # page_file = open("event.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
@@ -218,12 +218,12 @@ def get_all_event_attendances_between(start_dt, end_dt):
         event_url = event["event_url"]
         event_end_dt = event["end_dt"]
         if event_end_dt is None:
-            LOG.critical("Assuming end of search date is relevant as event is still ongoing.")
+            # LOG.critical("Assuming end of search date is relevant as event is still ongoing.")
             event_end_dt = end_dt
         event_minutes = ((event_end_dt - event_start_dt).total_seconds()) / 60.0
         total_events_minutes += event_minutes
 
-        LOG.info("Getting attendance rates from %s to %s...", event_start_dt, event_end_dt)
+        # LOG.info("Getting attendance rates from %s to %s...", event_start_dt, event_end_dt)
 
         event_attendances = get_attendance_rates_from_event_url(event_url)
 

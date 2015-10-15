@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from django.shortcuts import render, redirect
-from utils.attendance_scraper import get_all_event_attendances_between
+# from utils.attendance_scraper import get_all_event_attendances_between
+from libs.utils.attendance_scraper import get_all_event_attendances_between
 
 
 def scrape_selection(request):
