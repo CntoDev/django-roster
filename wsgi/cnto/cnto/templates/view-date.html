@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block body %}
+<h3>Event information for {{ date_string }}</h3>
+
+<form class="highlight">
+  <h5>Provide information for new scrape:</h5>
+
+  <div class="form-group row">
+    <div class="col-xs-1 dropdown">
+        Start time:
+    </div>
+    <div class="col-xs-1 dropdown">
+      <button id="start-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          18h<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="start-time-label">
+        <li><a class="start-time-selector" href="#">17h</a></li>
+        <li><a class="start-time-selector" href="#">18h</a></li>
+        <li><a class="start-time-selector" href="#">19h</a></li>
+        <li><a class="start-time-selector" href="#">20h</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-xs-1 dropdown">
+        End time:
+    </div>
+    <div class="col-xs-1 dropdown">
+      <button id="end-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          20h<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="start-time-label">
+        <li><a class="end-time-selector" href="#">20h</a></li>
+        <li><a class="end-time-selector" href="#">21h</a></li>
+        <li><a class="end-time-selector" href="#">22h</a></li>
+        <li><a class="end-time-selector" href="#">23h</a></li>
+        <li><a class="end-time-selector" href="#">00h</a></li>
+        <li><a class="end-time-selector" href="#">01h</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-xs-1">
+        <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
+    </div>
+    <div class="col-xs-1">
+        <a type="submit" href="{{ return_url }}" class="btn btn-default">Back</a>
+    </div>
+  </div>
+</form>
+
+<div class="modal fade" id="loading-modal" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Scraping</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please wait while scraping...</p>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    $('#perform-scrape').on('click', function () {
+        $('#loading-modal').modal('show');
+
+        var startHourString = $("#start-time-label").text().replace(/ /g,'');
+        var endHourString = $("#end-time-label").text().replace(/ /g,'');
+        var dateString = "{{ date_string }}";
+
+        $.get( "/scrape/" + dateString + "/" + startHourString + "/" + endHourString, function( data ) {
+            //$('#loading-modal').modal('hide');
+            window.location.reload();
+        });
+    });
+    $(".start-time-selector").click(function(e){
+        //do something
+        $("#start-time-label").html(e.target.innerHTML + '<span class="caret"></span>');
+    });
+    $(".end-time-selector").click(function(e){
+        //do something
+        $("#end-time-label").html(e.target.innerHTML + '<span class="caret"></span>');
+    });
+
+    $(document).ready(function() {
+        $('#loading-modal').modal({ show: false})
+    });
+
+</script>
+
+{% endblock %}

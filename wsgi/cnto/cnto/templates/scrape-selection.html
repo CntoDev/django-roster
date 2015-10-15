@@ -9,10 +9,10 @@
 $(document).ready(function() {
 
     // page is now ready, initialize the calendar...
-    console.log("YES");
     $('#calendar').fullCalendar({
         dayClick: function(date, jsEvent, view) {
-            alert('Clicked on: ' + date.format());
+            var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
+            window.location = "/view-date/" + dateComponent;
         }
     })
 });

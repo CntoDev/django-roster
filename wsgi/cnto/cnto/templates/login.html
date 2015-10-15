@@ -1,15 +1,25 @@
 {% extends "base.html" %}
 {% block body %}
-{{ state }}
+<h3>Carpe Noctem Roster</h3>
+&nbsp;
+<p>{{ state }}</p>
 <form action="/login/" method="post">
-    {% if next %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    {% endif %}
-    username:
-    <input type="text" name="username" value="{{ username}}" /><br />
-    password:
-    <input type="password" name="password" value="" /><br />
-    {% csrf_token %}
-    <input type="submit" value="Log In" />
+  {% if next %}
+  <input type="hidden" name="next" value="{{ next }}" />
+  {% endif %}
+  <div class="form-group">
+    <!--
+    <label for="username-input">Username</label>
+    -->
+    <input type="text" class="form-control" name="username" id="username-input" placeholder="Username">
+  </div>
+  <div class="form-group">
+    <!--
+    <label for="password-input">Password</label>
+    -->
+    <input type="password" class="form-control" name="password" id="password-input" placeholder="Password">
+  </div>
+  {% csrf_token %}
+  <input type="submit" class="btn btn-default" value="Submit" />
 </form>
 {% endblock %}

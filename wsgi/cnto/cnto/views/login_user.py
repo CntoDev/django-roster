@@ -9,6 +9,8 @@ def login_user(request):
     if request.POST:
         username = request.POST.get('username')
         password = request.POST.get('password')
+        print "YES"
+        print "%s: %s" % (username, password)
 
         user = authenticate(username=username, password=password)
         if user is not None:

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
-from views import scrape, login_user
+from views import scrape, login_user, event
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -25,5 +25,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
     url(r'^scrape-selection/', scrape.scrape_selection, name='scrape-selection'),
-    url(r'^scrape/', scrape.scrape, name='scrape'),
+    url(r'^scrape/(\w{4}-\w{2}-\w{2})/([0-9]{2})h/([0-9]{2})h/$', scrape.scrape, name='scrape'),
+    url(r'^view-date/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_date, name='view-date'),
+
 ]

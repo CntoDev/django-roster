@@ -6,9 +6,9 @@ import threading
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-# LOG = logging.getLogger("roster-tracker")
-# LOG.setLevel(logging.DEBUG)
-#
+LOG = logging.getLogger("roster-tracker")
+LOG.setLevel(logging.DEBUG)
+
 # FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 #
 # CH = logging.StreamHandler()
@@ -34,9 +34,9 @@ class ScrapeThread(threading.Thread):
             self._viewer.show_message_signal.emit("Success",
                                                   "Scraped succesfully for %s players with an average attendance of %s\n"
                                                   "minutes out of a total played time of %s minutes!" % (
-                                                  len(scraped_result),
-                                                  int(scrape_stats["minutes"] * scrape_stats["average_attendance"]),
-                                                  int(scrape_stats["minutes"])))
+                                                      len(scraped_result),
+                                                      int(scrape_stats["minutes"] * scrape_stats["average_attendance"]),
+                                                      int(scrape_stats["minutes"])))
 
         except Exception, e:
             self._viewer.show_message_signal.emit("Error", str(traceback.format_exc()))
@@ -59,7 +59,7 @@ def get_all_events_for_page(page_number=1):
     """
     """
     event_url = get_url_for_event_page(page_number)
-    # LOG.info("Loading all events for page %s...", event_url)
+    LOG.info("Loading all events for page %s...", event_url)
     page_file = urllib.urlopen(event_url)
     # page_file = open("temp.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
@@ -136,12 +136,15 @@ def get_all_events_from_start_to_end(start_dt, end_dt):
     relevant_events = {}
     for event_start_dt in sorted_start_dts:
         event = all_event_dicts[event_start_dt]
-        event_end_dt = event["end_dt"] if event["end_dt"] is not None else end_dt
+        event_end_dt = event["end_dt"] if event["end_dt"] is not None else datetime.now()
 
         player_count = event["player_count"]
 
-        if (
-                    start_dt <= event_start_dt <= end_dt or start_dt <= event_end_dt <= end_dt) and player_count > MINIMUM_ATTENDANCE_NUMBER:
+        event_overlaps = start_dt <= event_start_dt <= end_dt or start_dt <= event_end_dt <= end_dt
+        event_envelops = event_start_dt <= start_dt and event_end_dt >= end_dt
+
+        if (event_overlaps or event_envelops) and player_count > MINIMUM_ATTENDANCE_NUMBER:
+            LOG.info("Event from %s to %s overlaps with %s to %s!", event_start_dt, event_end_dt, start_dt, end_dt)
             event_start_dt = max(event_start_dt, start_dt)
             event["end_dt"] = min(event_end_dt, end_dt)
             relevant_events[event_start_dt] = event
@@ -152,7 +155,7 @@ def get_all_events_from_start_to_end(start_dt, end_dt):
 def get_attendance_rates_from_event_url(event_url):
     """
     """
-    # LOG.info("Loading event attendance rates from %s...", event_url)
+    LOG.info("Loading event attendance rates from %s...", event_url)
     page_file = urllib.urlopen(event_url)
     # page_file = open("event.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
@@ -197,9 +200,16 @@ def get_attendance_rates_from_event_url(event_url):
             part_parts = part.split(":")
             attendance_parts_dict[part_parts[0].strip()] = int(part_parts[1].strip().replace("%", ""))
 
-        attendance = attendance_parts_dict["width"] / (
-        100.0 - attendance_parts_dict["margin-right"] - attendance_parts_dict["margin-left"])
-        all_player_attendances[player_name] = attendance
+        # print "%s, %s, %s" % (attendance_parts_dict["margin-left"], attendance_parts_dict["width"], attendance_parts_dict["margin-right"])
+        attendance = attendance_parts_dict["width"] / 100.0
+        if player_name not in all_player_attendances:
+            all_player_attendances[player_name] = attendance
+        else:
+            all_player_attendances[player_name] += attendance
+
+    max_attendance = max(all_player_attendances[player_name] for player_name in all_player_attendances)
+    for player_name in all_player_attendances:
+        all_player_attendances[player_name] /= max_attendance
 
     return all_player_attendances
 
@@ -208,6 +218,7 @@ def get_all_event_attendances_between(start_dt, end_dt):
     """
     """
     events = get_all_events_from_start_to_end(start_dt, end_dt)
+    LOG.info("Found events: %s", events)
     if len(events) == 0:
         raise ValueError("No events took place in specified time frame!")
 
@@ -218,12 +229,13 @@ def get_all_event_attendances_between(start_dt, end_dt):
         event_url = event["event_url"]
         event_end_dt = event["end_dt"]
         if event_end_dt is None:
-            # LOG.critical("Assuming end of search date is relevant as event is still ongoing.")
+            LOG.critical("Assuming end of search date is relevant as event is still ongoing.")
             event_end_dt = end_dt
         event_minutes = ((event_end_dt - event_start_dt).total_seconds()) / 60.0
         total_events_minutes += event_minutes
 
-        # LOG.info("Getting attendance rates from %s to %s...", event_start_dt, event_end_dt)
+        LOG.info("Getting attendance rates from %s to %s with duration %s...", event_start_dt, event_end_dt,
+                 event_minutes)
 
         event_attendances = get_attendance_rates_from_event_url(event_url)
 
@@ -243,38 +255,13 @@ def get_all_event_attendances_between(start_dt, end_dt):
     return overall_attendances, {"minutes": total_events_minutes, "average_attendance": average_attendance}
 
 
-# if __name__ == "__main__":
-# LOG.info("CNTO roster tracker 0.1.0 by Supreme (sakkie99@gmail.com)")
-#     print """
-# Commands:
-#  * import-event: Specify start and end datetime to integrate event from.
-#    e.g. roster-tracker import-event 2015-10-10 18:00 20:00
-#  """
-#
-#     parser = argparse.ArgumentParser(description="Process events from CNTO server monitor.")
-#
-#     parser.add_argument(dest='command',
-#                         type=str,
-#                         help='Command you wish to execute.')
-#
-#     parser.add_argument(dest='event_date',
-#                         type=str,
-#                         help='Command you wish to execute.')
-#
-#     args = parser.parse_args()
-#
-#     LOG.info("Starting roster retrieval...")
-#
-#     if args.command.lower() == "import-event":
-#         if len(sys.argv) < 4:
-#             raise ValueError("Too few arguments provided, check example for command!")
-#         print sys.argv[2]
+if __name__ == "__main__":
+    start_dt = datetime(2015, 10, 1, 18, 10, 00)
+    end_dt = datetime(2015, 10, 1, 18, 40, 00)
 
-#     start_dt = datetime(2015, 10, 10, 18, 00, 00)
-#     end_dt = datetime(2015, 10, 12, 20, 00, 00)
-#     
-#     # overall_attendances = get_all_event_attendances_between(start_dt, end_dt)
-#     overall_attendances = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 0.27631578947368424, u'Anders [CNTO - SPC]': 0.7236842105263158, u'Guilly': 0.7236842105263158, u'Hellfire [CNTO - SPC]': 1.0, u'Rush [CNTO - Gnt]': 0.7236842105263158, u'Hateborder [CNTO - Gnt]': 0.7236842105263158, u'Peltier [CNTO - Gnt]': 0.5394736842105263, u'John [CNTO - JrNCO]': 0.7236842105263158, u'Alos': 1.0, u'Highway [CNTO - Gnt]': 0.27631578947368424, u'Mars [CNTO - Gnt]': 0.7236842105263158, u'Skywalker [CNTO - Gnt]': 0.6052631578947368, u'Supreme [CNTO - Gnt]': 0.7236842105263158, u'Dachi [CNTO - Gnt]': 0.7236842105263158, u'Postma [CNTO - Gnt]': 0.7236842105263158, u'Obi [CNTO - JrNCO]': 0.39473684210526316, u'Chris [CNTO - SPC]': 1.0, u'Cody [CNTO - SPC]': 1.0}
-#     
-#     db = RosterDatabase("temp.sqlite")
-#     db.insert_attendances(start_dt.date(), overall_attendances)
+    overall_attendances = get_all_event_attendances_between(start_dt, end_dt)
+    print overall_attendances
+    # overall_attendances = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 0.27631578947368424, u'Anders [CNTO - SPC]': 0.7236842105263158, u'Guilly': 0.7236842105263158, u'Hellfire [CNTO - SPC]': 1.0, u'Rush [CNTO - Gnt]': 0.7236842105263158, u'Hateborder [CNTO - Gnt]': 0.7236842105263158, u'Peltier [CNTO - Gnt]': 0.5394736842105263, u'John [CNTO - JrNCO]': 0.7236842105263158, u'Alos': 1.0, u'Highway [CNTO - Gnt]': 0.27631578947368424, u'Mars [CNTO - Gnt]': 0.7236842105263158, u'Skywalker [CNTO - Gnt]': 0.6052631578947368, u'Supreme [CNTO - Gnt]': 0.7236842105263158, u'Dachi [CNTO - Gnt]': 0.7236842105263158, u'Postma [CNTO - Gnt]': 0.7236842105263158, u'Obi [CNTO - JrNCO]': 0.39473684210526316, u'Chris [CNTO - SPC]': 1.0, u'Cody [CNTO - SPC]': 1.0}
+    #
+    # db = RosterDatabase("temp.sqlite")
+    # db.insert_attendances(start_dt.date(), overall_attendances)
