@@ -14,7 +14,7 @@ def login_user(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return redirect('scrape')
+                return redirect('scrape-selection')
             else:
                 state = "Your account is not active, please contact the site admin."
         else:

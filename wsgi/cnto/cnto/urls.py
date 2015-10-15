@@ -21,8 +21,9 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/scrape/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/scrape-selection/', permanent=True)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
+    url(r'^scrape-selection/', scrape.scrape_selection, name='scrape-selection'),
     url(r'^scrape/', scrape.scrape, name='scrape'),
 ]

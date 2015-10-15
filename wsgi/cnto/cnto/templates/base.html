@@ -14,9 +14,10 @@
     </title>
     {% load staticfiles %}
     <!-- Bootstrap -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cnto/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Bootstrap theme -->
-    <link href="{% static 'css/bootstrap-theme.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cnto/css/bootstrap-theme.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cnto/css/fullcalendar.min.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -24,9 +25,9 @@
         {% block body %}{% endblock %}
     </div>
 
-    <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
-    <script src="{% static 'js/moment.min.js' %}"></script>
-    <script src="{% static 'js/fullcalendar.min.js' %}"></script>
+    <script src="{% static 'cnto/js/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'cnto/js/moment.min.js' %}"></script>
+    <script src="{% static 'cnto/js/fullcalendar.min.js' %}"></script>
     {% block js %}{% endblock %}
 </body>
 

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+<h3>Scrape selection</h3>
+<div id='calendar'></div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+
+    // page is now ready, initialize the calendar...
+    console.log("YES");
+    $('#calendar').fullCalendar({
+        dayClick: function(date, jsEvent, view) {
+            alert('Clicked on: ' + date.format());
+        }
+    })
+});
+</script>
+
+{% endblock %}
