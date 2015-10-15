@@ -1,3 +1,18 @@
-<div class="row">
-    <h3>Woo</h3>
-</div>
+{% extends "base.html" %}
+{% block body %}
+<div id='calendar'></div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+
+    // page is now ready, initialize the calendar...
+
+    $('#calendar').fullCalendar({
+        // put your options and callbacks here
+    })
+});
+</script>
+
+{% endblock %}

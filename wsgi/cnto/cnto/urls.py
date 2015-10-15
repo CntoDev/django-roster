@@ -13,6 +13,7 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.views.generic.base import RedirectView
 
 from views import scrape, login_user
 from django.conf.urls import include, url
@@ -20,6 +21,7 @@ from django.contrib import admin
 
 
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='/scrape/', permanent=True)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
     url(r'^scrape/', scrape.scrape, name='scrape'),
