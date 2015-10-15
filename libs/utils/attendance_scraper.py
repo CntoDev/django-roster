@@ -16,11 +16,6 @@ CH.setLevel(logging.DEBUG)
 CH.setFormatter(FORMATTER)
 LOG.addHandler(CH)
 
-FH = logging.FileHandler("roster-tracker.LOG")
-FH.setLevel(logging.DEBUG)
-FH.setFormatter(FORMATTER)
-LOG.addHandler(FH)
-
 MINIMUM_ATTENDANCE_NUMBER = 5
 
 
