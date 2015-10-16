@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-<h3>Event information for {{ date_string }}</h3>
+
+{% if start_time_string %}
+    <h3>Event from {{ start_date_string }} {{ start_time_string }} to {{ end_time_string }}</h3>
+{% else %}
+    <h3>Event for {{ start_date_string }}</h3>
+{% endif %}
+
 <ul>
-    {% for name, attendance_value in attendance_values %}
-        <li>{{ name }}: {{ attendance_value }} %</li>
+    {% for name, attendance_value, bad_attendance in attendance_values %}
+        <li {% if bad_attendance %}class="bad-attendance"{% endif %}>{{ name }}: {{ attendance_value }} %</li>
     {% endfor %}
 </ul>
 <form class="highlight">
@@ -31,7 +37,7 @@
     </div>
     <div class="col-xs-1 dropdown">
       <button id="end-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          20h<span class="caret"></span>
+          21h<span class="caret"></span>
       </button>
       <ul class="dropdown-menu" aria-labelledby="start-time-label">
         <li><a class="end-time-selector" href="#">20h</a></li>
@@ -74,11 +80,17 @@
 
         var startHourString = $("#start-time-label").text().replace(/ /g,'');
         var endHourString = $("#end-time-label").text().replace(/ /g,'');
-        var dateString = "{{ date_string }}";
+        var dateString = "{{ start_date_string }}";
+        var scrapeUrl = "/scrape/" + dateString + "/" + startHourString + "/" + endHourString;
+        console.log(scrapeUrl);
 
-        $.get( "/scrape/" + dateString + "/" + startHourString + "/" + endHourString, function( data ) {
-            //$('#loading-modal').modal('hide');
-            window.location.reload();
+        $.get( scrapeUrl, function( data ) {
+            if (data["stats"]["average_attendance"] == 0) {
+                $('#loading-modal').modal('hide');
+                bootbox.alert("No relevant events were found!");
+            } else {
+                window.location.reload();
+            }
         });
     });
     $(".start-time-selector").click(function(e){

@@ -10,11 +10,12 @@ $(document).ready(function() {
 
     var eventsList = [];
     var results = {{ event_data|safe }};
-    for (var dt_string in results) {
+    for (var startDatetimeString in results) {
         eventsList.push({
-            title  : results[dt_string],
-            start  : dt_string,
-            all_day: true
+            title  : results[startDatetimeString]["title"],
+            start  : startDatetimeString,
+            end : results[startDatetimeString]["end_dt_string"],
+            all_day: false
         });
     }
 

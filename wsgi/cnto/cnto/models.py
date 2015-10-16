@@ -20,9 +20,23 @@ class Event(models.Model):
     name = models.TextField()
     start_dt = DateTimeField(null=False)
     end_dt = DateTimeField(null=False)
+    duration_minutes = models.IntegerField(null=False)
 
 
 class Attendance(models.Model):
+    @staticmethod
+    def get_stats_for_event(event):
+        """
+
+        :param event:
+        :return:
+        """
+        attendances = Attendance.objects.filter(event=event)
+        average_attendance = sum([attendance.attendance for attendance in attendances]) / len(attendances)
+
+        return {"duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
+                "player_count": len(attendances)}
+
     event = models.ForeignKey(Event, null=False)
     member = models.ForeignKey(Member, null=False)
     attendance = models.FloatField(null=False)
