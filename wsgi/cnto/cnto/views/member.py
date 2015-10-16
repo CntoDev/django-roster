@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
 
 from django.shortcuts import render, redirect
-
+from ..models import Member
 
 def delete_member(request, member_pk):
     """Delete Member
@@ -37,6 +37,8 @@ def list_members(request):
     if not request.user.is_authenticated():
         return redirect("login")
 
-    context = {}
+    context = {
+        "members": sorted(Member.objects.all(), key=lambda x: x.name)
+    }
 
     return render(request, 'member/list.html', context)

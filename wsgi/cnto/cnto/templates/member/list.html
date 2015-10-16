@@ -1,6 +1,24 @@
 {% extends "member/base.html" %}
 
 {% block body %}
+<table class="table table-striped member-table">
+    <tr>
+        <th>Name</th>
+        <th>Group</th>
+        <th></th>
+    </tr>
+    {% for member in members %}
+    <tr>
+        <td>{{ member.name }}</td>
+        <td>{{ member.member_group.name }}</td>
+        <td>
+            <a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
+            <a href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
 {% endblock %}
 
 {% block js %}
