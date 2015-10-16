@@ -28,9 +28,9 @@ def scrape(request, dt_string, start_hour, end_hour):
     # scrape_result = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 1.0, u'Guilly': 0.42857142857142855,
     # u'Hellfire [CNTO - SPC]': 1.0, u'Cody [CNTO - Gnt]': 1.0,
     # u'Ozzie [CNTO - SPC]': 0.7142857142857143, u'Skywalker': 0.6397515527950312,
-    #                  u'Obi [CNTO - JrNCO]': 0.7142857142857143, u'Zero': 1.0,
-    #                  u'Chris [CNTO - SPC]': 0.14285714285714285, u'Hateborder [CNTO - Gnt]': 1.0,
-    #                  u'Dusky [CNTO - Gnt]': 0.7142857142857143}
+    # u'Obi [CNTO - JrNCO]': 0.7142857142857143, u'Zero': 1.0,
+    # u'Chris [CNTO - SPC]': 0.14285714285714285, u'Hateborder [CNTO - Gnt]': 1.0,
+    # u'Dusky [CNTO - Gnt]': 0.7142857142857143}
     # scrape_stats = {'average_attendance': 0.7795031055900622, 'minutes': 56.0}
     try:
         event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
@@ -40,8 +40,8 @@ def scrape(request, dt_string, start_hour, end_hour):
         event.duration_minutes = scrape_stats["minutes"]
         event.save()
     except Event.DoesNotExist:
-        event, created = Event.objects.get_or_create(start_dt=start_dt, end_dt=end_dt,
-                                                     duration_minutes=scrape_stats["minutes"])
+        event = Event.objects.create(start_dt=start_dt, end_dt=end_dt,
+                                     duration_minutes=scrape_stats["minutes"])
     for raw_username in scrape_result:
         username_parts = raw_username.split(" ")
         username = username_parts[0]
@@ -53,14 +53,21 @@ def scrape(request, dt_string, start_hour, end_hour):
             rank_str = username_parts[3][0:-1]
         attendance_value = scrape_result[raw_username]
 
-        rank, created = Rank.objects.get_or_create(name=rank_str)
-        member, created = Member.objects.get_or_create(name=username, rank=rank)
+        try:
+            rank = Rank.objects.get(name=rank_str)
+        except Rank.DoesNotExist:
+            rank = Rank.objects.create(name=rank_str)
+
+        try:
+            member = Member.objects.get(name=username)
+        except Member.DoesNotExist:
+            member = Member.objects.create(name=username, rank=rank)
 
         try:
             attendance = Attendance.objects.get(event=event, member=member)
         except Attendance.DoesNotExist:
-            attendance, created = Attendance.objects.get_or_create(event=event, member=member,
-                                                                   attendance=attendance_value)
+            attendance = Attendance.objects.create(event=event, member=member,
+                                                   attendance=attendance_value)
         attendance.attendance = attendance_value
         attendance.save()
 

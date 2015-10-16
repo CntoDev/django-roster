@@ -3,11 +3,11 @@ from django.db.models.fields import DateTimeField
 
 
 class Rank(models.Model):
-    name = models.TextField(null=False)
+    name = models.TextField(null=False, unique=True)
 
 
 class MemberGroup(models.Model):
-    name = models.TextField(null=False)
+    name = models.TextField(null=False, unique=True)
 
 
 class Member(models.Model):
