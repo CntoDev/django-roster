@@ -33,5 +33,4 @@ urlpatterns = [
 
     url(r'^edit-member/(\d+)/$', member.edit_member, name='edit-member'),
     url(r'^list-members/$', member.list_members, name='list-members'),
-
 ]
