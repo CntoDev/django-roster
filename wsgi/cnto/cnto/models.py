@@ -32,7 +32,10 @@ class Attendance(models.Model):
         :return:
         """
         attendances = Attendance.objects.filter(event=event)
-        average_attendance = sum([attendance.attendance for attendance in attendances]) / len(attendances)
+        if len(attendances) > 0:
+            average_attendance = sum([attendance.attendance for attendance in attendances]) / len(attendances)
+        else:
+            average_attendance = 0
 
         return {"duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
                 "player_count": len(attendances)}
