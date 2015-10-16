@@ -11,7 +11,7 @@ class MemberGroup(models.Model):
 
 
 class Member(models.Model):
-    name = models.TextField(null=False)
+    name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
 
