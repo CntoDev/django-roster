@@ -1,3 +1,5 @@
+import json
+
 from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.http.response import JsonResponse
@@ -61,3 +63,32 @@ def view_event(request, year_string, month_string, day_string):
     context["attendance_values"] = attendance_values
 
     return render(request, 'view-event.html', context)
+
+
+def event_browser(request):
+    """Return the daily process main overview page.
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    context = {}
+
+    event_data = {}
+    for event in Event.objects.all():
+        if event.duration_minutes <= 0:
+            continue
+        stats = Attendance.get_stats_for_event(event)
+
+        start_dt = event.start_dt
+        end_dt = event.end_dt
+
+        event_data[start_dt.strftime("%Y-%m-%d %H:%M")] = {
+            "title": "\n%s minutes\n%.2f %% attendance\n%s players" % (
+            event.duration_minutes, stats["average_attendance"] * 100.0, stats["player_count"]),
+            "end_dt_string": end_dt.strftime("%Y-%m-%d %H:%M")
+        }
+
+    event_data = json.dumps(event_data)
+    context["event_data"] = event_data
+
+    return render(request, 'scrape-selection.html', context)
