@@ -18,7 +18,8 @@ class Member(models.Model):
 
 class Event(models.Model):
     name = models.TextField()
-    dt = DateTimeField(null=False)
+    start_dt = DateTimeField(null=False)
+    end_dt = DateTimeField(null=False)
 
 
 class Attendance(models.Model):

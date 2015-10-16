@@ -16,7 +16,12 @@ def scrape_selection(request):
 
     event_data = {}
     for event in Event.objects.all():
-        event_data[event.dt.strftime("%Y-%m-%d")] = None
+        start_dt = event.start_dt
+        end_dt = event.end_dt
+
+        shown_dt = start_dt if start_dt is not None else end_dt
+
+        event_data[shown_dt.strftime("%Y-%m-%d")] = None
 
     event_data = json.dumps(event_data)
     context["event_data"] = event_data
