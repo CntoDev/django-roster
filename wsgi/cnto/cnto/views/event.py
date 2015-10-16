@@ -2,10 +2,8 @@ import json
 
 from datetime import datetime
 from django.http.response import JsonResponse
-
 from django.shortcuts import render, redirect
 from ..models import Event, Attendance
-
 
 def delete_event(request, event_pk):
     """Return the daily process main overview page.

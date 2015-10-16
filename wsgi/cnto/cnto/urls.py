@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
-from views import scrape, login_user, event
+from views import scrape, login_user, event, member
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -24,8 +24,14 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/event-browser/', permanent=True)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
+
     url(r'^event-browser/', event.event_browser, name='event-browser'),
     url(r'^scrape/(\w{4}-\w{2}-\w{2})/([0-9]{2})h/([0-9]{2})h/$', scrape.scrape, name='scrape'),
+
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^delete-event/(\d+)/$', event.delete_event, name='delete-event'),
+
+    url(r'^edit-member/(\d+)/$', member.edit_member, name='edit-member'),
+    url(r'^list-members/$', member.list_members, name='list-members'),
+
 ]
