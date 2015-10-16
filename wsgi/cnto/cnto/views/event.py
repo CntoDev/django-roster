@@ -1,11 +1,10 @@
 import json
 
 from datetime import datetime
-from django.core.urlresolvers import reverse
 from django.http.response import JsonResponse
 
 from django.shortcuts import render, redirect
-from ..models import Attendance, Event
+from ..models import Event, Attendance
 
 
 def delete_event(request, event_pk):
@@ -36,8 +35,7 @@ def view_event(request, year_string, month_string, day_string):
         "event": None,
         "start_date_string": selected_dt.strftime("%Y-%m-%d"),
         "start_time_string": None,
-        "end_time_string": None,
-        "return_url": reverse("event-browser")
+        "end_time_string": None
     }
 
     attendance_values = []

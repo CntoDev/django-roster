@@ -9,14 +9,12 @@ def login_user(request):
     if request.POST:
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print "YES"
-        print "%s: %s" % (username, password)
 
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return redirect('scrape-selection')
+                return redirect('event-browser')
             else:
                 state = "Your account is not active, please contact the site admin."
         else:
