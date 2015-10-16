@@ -37,7 +37,7 @@ def view_event(request, year_string, month_string, day_string):
         "start_date_string": selected_dt.strftime("%Y-%m-%d"),
         "start_time_string": None,
         "end_time_string": None,
-        "return_url": reverse("scrape-selection")
+        "return_url": reverse("event-browser")
     }
 
     attendance_values = []
@@ -91,4 +91,4 @@ def event_browser(request):
     event_data = json.dumps(event_data)
     context["event_data"] = event_data
 
-    return render(request, 'scrape-selection.html', context)
+    return render(request, 'event-browser.html', context)
