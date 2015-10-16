@@ -3,14 +3,47 @@ from django.db.models.fields import DateTimeField
 
 
 class Rank(models.Model):
+    @staticmethod
+    def get_or_create_by_name(name):
+        used_name = name.lower()
+        try:
+            rank = Rank.objects.get(name=used_name)
+        except Rank.DoesNotExist:
+            rank = Rank.objects.create(name=used_name)
+
+        return rank
+
     name = models.TextField(null=False, unique=True)
 
 
 class MemberGroup(models.Model):
+    @staticmethod
+    def get_or_create_by_name(name):
+        used_name = name.lower()
+        try:
+            member_group = MemberGroup.objects.get(name=used_name)
+        except MemberGroup.DoesNotExist:
+            member_group = MemberGroup.objects.create(name=used_name)
+
+        return member_group
+
     name = models.TextField(null=False, unique=True)
 
 
 class Member(models.Model):
+    @staticmethod
+    def get_or_create_by_username(username, rank=None):
+        used_username = username.lower()
+        try:
+            member = Member.objects.get(name=used_username)
+        except Member.DoesNotExist:
+            if rank is not None:
+                member = Member.objects.create(name=used_username, rank=rank)
+            else:
+                member = Member.objects.create(name=used_username)
+
+        return member
+
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)

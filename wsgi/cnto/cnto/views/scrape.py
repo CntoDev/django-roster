@@ -53,15 +53,8 @@ def scrape(request, dt_string, start_hour, end_hour):
             rank_str = username_parts[3][0:-1]
         attendance_value = scrape_result[raw_username]
 
-        try:
-            rank = Rank.objects.get(name=rank_str)
-        except Rank.DoesNotExist:
-            rank = Rank.objects.create(name=rank_str)
-
-        try:
-            member = Member.objects.get(name=username)
-        except Member.DoesNotExist:
-            member = Member.objects.create(name=username, rank=rank)
+        rank = Rank.get_or_create_by_name(rank_str)
+        member = Member.get_or_create_by_username(username, rank=rank)
 
         try:
             attendance = Attendance.objects.get(event=event, member=member)
