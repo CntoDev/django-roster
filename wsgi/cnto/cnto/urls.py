@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
-from views import scrape, login_user, event, member
+from views import scrape, login_user, event, member, report
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -34,4 +34,6 @@ urlpatterns = [
     url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(\d+)/$', member.edit_member, name='edit-member'),
     url(r'^list-members/$', member.list_members, name='list-members'),
+
+    url(r'^report/$', report.report_config, name='report-config'),
 ]

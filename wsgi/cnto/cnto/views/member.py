@@ -28,7 +28,7 @@ def edit_member(request, member_pk):
 
     context = {}
 
-    return render(request, 'member/edit.html', context)
+    return render(request, 'member/report-config.html', context)
 
 
 def list_members(request):

@@ -58,7 +58,7 @@ def view_event(request, year_string, month_string, day_string):
 
     context["attendance_values"] = attendance_values
 
-    return render(request, 'event/edit.html', context)
+    return render(request, 'event/report-config.html', context)
 
 
 def event_browser(request):
