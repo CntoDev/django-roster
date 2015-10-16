@@ -58,7 +58,7 @@ def view_event(request, year_string, month_string, day_string):
 
     context["attendance_values"] = attendance_values
 
-    return render(request, 'view-event.html', context)
+    return render(request, 'event/edit.html', context)
 
 
 def event_browser(request):
@@ -87,4 +87,4 @@ def event_browser(request):
     event_data = json.dumps(event_data)
     context["event_data"] = event_data
 
-    return render(request, 'event-browser.html', context)
+    return render(request, 'event/browser.html', context)

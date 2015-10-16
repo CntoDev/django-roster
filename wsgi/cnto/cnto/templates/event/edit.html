@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-with-nav.html" %}
 {% block body %}
 
 {% if start_time_string %}
@@ -59,7 +59,7 @@
         <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
     </div>
     <div class="col-xs-1">
-        <a type="submit" href="{% url 'scrape-selection' %}" class="btn btn-default">Back</a>
+        <a type="submit" href="{% url 'event-browser' %}" class="btn btn-default">Back</a>
     </div>
     {% if event %}
     <div class="col-xs-1">
@@ -103,7 +103,7 @@
                 var deleteUrl = "/delete-event/{{ event.pk }}";
                 $('#delete-modal').modal('show');
                 $.get( deleteUrl, function( data ) {
-                    window.location = "{% url 'scrape-selection' %}";
+                    window.location = "{% url 'event-browser' %}";
                 });
             }
         });
