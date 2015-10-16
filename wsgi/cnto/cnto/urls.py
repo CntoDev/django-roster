@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^delete-event/(\d+)/$', event.delete_event, name='delete-event'),
 
+    url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(\d+)/$', member.edit_member, name='edit-member'),
     url(r'^list-members/$', member.list_members, name='list-members'),
 ]

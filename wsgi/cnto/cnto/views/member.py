@@ -3,6 +3,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from ..models import Member
 
+
 def delete_member(request, member_pk):
     """Delete Member
     """
@@ -10,11 +11,11 @@ def delete_member(request, member_pk):
     if not request.user.is_authenticated():
         return redirect("login")
 
-    # try:
-    #     # event = Event.objects.get(pk=event_pk)
-    #     # event.delete()
-    # except Event.DoesNotExist:
-    #     return JsonResponse({"success": False})
+    try:
+        member = Member.objects.get(pk=member_pk)
+        member.delete()
+    except Member.DoesNotExist:
+        return JsonResponse({"success": False})
     return JsonResponse({"success": True})
 
 

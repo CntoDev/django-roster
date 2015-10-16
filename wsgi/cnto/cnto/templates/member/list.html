@@ -8,12 +8,12 @@
         <th></th>
     </tr>
     {% for member in members %}
-    <tr>
+    <tr id="member-{{ member.pk }}">
         <td>{{ member.name }}</td>
         <td>{{ member.member_group.name }}</td>
         <td>
             <a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
-            <a href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+            <a class="delete-member" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
         </td>
     </tr>
     {% endfor %}
@@ -22,4 +22,22 @@
 {% endblock %}
 
 {% block js %}
+<script>
+    $('.delete-member').on('click', function () {
+        var memberElement = $(this);
+        bootbox.confirm("Are you sure you wish to delete this member?", function(result) {
+            if (result) {
+                var memberIdString = memberElement.parent().parent().attr("id");
+                var memberId = memberIdString.split("-")[1];
+                var deleteUrl = "/delete-member/" + memberId;
+                $('#delete-modal').modal('show');
+                $.get( deleteUrl, function( data ) {
+                    window.location.reload();
+                });
+            }
+        });
+    });
+
+</script>
+
 {% endblock %}
