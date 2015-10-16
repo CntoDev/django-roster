@@ -1,8 +1,24 @@
 from datetime import datetime
 from django.core.urlresolvers import reverse
+from django.http.response import JsonResponse
 
 from django.shortcuts import render, redirect
 from ..models import Attendance, Event
+
+
+def delete_event(request, event_pk):
+    """Return the daily process main overview page.
+    """
+
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    try:
+        event = Event.objects.get(pk=event_pk)
+        event.delete()
+        return JsonResponse({"success": True})
+    except Event.DoesNotExist:
+        return JsonResponse({"success": False})
 
 
 def view_event(request, year_string, month_string, day_string):
@@ -15,6 +31,7 @@ def view_event(request, year_string, month_string, day_string):
     selected_dt = datetime(year=int(year_string), month=int(month_string), day=int(day_string))
 
     context = {
+        "event": None,
         "start_date_string": selected_dt.strftime("%Y-%m-%d"),
         "start_time_string": None,
         "end_time_string": None,
@@ -36,6 +53,7 @@ def view_event(request, year_string, month_string, day_string):
         context["start_date_string"] = event.start_dt.strftime("%Y-%m-%d")
         context["start_time_string"] = event.start_dt.strftime("%H:%M")
         context["end_time_string"] = event.end_dt.strftime("%H:%M")
+        context["event"] = event
 
     except Event.DoesNotExist:
         pass

@@ -26,6 +26,10 @@ $(document).ready(function() {
             var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
             window.location = "/view-event/" + dateComponent;
         },
+        eventClick: function(calEvent, jsEvent, view) {
+            var dateComponent = calEvent.start.format('YYYY') + "/" + calEvent.start.format('MM') + "/" + calEvent.start.format('DD');
+            window.location = "/view-event/" + dateComponent;
+        },
         events: eventsList
     });
 

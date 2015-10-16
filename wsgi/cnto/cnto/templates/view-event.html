@@ -13,7 +13,12 @@
     {% endfor %}
 </ul>
 <form class="highlight">
-  <h5>Provide information for new scrape:</h5>
+  {% if event %}
+    <h5>Provide information for re-scrape:</h5>
+  {% else %}
+    <h5>Provide information for new scrape:</h5>
+  {% endif %}
+
 
   <div class="form-group row">
     <div class="col-xs-1 dropdown">
@@ -54,8 +59,13 @@
         <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
     </div>
     <div class="col-xs-1">
-        <a type="submit" href="{{ return_url }}" class="btn btn-default">Back</a>
+        <a type="submit" href="{% url 'scrape-selection' %}" class="btn btn-default">Back</a>
     </div>
+    {% if event %}
+    <div class="col-xs-1">
+        <button type="button" href="{{ return_url }}" id="delete-event" class="btn btn-danger">Delete</button>
+    </div>
+    {% endif %}
   </div>
 </form>
 
@@ -71,10 +81,33 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<div class="modal fade" id="deleting-modal" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Deleting</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please wait while deleting event...</p>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
 
 {% block js %}
 <script>
+    $('#delete-event').on('click', function () {
+        bootbox.confirm("Are you sure you wish to delete the event of {{ start_date_string }}?", function(result) {
+            if (result) {
+                var deleteUrl = "/delete-event/{{ event.pk }}";
+                $('#delete-modal').modal('show');
+                $.get( deleteUrl, function( data ) {
+                    window.location = "{% url 'scrape-selection' %}";
+                });
+            }
+        });
+    });
     $('#perform-scrape').on('click', function () {
         $('#loading-modal').modal('show');
 
@@ -82,7 +115,6 @@
         var endHourString = $("#end-time-label").text().replace(/ /g,'');
         var dateString = "{{ start_date_string }}";
         var scrapeUrl = "/scrape/" + dateString + "/" + startHourString + "/" + endHourString;
-        console.log(scrapeUrl);
 
         $.get( scrapeUrl, function( data ) {
             if (data["stats"]["average_attendance"] == 0) {
