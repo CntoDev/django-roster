@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
-from views import scrape, login_user, event, member, report
+from views import scrape, login_user, event, member, report, group
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -31,9 +31,14 @@ urlpatterns = [
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^delete-event/(\d+)/$', event.delete_event, name='delete-event'),
 
-    url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
-    url(r'^edit-member/(\d+)/$', member.edit_member, name='edit-member'),
     url(r'^list-members/$', member.list_members, name='list-members'),
+    url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
+    url(r'^edit-member/(?P<pk>\d+)/$', member.edit_member, name='edit-member'),
+    url(r'^create-member/$', member.create_member, name='create-member'),
+
+    url(r'^delete-group/(\d+)/$', group.delete_group, name='delete-group'),
+    url(r'^edit-group/(?P<pk>\d+)/$', group.edit_group, name='edit-group'),
+    url(r'^create-group/$', group.create_group, name='create-group'),
 
     url(r'^report/$', report.report_config, name='report-config'),
 ]

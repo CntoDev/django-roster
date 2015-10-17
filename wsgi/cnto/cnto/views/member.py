@@ -1,7 +1,9 @@
-from django.http.response import JsonResponse
-
-from django.shortcuts import render, redirect
-from ..models import Member
+from django.http.response import JsonResponse, HttpResponseNotFound
+from django.http import Http404
+from django.shortcuts import render, redirect, render_to_response
+from django.template.context_processors import csrf
+from ..models import Member, MemberGroup
+from ..forms import MemberForm
 
 
 def delete_member(request, member_pk):
@@ -19,16 +21,46 @@ def delete_member(request, member_pk):
     return JsonResponse({"success": True})
 
 
-def edit_member(request, member_pk):
+def handle_member_change_view(request, member=None):
+    if request.POST:
+        form = MemberForm(request.POST, instance=member)
+        if request.POST.get("cancel"):
+            return redirect('list-members')
+        elif form.is_valid():
+            form.save()
+            return redirect('list-members')
+    else:
+        form = MemberForm(instance=member)
+
+    args = {}
+    args.update(csrf(request))
+
+    args['form'] = form
+
+    return render_to_response('member/edit.html', args)
+
+
+def create_member(request):
     """View Member
     """
-
     if not request.user.is_authenticated():
         return redirect("login")
 
-    context = {}
+    return handle_member_change_view(request)
 
-    return render(request, 'member/report-config.html', context)
+
+def edit_member(request, pk):
+    """View Member
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    try:
+        member = Member.objects.get(pk=pk)
+    except Member.DoesNotExist:
+        raise Http404()
+
+    return handle_member_change_view(request, member=member)
 
 
 def list_members(request):
@@ -39,7 +71,8 @@ def list_members(request):
         return redirect("login")
 
     context = {
-        "members": sorted(Member.objects.all(), key=lambda x: x.name)
+        "members": sorted(Member.objects.all(), key=lambda x: x.name),
+        "groups": sorted(MemberGroup.objects.all(), key=lambda x: x.name)
     }
 
     return render(request, 'member/list.html', context)

@@ -1,99 +1,100 @@
 {% extends "event/base.html" %}
 
-{% block body %}
-
-{% if start_time_string %}
-    <h3>Event from {{ start_date_string }} {{ start_time_string }} to {{ end_time_string }}</h3>
-{% else %}
-    <h3>Event for {{ start_date_string }}</h3>
-{% endif %}
-
-<ul>
-    {% for name, attendance_value, bad_attendance in attendance_values %}
-        <li {% if bad_attendance %}class="bad-attendance"{% endif %}>{{ name }}: {{ attendance_value }} %</li>
-    {% endfor %}
-</ul>
-<form class="highlight">
-  {% if event %}
-    <h5>Provide information for re-scrape:</h5>
-  {% else %}
-    <h5>Provide information for new scrape:</h5>
-  {% endif %}
-
-
-  <div class="form-group row">
-    <div class="col-xs-1 dropdown">
-        Start time:
-    </div>
-    <div class="col-xs-1 dropdown">
-      <button id="start-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          18h<span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="start-time-label">
-        <li><a class="start-time-selector" href="#">17h</a></li>
-        <li><a class="start-time-selector" href="#">18h</a></li>
-        <li><a class="start-time-selector" href="#">19h</a></li>
-        <li><a class="start-time-selector" href="#">20h</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-xs-1 dropdown">
-        End time:
-    </div>
-    <div class="col-xs-1 dropdown">
-      <button id="end-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          21h<span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="start-time-label">
-        <li><a class="end-time-selector" href="#">20h</a></li>
-        <li><a class="end-time-selector" href="#">21h</a></li>
-        <li><a class="end-time-selector" href="#">22h</a></li>
-        <li><a class="end-time-selector" href="#">23h</a></li>
-        <li><a class="end-time-selector" href="#">00h</a></li>
-        <li><a class="end-time-selector" href="#">01h</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-xs-1">
-        <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
-    </div>
-    <div class="col-xs-1">
-        <a type="submit" href="{% url 'event-browser' %}" class="btn btn-default">Back</a>
-    </div>
-    {% if event %}
-    <div class="col-xs-1">
-        <button type="button" href="{{ return_url }}" id="delete-event" class="btn btn-danger">Delete</button>
-    </div>
+{% block content %}
+<div class="container">
+    {% if start_time_string %}
+        <h3>Event from {{ start_date_string }} {{ start_time_string }} to {{ end_time_string }}</h3>
+    {% else %}
+        <h3>Event for {{ start_date_string }}</h3>
     {% endif %}
-  </div>
-</form>
 
-<div class="modal fade" id="loading-modal" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Scraping</h4>
+    <ul>
+        {% for name, attendance_value, bad_attendance in attendance_values %}
+            <li {% if bad_attendance %}class="bad-attendance"{% endif %}>{{ name }}: {{ attendance_value }} %</li>
+        {% endfor %}
+    </ul>
+    <form class="highlight">
+      {% if event %}
+        <h5>Provide information for re-scrape:</h5>
+      {% else %}
+        <h5>Provide information for new scrape:</h5>
+      {% endif %}
+
+
+      <div class="form-group row">
+        <div class="col-xs-1 dropdown">
+            Start time:
+        </div>
+        <div class="col-xs-1 dropdown">
+          <button id="start-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              18h<span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="start-time-label">
+            <li><a class="start-time-selector" href="#">17h</a></li>
+            <li><a class="start-time-selector" href="#">18h</a></li>
+            <li><a class="start-time-selector" href="#">19h</a></li>
+            <li><a class="start-time-selector" href="#">20h</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="modal-body">
-        <p>Please wait while scraping...</p>
+      <div class="form-group row">
+        <div class="col-xs-1 dropdown">
+            End time:
+        </div>
+        <div class="col-xs-1 dropdown">
+          <button id="end-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              21h<span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="start-time-label">
+            <li><a class="end-time-selector" href="#">20h</a></li>
+            <li><a class="end-time-selector" href="#">21h</a></li>
+            <li><a class="end-time-selector" href="#">22h</a></li>
+            <li><a class="end-time-selector" href="#">23h</a></li>
+            <li><a class="end-time-selector" href="#">00h</a></li>
+            <li><a class="end-time-selector" href="#">01h</a></li>
+          </ul>
+        </div>
       </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-<div class="modal fade" id="deleting-modal" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Deleting</h4>
+      <div class="form-group row">
+        <div class="col-xs-1">
+            <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
+        </div>
+        <div class="col-xs-1">
+            <a type="submit" href="{% url 'event-browser' %}" class="btn btn-default">Back</a>
+        </div>
+        {% if event %}
+        <div class="col-xs-1">
+            <button type="button" href="{{ return_url }}" id="delete-event" class="btn btn-danger">Delete</button>
+        </div>
+        {% endif %}
       </div>
-      <div class="modal-body">
-        <p>Please wait while deleting event...</p>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </form>
+
+    <div class="modal fade" id="loading-modal" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Scraping</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please wait while scraping...</p>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal fade" id="deleting-modal" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Deleting</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please wait while deleting event...</p>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
 {% endblock %}
 
 {% block js %}

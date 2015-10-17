@@ -1,43 +1,115 @@
 {% extends "member/base.html" %}
 
-{% block body %}
-<table class="table table-striped member-table">
-    <tr>
-        <th>Name</th>
-        <th>Group</th>
-        <th></th>
-    </tr>
-    {% for member in members %}
-    <tr id="member-{{ member.pk }}">
-        <td>{{ member.name }}</td>
-        <td>{{ member.member_group.name }}</td>
-        <td>
-            <a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
-            <a class="delete-member" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
-        </td>
-    </tr>
-    {% endfor %}
+{% block content %}
+<div class="container col-md-4 col-md-offset-4">
 
-</table>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
+    <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active row" id="members">
+        <table class="table table-striped">
+            <tr>
+                <th>Name</th>
+                <th>Group</th>
+                <th></th>
+            </tr>
+            {% for member in members %}
+            <tr id="member-{{ member.pk }}">
+                <td>{{ member.name }}</td>
+                <td>{{ member.member_group.name }}</td>
+                <td>
+                    <a class="edit-member" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
+                    <a class="delete-member" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button id="add-member">Create member</button>
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="groups">
+        <table class="table table-striped">
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+            {% for group in groups %}
+            <tr id="group-{{ group.pk }}">
+                <td>{{ group.name }}</td>
+                <td>
+                    <a class="edit-group" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
+                    <a class="delete-group" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button id="create-group">Create group</button>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block js %}
 <script>
+    function getPKFromElement(memberElement) {
+        var memberIdString = memberElement.parent().parent().attr("id");
+        return parseInt(memberIdString.split("-")[1]);
+    }
+
     $('.delete-member').on('click', function () {
         var memberElement = $(this);
-        bootbox.confirm("Are you sure you wish to delete this member?", function(result) {
+        bootbox.confirm("Are you sure you wish to delete this member?", function (result) {
             if (result) {
-                var memberIdString = memberElement.parent().parent().attr("id");
-                var memberId = memberIdString.split("-")[1];
-                var deleteUrl = "/delete-member/" + memberId;
+                var deleteUrl = "/delete-member/" + getPKFromElement(memberElement).toString();
                 $('#delete-modal').modal('show');
-                $.get( deleteUrl, function( data ) {
+                $.get(deleteUrl, function (data) {
                     window.location.reload();
                 });
             }
         });
     });
 
-</script>
+    $('.edit-member').on('click', function () {
+        var memberElement = $(this);
+        var editUrl = "/edit-member/" + getPKFromElement(memberElement).toString();
+        $.get(editUrl, function (data) {
+            window.location = editUrl;
+        });
+    });
 
+    $('.delete-group').on('click', function () {
+        var groupElement = $(this);
+        bootbox.confirm("Are you sure you wish to delete this group?", function (result) {
+            if (result) {
+                var deleteUrl = "/delete-group/" + getPKFromElement(groupElement).toString();
+                $('#delete-modal').modal('show');
+                $.get(deleteUrl, function (data) {
+                    window.location.reload();
+                });
+            }
+        });
+    });
+
+    $('.edit-group').on('click', function () {
+        var groupElement = $(this);
+        window.location = "/edit-group/" + getPKFromElement(groupElement).toString();
+    });
+
+    $('#create-group').on('click', function () {
+        window.location = "/{{ 'create-group' }}";
+    });
+
+    $(document).ready(function() {
+
+        $('#major-tabs li a').click(function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        });
+    });
+</script>
 {% endblock %}

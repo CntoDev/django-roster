@@ -23,10 +23,9 @@
 
 <body>
     {% block navbar %}{% endblock %}
+    {% block navbar-minor %}{% endblock %}
 
-    <div class="container">
-        {% block body %}{% endblock %}
-    </div>
+    {% block content %}{% endblock %}
 
     <script src="{% static 'cnto/js/jquery-2.1.4.min.js' %}"></script>
     <script src="{% static 'cnto/js/bootstrap.min.js' %}"></script>

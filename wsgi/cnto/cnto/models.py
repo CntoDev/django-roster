@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.fields import DateTimeField
 
@@ -29,6 +30,9 @@ class MemberGroup(models.Model):
 
     name = models.TextField(null=False, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Member(models.Model):
     @staticmethod
@@ -47,6 +51,9 @@ class Member(models.Model):
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
+
+    def get_absolute_url(self):
+        return reverse('edit-member', kwargs={'pk': self.pk})
 
 
 class Event(models.Model):
