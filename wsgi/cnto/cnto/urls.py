@@ -41,5 +41,8 @@ urlpatterns = [
     url(r'^edit-group/(?P<pk>\d+)/$', group.edit_group, name='edit-group'),
     url(r'^create-group/$', group.create_group, name='create-group'),
 
-    url(r'^report/$', report.report_config, name='report-config'),
+    url(r'^download-month-csv/(?P<dt_string>\w{4}-\w{2}-\w{2})/$', report.download_report_for_month,
+        name='download-month-csv'),
+    url(r'^download-group-month-csv/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<group_pk>\d+)/$',
+        report.download_report_for_month, name='download-group-month-csv'),
 ]

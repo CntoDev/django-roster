@@ -7,14 +7,14 @@
             <h3>Event browser</h3>
         </div>
         <div class="dropdown" style="float: right;">
-          <button id="start-time-label" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Download<span class="caret"></span>
+          <button id="start-time-label" class="btn btn-success" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Download <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="start-time-label">
-            <li><a class="start-time-selector" href="#">17h</a></li>
-            <li><a class="start-time-selector" href="#">18h</a></li>
-            <li><a class="start-time-selector" href="#">19h</a></li>
-            <li><a class="start-time-selector" href="#">20h</a></li>
+            {% for group in groups %}
+                <li><a id="group-{{ group.pk }}" class="download-selector" href="#">{{ group.name }}</a></li>
+            {% endfor %}
+
           </ul>
         </div>
     </div>
@@ -25,6 +25,11 @@
 {% block js %}
 <script>
 $(document).ready(function() {
+
+    function getPKFromElement(memberElement) {
+        var memberIdString = memberElement.attr("id");
+        return parseInt(memberIdString.split("-")[1]);
+    }
 
     var eventsList = [];
     var results = {{ event_data|safe }};
@@ -41,9 +46,9 @@ $(document).ready(function() {
     // page is now ready, initialize the calendar...
     $('#calendar').fullCalendar({
         dayClick: function(date, jsEvent, view) {
-//            var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
-//            window.location = "/view-event/" + dateComponent;
-            console.log($("#calendar").fullCalendar("getDate"));
+            var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
+            window.location = "/view-event/" + dateComponent;
+            console.log();
         },
         eventClick: function(calEvent, jsEvent, view) {
             var dateComponent = calEvent.start.format('YYYY') + "/" + calEvent.start.format('MM') + "/" + calEvent.start.format('DD');
@@ -51,6 +56,16 @@ $(document).ready(function() {
         },
         events: eventsList
     });
+
+    $(".download-selector").click(function(e) {
+        //do something
+        var calendarDate = $("#calendar").fullCalendar("getDate");
+        var calendarString = calendarDate.format("YYYY-MM-DD");
+        var groupPK = getPKFromElement($(this));
+
+        window.location = "/download-group-month-csv/" + calendarString + "/" + groupPK;
+    });
+
 });
 </script>
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
@@ -17,7 +17,10 @@ def scrape(request, dt_string, start_hour, end_hour):
     dt = datetime.strptime(dt_string, "%Y-%m-%d")
 
     start_dt = datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00)
+
     end_dt = datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00)
+    if end_dt < start_dt:
+        end_dt += timedelta(hours=240)
 
     try:
         scrape_result, scrape_stats = get_all_event_attendances_between(start_dt, end_dt)
@@ -42,6 +45,10 @@ def scrape(request, dt_string, start_hour, end_hour):
     except Event.DoesNotExist:
         event = Event.objects.create(start_dt=start_dt, end_dt=end_dt,
                                      duration_minutes=scrape_stats["minutes"])
+
+    previous_attendances = Attendance.objects.filter(event=event)
+    previous_attendances.delete()
+
     for raw_username in scrape_result:
         username_parts = raw_username.split(" ")
         username = username_parts[0]

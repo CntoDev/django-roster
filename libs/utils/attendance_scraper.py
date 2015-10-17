@@ -252,6 +252,9 @@ def get_all_event_attendances_between(start_dt, end_dt):
 
     average_attendance /= len(overall_attendances)
 
+    if total_events_minutes <= 0:
+        raise ValueError("No events took place in specified time frame!")
+
     return overall_attendances, {"minutes": total_events_minutes, "average_attendance": average_attendance}
 
 
