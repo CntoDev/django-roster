@@ -30,6 +30,10 @@ class MemberForm(forms.models.ModelForm):
         )
     )
 
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        return name.lower()
+
 
 class MemberGroupForm(forms.models.ModelForm):
     class Meta:
