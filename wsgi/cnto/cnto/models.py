@@ -16,6 +16,9 @@ class Rank(models.Model):
 
     name = models.TextField(null=False, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class MemberGroup(models.Model):
     @staticmethod
@@ -54,6 +57,9 @@ class Member(models.Model):
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return self.name
 
 
 class Event(models.Model):

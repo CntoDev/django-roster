@@ -29,7 +29,7 @@
             </tr>
             {% endfor %}
         </table>
-        <button id="add-member">Create member</button>
+        <button id="create-member">Create member</button>
     </div>
     <div role="tabpanel" class="tab-pane row" id="groups">
         <table class="table table-striped">
@@ -81,6 +81,11 @@
             window.location = editUrl;
         });
     });
+
+    $('#create-member').on('click', function () {
+        window.location = "/{{ 'create-member' }}";
+    });
+
 
     $('.delete-group').on('click', function () {
         var groupElement = $(this);

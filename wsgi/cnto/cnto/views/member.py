@@ -2,7 +2,7 @@ from django.http.response import JsonResponse, HttpResponseNotFound
 from django.http import Http404
 from django.shortcuts import render, redirect, render_to_response
 from django.template.context_processors import csrf
-from ..models import Member, MemberGroup
+from ..models import Member, MemberGroup, Rank
 from ..forms import MemberForm
 
 
@@ -27,6 +27,9 @@ def handle_member_change_view(request, member=None):
         if request.POST.get("cancel"):
             return redirect('list-members')
         elif form.is_valid():
+            if form.fields["rank"] is None:
+                form.fields["rank"] = Rank.get_or_create_by_name("Rec")
+
             form.save()
             return redirect('list-members')
     else:
