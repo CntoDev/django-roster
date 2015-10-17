@@ -4,6 +4,7 @@ from datetime import datetime
 from django.http import HttpResponse
 from ..models import MemberGroup, Event, Member, Attendance
 
+
 def download_report_for_month(request, dt_string, group_pk=None):
     group = MemberGroup.objects.get(pk=group_pk)
     dt = datetime.strptime(dt_string, "%Y-%m-%d")
@@ -12,7 +13,7 @@ def download_report_for_month(request, dt_string, group_pk=None):
 
     members = Member.objects.filter(member_group=group).order_by("name")
 
-    filename = "%s-%s.csv" % (dt_string, group.name.lower())
+    filename = "%s-%s.csv" % (dt.strftime("%Y-%m"), group.name.lower())
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
@@ -36,7 +37,7 @@ def download_report_for_month(request, dt_string, group_pk=None):
                 pass
 
             if was_adequate:
-                member_columns.append("O")
+                member_columns.append(" ")
             else:
                 member_columns.append("X")
 
