@@ -92,3 +92,10 @@ class Attendance(models.Model):
 
     class Meta:
         unique_together = ('event', 'member',)
+
+    def was_adequate(self):
+        attendance_minutes = self.event.duration_minutes * self.attendance
+        base_required_attendance_minutes = 60
+        scaled_half_required_attendance_minutes = self.event.duration_minutes * 0.5
+
+        return attendance_minutes > min(base_required_attendance_minutes, scaled_half_required_attendance_minutes)

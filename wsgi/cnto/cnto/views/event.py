@@ -46,7 +46,8 @@ def view_event(request, year_string, month_string, day_string):
 
         for attendance in attendances:
             attendance_values.append(
-                (attendance.member.name, "%.2f" % (attendance.attendance * 100.0, ), attendance.attendance < 0.5))
+                (attendance.member.name, "%.2f" % (attendance.attendance * 100.0, ),
+                 not attendance.was_adequate()))
 
         attendance_values.sort(key=lambda x: x[0])
         context["start_date_string"] = event.start_dt.strftime("%Y-%m-%d")
@@ -81,7 +82,7 @@ def event_browser(request):
 
         event_data[start_dt.strftime("%Y-%m-%d %H:%M")] = {
             "title": "\n%s minutes\n%.2f %% attendance\n%s players" % (
-            event.duration_minutes, stats["average_attendance"] * 100.0, stats["player_count"]),
+                event.duration_minutes, stats["average_attendance"] * 100.0, stats["player_count"]),
             "end_dt_string": end_dt.strftime("%Y-%m-%d %H:%M")
         }
 

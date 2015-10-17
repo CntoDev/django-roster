@@ -28,14 +28,17 @@ def download_report_for_month(request, dt_string, group_pk=None):
         member_columns = [member.name]
 
         for event in events:
-            event_attendance = 0
+            was_adequate = False
             try:
                 attendance = Attendance.objects.get(member=member, event=event)
-                event_attendance = attendance.attendance
+                was_adequate = attendance.was_adequate()
             except Attendance.DoesNotExist:
                 pass
 
-            member_columns.append("%.2f" % (event_attendance, ))
+            if was_adequate:
+                member_columns.append("O")
+            else:
+                member_columns.append("X")
 
         writer.writerow(member_columns)
 
