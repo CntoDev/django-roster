@@ -22,6 +22,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/event-browser/', permanent=True)),
+    url(r'^/', RedirectView.as_view(url='/event-browser/', permanent=True)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
 
