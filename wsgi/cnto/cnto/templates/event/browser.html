@@ -3,12 +3,12 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div style="float: left;">
+        <div class="col-xs-2">
             <h3>Event browser</h3>
         </div>
-        <div class="dropdown" style="float: right;">
+        <div class="dropdown col-xs-1 col-md-offset-9" style="vertical-align: middle;">
           <button id="start-time-label" class="btn btn-success" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Download <span class="caret"></span>
+              Download <span id="download-month-name"></span> <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="start-time-label">
             {% for group in groups %}
@@ -24,49 +24,69 @@
 
 {% block js %}
 <script>
-$(document).ready(function() {
+    function updateMonth() {
+        var calendarDate = $("#calendar").fullCalendar("getDate");
+        $("#download-month-name").html(calendarDate.format("MMMM"));
+    }
 
     function getPKFromElement(memberElement) {
         var memberIdString = memberElement.attr("id");
         return parseInt(memberIdString.split("-")[1]);
     }
 
-    var eventsList = [];
-    var results = {{ event_data|safe }};
-    for (var startDatetimeString in results) {
-        eventsList.push({
-            title  : results[startDatetimeString]["title"],
-            start  : startDatetimeString,
-            end : results[startDatetimeString]["end_dt_string"],
-            all_day: false
+    $(document).ready(function() {
+
+        var eventsList = [];
+        var results = {{ event_data|safe }};
+        for (var startDatetimeString in results) {
+            eventsList.push({
+                title  : results[startDatetimeString]["title"],
+                start  : startDatetimeString,
+                end : results[startDatetimeString]["end_dt_string"],
+                all_day: false
+            });
+        }
+
+
+        // page is now ready, initialize the calendar...
+        $('#calendar').fullCalendar({
+            dayClick: function(date, jsEvent, view) {
+                var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
+                window.location = "/view-event/" + dateComponent;
+                console.log();
+            },
+            eventClick: function(calEvent, jsEvent, view) {
+                var dateComponent = calEvent.start.format('YYYY') + "/" + calEvent.start.format('MM') + "/" + calEvent.start.format('DD');
+                window.location = "/view-event/" + dateComponent;
+            },
+            events: eventsList
         });
-    }
 
+        $(".download-selector").click(function(e) {
+            //do something
+            var calendarDate = $("#calendar").fullCalendar("getDate");
+            var calendarString = calendarDate.format("YYYY-MM-DD");
+            var groupPK = getPKFromElement($(this));
 
-    // page is now ready, initialize the calendar...
-    $('#calendar').fullCalendar({
-        dayClick: function(date, jsEvent, view) {
-            var dateComponent = date.format('YYYY') + "/" + date.format('MM') + "/" + date.format('DD');
-            window.location = "/view-event/" + dateComponent;
-            console.log();
-        },
-        eventClick: function(calEvent, jsEvent, view) {
-            var dateComponent = calEvent.start.format('YYYY') + "/" + calEvent.start.format('MM') + "/" + calEvent.start.format('DD');
-            window.location = "/view-event/" + dateComponent;
-        },
-        events: eventsList
+            window.location = "/download-group-month-csv/" + calendarString + "/" + groupPK;
+        });
+
+//        $('body').on('click', 'button.fc-prev-button', function() {
+//            updateMonth();
+//        });
+//
+//        $('body').on('click', 'button.fc-next-button', function() {
+//            updateMonth();
+//        });
+//
+//        $('body').on('click', 'button.fc-today-button', function() {
+//            //updateMonth();
+//            console.log("TODAY");
+//        });
+//
+//        updateMonth();
+
     });
-
-    $(".download-selector").click(function(e) {
-        //do something
-        var calendarDate = $("#calendar").fullCalendar("getDate");
-        var calendarString = calendarDate.format("YYYY-MM-DD");
-        var groupPK = getPKFromElement($(this));
-
-        window.location = "/download-group-month-csv/" + calendarString + "/" + groupPK;
-    });
-
-});
 </script>
 
 {% endblock %}
