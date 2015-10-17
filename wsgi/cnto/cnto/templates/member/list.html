@@ -76,7 +76,8 @@
         });
     });
 
-    $('.edit-member').on('click', function () {
+    $('.edit-member').on('click', function (e) {
+        e.preventDefault();
         var memberElement = $(this);
         var editUrl = "/edit-member/" + getPKFromElement(memberElement).toString();
         $.get(editUrl, function (data) {
@@ -102,7 +103,8 @@
         });
     });
 
-    $('.edit-group').on('click', function () {
+    $('.edit-group').on('click', function (e) {
+        e.preventDefault();
         var groupElement = $(this);
         window.location = "/edit-group/" + getPKFromElement(groupElement).toString();
     });
