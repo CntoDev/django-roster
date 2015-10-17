@@ -33,7 +33,12 @@ def handle_member_change_view(request, member=None):
             form.save()
             return redirect('list-members')
     else:
-        form = MemberForm(instance=member)
+        initial = {}
+        if member is None:
+            initial = {
+                'rank': Rank.get_or_create_by_name("gnt").pk
+            }
+        form = MemberForm(instance=member, initial=initial)
 
     args = {}
     args.update(csrf(request))
