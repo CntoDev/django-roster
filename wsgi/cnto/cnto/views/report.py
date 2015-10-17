@@ -37,10 +37,13 @@ def download_report_for_month(request, dt_string, group_pk=None):
                 pass
 
             if was_adequate:
-                member_columns.append(" ")
-            else:
                 member_columns.append("X")
+            else:
+                member_columns.append(" ")
 
         writer.writerow(member_columns)
+
+    writer.writerow([])
+    writer.writerow(["X = attended"])
 
     return response
