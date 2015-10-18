@@ -6,7 +6,7 @@ from django.http import Http404
 from django.template.context_processors import csrf
 
 
-def delete_absence(request, pk):
+def delete_absence(request, absence_pk):
     """Return the daily process main overview page.
     """
 
@@ -14,8 +14,9 @@ def delete_absence(request, pk):
         return redirect("login")
 
     try:
-        group = MemberGroup.objects.get(pk=pk)
-        group.delete()
+        absence = Absence.objects.get(pk=absence_pk)
+        absence.deleted = True
+        absence.save()
         return JsonResponse({"success": True})
     except MemberGroup.DoesNotExist:
         return JsonResponse({"success": False})
@@ -85,7 +86,8 @@ def edit_absences(request, member_pk):
 
     context = {
         "member": member,
-        "absences": sorted(Absence.objects.filter(member=member), key=lambda x: x.start_dt, reverse=True),
+        "absences": sorted(Absence.objects.filter(member=member, deleted=False), key=lambda x: x.start_dt,
+                           reverse=True),
     }
 
     return render(request, 'cnto/absence/list-for-member.html', context)

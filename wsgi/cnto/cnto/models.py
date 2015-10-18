@@ -76,6 +76,7 @@ class Absence(models.Model):
     absence_type = models.ForeignKey(AbsenceType, null=False)
     start_dt = models.DateTimeField(null=False)
     end_dt = models.DateTimeField(null=False)
+    deleted = models.BooleanField(default=False, null=False)
 
     def due_days(self):
         return (self.end_dt - timezone.now()).days
