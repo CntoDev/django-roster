@@ -9,7 +9,7 @@
             <div class="container col-md-offset-6 col-md-1"><a href="{% url 'edit-absences' form.instance.pk %}" class="btn btn-default">Absences</a></div>
         </div>
     {% else %}
-        <div class="sub-header">Create member<div class="sub-header">
+        <div class="sub-header">Create member</div>
     {% endif %}
 
     {% crispy form %}
