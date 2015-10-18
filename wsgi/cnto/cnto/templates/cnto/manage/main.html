@@ -8,6 +8,7 @@
     <li role="presentation" class="active"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
     <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
     <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
+    <li role="presentation"><a href="#members-discharged" aria-controls="profile" role="tab" data-toggle="tab">Discharges</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -20,6 +21,9 @@
     </div>
     <div role="tabpanel" class="tab-pane row" id="event-types">
         {% include 'cnto/event/manage-type.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="members-discharged">
+        {% include 'cnto/member/manage-discharged.html' %}
     </div>
   </div>
 
@@ -38,6 +42,8 @@
     {% include 'cnto/group/manage.js' %}
 
     {% include 'cnto/event/manage-type.js' %}
+
+    {% include 'cnto/member/manage-discharged.js' %}
 
     $(document).ready(function() {
 

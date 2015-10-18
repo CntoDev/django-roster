@@ -14,7 +14,8 @@ def management(request):
         return redirect("login")
 
     context = {
-        "members": sorted(Member.objects.all(), key=lambda x: x.name.lower()),
+        "members": sorted(Member.objects.all().filter(discharged=False), key=lambda x: x.name.lower()),
+        "discharges": sorted(Member.objects.all().filter(discharged=True), key=lambda x: x.name.lower()),
         "groups": sorted(MemberGroup.objects.all(), key=lambda x: x.name.lower()),
         "event_types": sorted(EventType.objects.all(), key=lambda x: x.name.lower())
     }

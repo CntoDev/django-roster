@@ -29,6 +29,7 @@ class Member(models.Model):
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
     join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=django_timezone.now)
+    discharged = models.BooleanField(default=False, null=False)
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
