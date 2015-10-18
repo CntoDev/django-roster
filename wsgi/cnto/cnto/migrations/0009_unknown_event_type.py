@@ -27,9 +27,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(assign_unknown_event_type),
-        migrations.AlterField(
-            model_name='event',
-            name='event_type',
-            field=models.ForeignKey(to='cnto.EventType'),
-        ),
     ]
