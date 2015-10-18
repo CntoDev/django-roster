@@ -1,6 +1,5 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.fields import DateTimeField
 
 
 class Rank(models.Model):
@@ -62,10 +61,17 @@ class Member(models.Model):
         return self.name
 
 
+class EventType(models.Model):
+    name = models.TextField(null=False) 
+    default_start_hour = models.IntegerField()
+    default_end_hour = models.IntegerField()
+
+
 class Event(models.Model):
     name = models.TextField()
-    start_dt = DateTimeField(null=False)
-    end_dt = DateTimeField(null=False)
+    event_type = models.ForeignKey(EventType, null=True)
+    start_dt = models.DateTimeField(null=False)
+    end_dt = models.DateTimeField(null=False)
     duration_minutes = models.IntegerField(null=False)
 
 
