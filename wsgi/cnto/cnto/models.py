@@ -41,6 +41,7 @@ class EventType(models.Model):
     name = models.TextField(null=False)
     default_start_hour = models.IntegerField()
     default_end_hour = models.IntegerField()
+    css_class_name = models.TextField(null=False, blank=True)
 
     def lowered_name(self):
         return self.name.lower()
@@ -48,7 +49,7 @@ class EventType(models.Model):
 
 class Event(models.Model):
     name = models.TextField()
-    event_type = models.ForeignKey(EventType, null=True)
+    event_type = models.ForeignKey(EventType, null=False)
     start_dt = models.DateTimeField(null=False)
     end_dt = models.DateTimeField(null=False)
     duration_minutes = models.IntegerField(null=False)

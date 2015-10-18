@@ -4,15 +4,17 @@ from django.http.response import JsonResponse
 from django.shortcuts import redirect
 
 from libs.utils.attendance_scraper import get_all_event_attendances_between
-from ..models import Event, Member, Rank, Attendance
+from ..models import Event, Member, Rank, Attendance, EventType
 
 
-def scrape(request, dt_string, start_hour, end_hour):
+def scrape(request, event_type_name, dt_string, start_hour, end_hour):
     """Return the daily process main overview page.
     """
 
     if not request.user.is_authenticated():
         return redirect("login")
+
+    event_type = EventType.objects.get(name__iexact=event_type_name)
 
     dt = datetime.strptime(dt_string, "%Y-%m-%d")
 
@@ -40,11 +42,12 @@ def scrape(request, dt_string, start_hour, end_hour):
                                   start_dt__day=start_dt.day)
         event.start_dt = start_dt
         event.end_dt = end_dt
+        event.event_type = event_type
         event.duration_minutes = scrape_stats["minutes"]
         event.save()
     except Event.DoesNotExist:
         event = Event(start_dt=start_dt, end_dt=end_dt,
-                      duration_minutes=scrape_stats["minutes"])
+                      duration_minutes=scrape_stats["minutes"], event_type=event_type)
         event.save()
 
     previous_attendances = Attendance.objects.filter(event=event)

@@ -94,9 +94,10 @@ def view_event(request, year_string, month_string, day_string):
 
     context = {
         "event": None,
+        "event_types": EventType.objects.all().order_by("name"),
         "start_date_string": selected_dt.strftime("%Y-%m-%d"),
         "start_time_string": None,
-        "end_time_string": None
+        "end_time_string": None,
     }
 
     attendance_values = []
@@ -145,7 +146,8 @@ def event_browser(request):
         event_data[start_dt.strftime("%Y-%m-%d %H:%M")] = {
             "title": "\n%s minutes\n%.2f %% attendance\n%s players" % (
                 event.duration_minutes, stats["average_attendance"] * 100.0, stats["player_count"]),
-            "end_dt_string": end_dt.strftime("%Y-%m-%d %H:%M")
+            "end_dt_string": end_dt.strftime("%Y-%m-%d %H:%M"),
+            "css_class_name": event.event_type.css_class_name,
         }
 
     event_data = json.dumps(event_data)

@@ -9,3 +9,22 @@
 .bad-attendance {
     color: red;
 }
+
+.event-type-blue {
+    background-color: lightskyblue;
+    color: black;
+}
+
+.event-type-green{
+    background-color: lightgreen;
+    color: black;
+}
+.event-type-grey{
+    background-color: lightgrey;
+    color: black;
+}
+
+.event-type-yellow{
+    background-color: #ffd966;
+    color: black;
+}
