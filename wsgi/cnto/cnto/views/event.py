@@ -60,7 +60,7 @@ def view_event(request, year_string, month_string, day_string):
 
     context["attendance_values"] = attendance_values
 
-    return render(request, 'event/edit.html', context)
+    return render(request, 'cnto/event/edit.html', context)
 
 
 def event_browser(request):
@@ -90,4 +90,4 @@ def event_browser(request):
     context["event_data"] = event_data
     context["groups"] = MemberGroup.objects.all()
 
-    return render(request, 'event/browser.html', context)
+    return render(request, 'cnto/event/browser.html', context)

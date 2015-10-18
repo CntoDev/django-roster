@@ -1,0 +1,44 @@
+{% extends "cnto/member/base.html" %}
+
+{% block content %}
+<div class="container col-md-4 col-md-offset-4">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
+    <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active row" id="members">
+        {% include 'cnto/member/manage.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="groups">
+        {% include 'cnto/group/manage.html' %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    function getPKFromElement(memberElement) {
+        var memberIdString = memberElement.parent().parent().attr("id");
+        return parseInt(memberIdString.split("-")[1]);
+    }
+
+    {% include 'cnto/member/manage.js' %}
+
+    {% include 'cnto/group/manage.js' %}
+
+    $(document).ready(function() {
+
+        $('#major-tabs li a').click(function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        });
+    });
+</script>
+{% endblock %}

@@ -26,7 +26,7 @@ def handle_group_change_view(request, edit_mode, group=None):
     context['form'] = form
     context["edit_mode"] = edit_mode
 
-    return render_to_response('group/edit.html', context)
+    return render_to_response('cnto/group/edit.html', context)
 
 
 def create_group(request):

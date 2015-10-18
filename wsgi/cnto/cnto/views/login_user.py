@@ -22,4 +22,4 @@ def login_user(request):
     context = {'state': state, 'username': username}
     context.update(csrf(request))
 
-    return render_to_response('login.html', context)
+    return render_to_response('cnto/login.html', context)

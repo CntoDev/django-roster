@@ -1,14 +1,14 @@
-{% extends "member/base.html" %}
+{% extends "cnto/group/base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container col-md-4 col-md-offset-4">
     {% if edit_mode %}
-        <h3>Edit member</h3>
+        <h3>Edit group</h3>
     {% else %}
-        <h3>Create member</h3>
+        <h3>Create group</h3>
     {% endif %}
-    {% crispy form %}
+{% crispy form %}
 </div>
 {% endblock %}
 

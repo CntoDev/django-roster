@@ -62,7 +62,7 @@ class Member(models.Model):
 
 
 class EventType(models.Model):
-    name = models.TextField(null=False) 
+    name = models.TextField(null=False)
     default_start_hour = models.IntegerField()
     default_end_hour = models.IntegerField()
 

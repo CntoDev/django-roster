@@ -45,7 +45,7 @@ def handle_member_change_view(request, member=None):
 
     args['form'] = form
 
-    return render_to_response('member/edit.html', args)
+    return render_to_response('cnto/member/edit.html', args)
 
 
 def create_member(request):
@@ -69,18 +69,3 @@ def edit_member(request, pk):
         raise Http404()
 
     return handle_member_change_view(request, member=member)
-
-
-def list_members(request):
-    """List members
-    """
-
-    if not request.user.is_authenticated():
-        return redirect("login")
-
-    context = {
-        "members": sorted(Member.objects.all(), key=lambda x: x.name),
-        "groups": sorted(MemberGroup.objects.all(), key=lambda x: x.name)
-    }
-
-    return render(request, 'member/list.html', context)
