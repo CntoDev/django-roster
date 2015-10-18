@@ -2,10 +2,20 @@
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
-from models import Member, MemberGroup, Rank, EventType
+from models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Field
+from crispy_forms.layout import Layout, Submit, Field, BaseInput
 from crispy_forms.bootstrap import FormActions
+
+
+class AcceptButton(BaseInput):
+    input_type = 'submit'
+    field_classes = 'btn btn-primary'
+
+
+class CancelButton(BaseInput):
+    input_type = 'submit'
+    field_classes = 'btn btn-default'
 
 
 class EventTypeForm(forms.models.ModelForm):
@@ -30,8 +40,8 @@ class EventTypeForm(forms.models.ModelForm):
         Field('default_end_hour'),
         Field('css_class_name'),
         FormActions(
-            Submit('save_changes', 'Save changes', css_class="btn-primary"),
-            Submit('cancel', 'Cancel'),
+            AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
+            CancelButton('cancel', 'Cancel', css_class="btn-default"),
         )
     )
 
@@ -65,8 +75,8 @@ class MemberForm(forms.models.ModelForm):
         Field('join_dt'),
         Field('discharged'),
         FormActions(
-            Submit('save_changes', 'Save changes', css_class="btn-primary"),
-            Submit('cancel', 'Cancel'),
+            AcceptButton('save_changes', 'Save changes'),
+            CancelButton('cancel', 'Cancel'),
         )
     )
 
@@ -83,7 +93,34 @@ class MemberGroupForm(forms.models.ModelForm):
     helper.layout = Layout(
         Field('name'),
         FormActions(
-            Submit('save_changes', 'Save changes', css_class="btn-primary"),
-            Submit('cancel', 'Cancel'),
+            AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
+            CancelButton('cancel', 'Cancel', css_class="btn-default"),
+        )
+    )
+
+
+class AbsenceForm(forms.models.ModelForm):
+    class Meta:
+        model = Absence
+        fields = ['absence_type', 'start_dt', 'end_dt', 'member']
+
+    absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all())
+
+    start_dt = forms.DateField(label="Start date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                                  "pickTime": False}))
+
+    end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                              "pickTime": False}))
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.layout = Layout(
+        Field('absence_type'),
+        Field('start_dt'),
+        Field('end_dt'),
+        Field('member', type="hidden"),
+        FormActions(
+            AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
+            CancelButton('cancel', 'Cancel', css_class="btn-default"),
         )
     )

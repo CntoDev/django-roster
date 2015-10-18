@@ -15,16 +15,21 @@
     color: black;
 }
 
-.event-type-green{
+.event-type-green {
     background-color: lightgreen;
     color: black;
 }
-.event-type-grey{
+
+.event-type-grey {
     background-color: lightgrey;
     color: black;
 }
 
-.event-type-yellow{
+.event-type-yellow {
     background-color: #ffd966;
     color: black;
+}
+
+.sub-header {
+    font-size: 16pt;
 }

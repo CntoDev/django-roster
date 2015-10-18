@@ -15,13 +15,14 @@ def delete_member(request, member_pk):
 
     try:
         member = Member.objects.get(pk=member_pk)
-        member.delete()
+        member.deleted = True
+        member.save()
     except Member.DoesNotExist:
         return JsonResponse({"success": False})
     return JsonResponse({"success": True})
 
 
-def handle_member_change_view(request, member=None):
+def handle_member_change_view(request, edit_mode=False, member=None):
     if request.POST:
         form = MemberForm(request.POST, instance=member)
         if request.POST.get("cancel"):
@@ -56,6 +57,7 @@ def handle_member_change_view(request, member=None):
     args.update(csrf(request))
 
     args['form'] = form
+    args["edit_mode"] = edit_mode
 
     return render_to_response('cnto/member/edit.html', args)
 
@@ -80,4 +82,4 @@ def edit_member(request, pk):
     except Member.DoesNotExist:
         raise Http404()
 
-    return handle_member_change_view(request, member=member)
+    return handle_member_change_view(request, edit_mode=True, member=member)

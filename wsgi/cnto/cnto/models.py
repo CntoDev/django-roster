@@ -2,6 +2,7 @@ import django.utils.timezone as django_timezone
 
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils import timezone
 
 
 class Rank(models.Model):
@@ -30,6 +31,7 @@ class Member(models.Model):
     member_group = models.ForeignKey(MemberGroup, null=True)
     join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=django_timezone.now)
     discharged = models.BooleanField(default=False, null=False)
+    deleted = models.BooleanField(default=False, null=False)
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
@@ -60,6 +62,23 @@ class Event(models.Model):
 
     def lowered_name(self):
         return self.name.lower()
+
+
+class AbsenceType(models.Model):
+    name = models.TextField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Absence(models.Model):
+    member = models.ForeignKey(Member, null=False)
+    absence_type = models.ForeignKey(AbsenceType, null=False)
+    start_dt = models.DateTimeField(null=False)
+    end_dt = models.DateTimeField(null=False)
+
+    def due_days(self):
+        return (self.end_dt - timezone.now()).days
 
 
 class Attendance(models.Model):

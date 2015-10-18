@@ -42,7 +42,7 @@ def handle_event_type_change_view(request, edit_mode, event_type=None):
     context['form'] = form
     context["edit_mode"] = edit_mode
 
-    return render_to_response('cnto/group/edit.html', context)
+    return render_to_response('cnto/event/edit-type.html', context)
 
 
 def create_event_type(request):

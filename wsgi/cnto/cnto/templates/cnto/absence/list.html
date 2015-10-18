@@ -1,0 +1,25 @@
+{% load cnto-tags %}
+
+<table class="table table-striped">
+    <tr>
+        <th>Member</th>
+        <th>Type</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Due days</th>
+        <th></th>
+    </tr>
+    {% for absence in current_absences %}
+    <tr>
+        <td><a href="{% url 'edit-absence' absence.pk %}">{{ absence.member.name }}</a></td>
+        <td>{{ absence.absence_type }}</td>
+        <td>{{ absence.start_dt|date:'Y-m-d' }}</td>
+        <td>{{ absence.end_dt|date:'Y-m-d' }}</td>
+        <td>{{ absence|value_of:"due_days" }}</td>
+        <td>
+            <a class="delete-absence" href="#"><span class="glyphicon glyphicon-remove-circle"
+                                                     aria-hidden="true"></span></a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

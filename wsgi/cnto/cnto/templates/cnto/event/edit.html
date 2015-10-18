@@ -3,15 +3,14 @@
 {% block content %}
 <div class="container">
     {% if start_time_string %}
-    <h3>Event from {{ start_date_string }} {{ start_time_string }} to {{ end_time_string }}</h3>
+    <div class="sub-header">Event from {{ start_date_string }} {{ start_time_string }} to {{ end_time_string }}</div>
     {% else %}
-    <h3>Event for {{ start_date_string }}</h3>
+    <div class="sub-header">Event for {{ start_date_string }}</div>
     {% endif %}
 
     <ul>
         {% for name, attendance_value, bad_attendance in attendance_values %}
-        <li
-        {% if bad_attendance %}class="bad-attendance"{% endif %}>{{ name }}: {{ attendance_value }} %</li>
+        <li {% if bad_attendance %}class="bad-attendance"{% endif %}>{{ name }}: {{ attendance_value }} %</li>
         {% endfor %}
     </ul>
     <form class="highlight">
@@ -130,11 +129,10 @@
 
         $('#loading-modal').modal('show');
 
-        var eventTypeString = $("#event-type-label").text().replace(/ /g, '');
         var startHourString = $("#start-time-label").text().replace(/ /g, '');
         var endHourString = $("#end-time-label").text().replace(/ /g, '');
         var dateString = "{{ start_date_string }}";
-        var scrapeUrl = "/scrape/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
+        var scrapeUrl = "/scrape/" + dateString + "/" + startHourString + "/" + endHourString;
 
         $.get(scrapeUrl, function (data) {
             if (data["stats"]["average_attendance"] == 0) {

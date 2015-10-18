@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
-from views import scrape, login_user, event, member, report, group, manage
+from views import scrape, login_user, event, member, report, group, manage, absence
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^create-event-type/$', event.create_event_type, name='create-event-type'),
 
     url(r'^list-members/$', manage.management, name='list-members'),
+
     url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(?P<pk>\d+)/$', member.edit_member, name='edit-member'),
     url(r'^create-member/$', member.create_member, name='create-member'),
@@ -43,6 +44,11 @@ urlpatterns = [
     url(r'^delete-group/(\d+)/$', group.delete_group, name='delete-group'),
     url(r'^edit-group/(?P<pk>\d+)/$', group.edit_group, name='edit-group'),
     url(r'^create-group/$', group.create_group, name='create-group'),
+
+    url(r'^delete-absence/(?P<absence_pk>\d+)/$', absence.delete_absence, name='delete-absence'),
+    url(r'^edit-absences/(?P<member_pk>\d+)/$', absence.edit_absences, name='edit-absences'),
+    url(r'^edit-absence/(?P<absence_pk>\d+)/$', absence.edit_absence, name='edit-absence'),
+    url(r'^create-absence/(?P<member_pk>\d+)/$', absence.create_absence, name='create-absence'),
 
     url(r'^download-month-csv/(?P<dt_string>\w{4}-\w{2}-\w{2})/$', report.download_report_for_month,
         name='download-month-csv'),

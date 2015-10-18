@@ -8,3 +8,8 @@ CNTOUtils.padDigits = function(number, digits) {
 
     return digitString;
 };
+
+CNTOUtils.getPKFromElement = function(memberElement) {
+    var memberIdString = memberElement.parent().parent().attr("id");
+    return parseInt(memberIdString.split("-")[1]);
+};

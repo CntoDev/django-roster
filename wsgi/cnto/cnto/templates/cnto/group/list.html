@@ -5,15 +5,17 @@
     </tr>
     {% for group in groups %}
     <tr id="group-{{ group.pk }}">
-        <td>{{ group.name }}</td>
+        <td><a href="{% url 'edit-group' group.pk %}">{{ group.name }}</td>
         <td>
-            <a class="edit-group" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
             <a class="delete-group" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
         </td>
     </tr>
     {% endfor %}
 </table>
-<button id="create-group">Create group</button>
+<a href="{% url 'create-group' %}" class="btn btn-default" id="create-group" type="button">
+    Create group
+</a>
+
 
 <div class="modal fade" id="deleting-group-modal" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
