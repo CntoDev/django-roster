@@ -28,15 +28,27 @@ def handle_member_change_view(request, member=None):
             return redirect('list-members')
         elif form.is_valid():
             if form.fields["rank"] is None:
-                form.fields["rank"] = Rank.get_or_create_by_name("Rec")
+                try:
+                    rec_rank = Rank.objects.get(name__iexact="Rec")
+                except Rank.DoesNotExist:
+                    rec_rank = Rank(name="Rec")
+                    rec_rank.save()
+
+                form.fields["rank"] = rec_rank
 
             form.save()
             return redirect('list-members')
     else:
         initial = {}
         if member is None:
+            try:
+                gnt_rank = Rank.objects.get(name__iexact="Gnt")
+            except Rank.DoesNotExist:
+                gnt_rank = Rank(name="Gnt")
+                gnt_rank.save()
+
             initial = {
-                'rank': Rank.get_or_create_by_name("gnt").pk
+                'rank': gnt_rank
             }
         form = MemberForm(instance=member, initial=initial)
 
