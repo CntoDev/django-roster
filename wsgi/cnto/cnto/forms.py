@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
+from bootstrap3_datetime.widgets import DateTimePicker
 from models import Member, MemberGroup, Rank, EventType
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field
@@ -44,20 +45,22 @@ class EventTypeForm(forms.models.ModelForm):
 class MemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
-        fields = ['name', 'member_group', 'rank']
+        fields = ['name', 'member_group', 'rank', 'join_dt']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
     rank = forms.ModelChoiceField(queryset=Rank.objects.all(),
                                   empty_label="<Select rank>")
-
+    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                                "pickTime": False}))
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
         Field('name'),
         Field('member_group'),
         Field('rank'),
+        Field('join_dt'),
         FormActions(
             Submit('save_changes', 'Save changes', css_class="btn-primary"),
             Submit('cancel', 'Cancel'),

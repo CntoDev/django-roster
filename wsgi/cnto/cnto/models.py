@@ -1,3 +1,5 @@
+import django.utils.timezone as django_timezone
+
 from django.core.urlresolvers import reverse
 from django.db import models
 
@@ -26,6 +28,7 @@ class Member(models.Model):
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
+    join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=django_timezone.now)
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})

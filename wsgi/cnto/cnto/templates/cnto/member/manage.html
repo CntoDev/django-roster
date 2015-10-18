@@ -3,6 +3,7 @@
         <th>Name</th>
         <th>Rank</th>
         <th>Group</th>
+        <th>Joined</th>
         <th></th>
     </tr>
     {% for member in members %}
@@ -10,6 +11,7 @@
         <td>{{ member.name }}</td>
         <td>{{ member.rank }}</td>
         <td>{{ member.member_group.name }}</td>
+        <td>{{ member.join_dt|date:'Y-m-d' }}</td>
         <td>
             <a class="edit-member" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>&nbsp;
             <a class="delete-member" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
