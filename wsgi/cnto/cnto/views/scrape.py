@@ -43,8 +43,9 @@ def scrape(request, dt_string, start_hour, end_hour):
         event.duration_minutes = scrape_stats["minutes"]
         event.save()
     except Event.DoesNotExist:
-        event = Event.objects.create(start_dt=start_dt, end_dt=end_dt,
-                                     duration_minutes=scrape_stats["minutes"])
+        event = Event(start_dt=start_dt, end_dt=end_dt,
+                      duration_minutes=scrape_stats["minutes"])
+        event.save()
 
     previous_attendances = Attendance.objects.filter(event=event)
     previous_attendances.delete()
@@ -60,15 +61,25 @@ def scrape(request, dt_string, start_hour, end_hour):
             rank_str = username_parts[3][0:-1]
         attendance_value = scrape_result[raw_username]
 
-        rank = Rank.get_or_create_by_name(rank_str)
-        member = Member.get_or_create_by_username(username, rank=rank)
+        try:
+            rank = Rank.objects.get(name__iexact=rank_str)
+        except Rank.DoesNotExist:
+            rank = Rank(name=rank_str)
+            rank.save()
+
+        try:
+            member = Member.objects.get(name__iexact=username)
+        except Member.DoesNotExist:
+            member = Member(name=username, rank=rank)
+            member.save()
 
         try:
             attendance = Attendance.objects.get(event=event, member=member)
+            attendance.attendance = attendance_value
+            attendance.save()
         except Attendance.DoesNotExist:
-            attendance = Attendance.objects.create(event=event, member=member,
-                                                   attendance=attendance_value)
-        attendance.attendance = attendance_value
-        attendance.save()
+            attendance = Attendance(event=event, member=member,
+                                    attendance=attendance_value)
+            attendance.save()
 
     return JsonResponse({"attendance": scrape_result, "stats": scrape_stats})

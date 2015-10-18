@@ -2,8 +2,70 @@ import json
 
 from datetime import datetime
 from django.http.response import JsonResponse
-from django.shortcuts import render, redirect
-from ..models import Event, Attendance, MemberGroup
+from django.shortcuts import render, redirect, render_to_response
+from ..models import Event, Attendance, MemberGroup, EventType
+from django.http import Http404
+from django.template.context_processors import csrf
+
+from ..forms import EventTypeForm
+
+
+def delete_event_type(request, event_type_pk):
+    """Return the daily process main overview page.
+    """
+
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    try:
+        event_type = EventType.objects.get(pk=event_type_pk)
+        event_type.delete()
+        return JsonResponse({"success": True})
+    except Event.DoesNotExist:
+        return JsonResponse({"success": False})
+
+
+def handle_event_type_change_view(request, edit_mode, event_type=None):
+    if request.POST:
+        form = EventTypeForm(request.POST, instance=event_type)
+        if request.POST.get("cancel"):
+            return redirect('list-members')
+        elif form.is_valid():
+            form.save()
+            return redirect('list-members')
+    else:
+        form = EventTypeForm(instance=event_type)
+
+    context = {}
+    context.update(csrf(request))
+
+    context['form'] = form
+    context["edit_mode"] = edit_mode
+
+    return render_to_response('cnto/group/edit.html', context)
+
+
+def create_event_type(request):
+    """View Member
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    return handle_event_type_change_view(request, edit_mode=False)
+
+
+def edit_event_type(request, pk):
+    """View Member
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    try:
+        event_type = EventType.objects.get(pk=pk)
+    except MemberGroup.DoesNotExist:
+        raise Http404()
+
+    return handle_event_type_change_view(request, edit_mode=True, event_type=event_type)
 
 
 def delete_event(request, event_pk):

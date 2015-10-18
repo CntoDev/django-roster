@@ -7,6 +7,7 @@
   <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
     <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
+    <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -16,6 +17,9 @@
     </div>
     <div role="tabpanel" class="tab-pane row" id="groups">
         {% include 'cnto/group/manage.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="event-types">
+        {% include 'cnto/event/manage-type.html' %}
     </div>
   </div>
 
@@ -32,6 +36,8 @@
     {% include 'cnto/member/manage.js' %}
 
     {% include 'cnto/group/manage.js' %}
+
+    {% include 'cnto/event/manage-type.js' %}
 
     $(document).ready(function() {
 
