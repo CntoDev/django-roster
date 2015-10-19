@@ -1,5 +1,6 @@
 import csv
 
+import calendar
 from datetime import datetime
 from django.http.response import JsonResponse
 from django.utils import timezone
@@ -33,7 +34,6 @@ def get_report_context_for_date_range(start_dt, end_dt):
     context["events"] = events_dict
 
     reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
-    loa_absence_type = AbsenceType.objects.get(name__iexact="leave of absence")
 
     groups = MemberGroup.objects.all().order_by("name")
     attendance_dict = {}
@@ -48,7 +48,8 @@ def get_report_context_for_date_range(start_dt, end_dt):
             for event in events:
                 presence_marker = " "
                 try:
-                    absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt, end_dt__gte=event.start_dt)
+                    absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
+                                                  end_dt__gte=event.start_dt)
                     if absence.absence_type == reservist_absence_type:
                         absence_type = "R"
                     else:
@@ -87,7 +88,8 @@ def get_report_body_for_month(request, month_string):
     month_dt = datetime.strptime(month_string, "%Y-%m")
 
     context = get_report_context_for_date_range(datetime(month_dt.year, month_dt.month, 1, 0, 0),
-                                                datetime(month_dt.year, month_dt.month, 30, 23, 59))
+                                                datetime(month_dt.year, month_dt.month,
+                                                         calendar.monthrange(month_dt.year, month_dt.month)[1], 23, 59))
 
     return JsonResponse(context)
 
