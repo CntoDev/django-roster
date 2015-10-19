@@ -1,12 +1,40 @@
 {% extends "cnto/report/base.html" %}
 
 {% block content %}
-<div id="report-container" class="container col-md-6 col-md-offset-3">
+<div id="report-container" class="container col-md-10 col-md-offset-1">
     Loading default report...
 </div>
 {% endblock %}
 
 {% block js %}
+<script type="text/template" id="report-body-template">
+    <div id='report-body'>
+        <h3><%= start_dt %> to <%= end_dt %></h3>
+        <% _.each(attendances,function(item,key,arr) { %>
+            <h4><%=key %></h4>
+            <table class="table table-striped">
+                <tr>
+                    <th>Member</th>
+                    <% _.each(events.start_dates,function(item,key,arr) { %>
+                        <th><%=item %></th>
+                    <% }); %>
+                </tr>
+                <% _.each(item,function(item,key,arr) { %>
+                    <tr>
+                        <td><%=key %></td>
+                        <% _.each(item,function(attended,key,arr) { %>
+                            <td><%=attended %></td>
+                        <% }); %>
+                    </tr>
+                <% }); %>
+            </table>
+        <% }); %>
+        <%= event_count %> events took place.
+
+    </div>
+</script>
+
+<script
 <script>
     {% include "cnto/report/report-browser.js" %}
 </script>

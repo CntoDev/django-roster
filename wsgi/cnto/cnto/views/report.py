@@ -1,6 +1,7 @@
 import csv
 
 from datetime import datetime
+from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -22,10 +23,33 @@ def report_browser(request):
 def get_report_context_for_date_range(start_dt, end_dt):
     context = {}
 
-    events = Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt)
+    events = Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt).order_by("start_dt")
     context["event_count"] = events.count()
-    context["start_dt"] = start_dt
-    context["end_dt"] = end_dt
+
+    event_start_dates = [event.start_dt for event in events]
+
+    events_dict = {"start_dates": [event_start_dt.strftime("%Y-%m-%d") for event_start_dt in event_start_dates]}
+    context["events"] = events_dict
+
+    groups = MemberGroup.objects.all().order_by("name")
+    attendance_dict = {}
+    for group in groups:
+        attendance_dict[group.name] = {}
+        members = Member.objects.filter(member_group=group).order_by("name")
+        for member in members:
+            attendance_dict[group.name][member.name] = []
+            for event in events:
+                try:
+                    attendance = Attendance.objects.get(member=member, event=event)
+                    was_adequate = attendance.was_adequate()
+                except Attendance.DoesNotExist:
+                    was_adequate = False
+                attendance_dict[group.name][member.name].append("X" if was_adequate else " ")
+
+    context["attendances"] = attendance_dict
+
+    context["start_dt"] = start_dt.strftime("%Y-%m-%d")
+    context["end_dt"] = end_dt.strftime("%Y-%m-%d")
 
     return context
 
@@ -39,7 +63,7 @@ def get_report_body(request):
 
     context = get_report_context_for_date_range(datetime(2015, 9, 1, 0, 0), datetime(2015, 9, 30, 23, 59))
 
-    return render(request, 'cnto/report/report-body.html', context)
+    return JsonResponse(context)
 
 
 def download_report_for_month(request, dt_string, group_pk=None):
