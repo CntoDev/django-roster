@@ -27,7 +27,9 @@ urlpatterns = [
     url(r'^login/', login_user.login_user, name='login'),
 
     url(r'^event-browser/', event.event_browser, name='event-browser'),
-    url(r'^scrape/(\w+)/(\w{4}-\w{2}-\w{2})/([0-9]{2})h/([0-9]{2})h/$', scrape.scrape, name='scrape'),
+    url(
+        r'^scrape/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(?P<end_hour>[0-9]{2})h/$',
+        scrape.scrape, name='scrape'),
 
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^delete-event/(\d+)/$', event.delete_event, name='delete-event'),
@@ -54,4 +56,8 @@ urlpatterns = [
         name='download-month-csv'),
     url(r'^download-group-month-csv/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<group_pk>\d+)/$',
         report.download_report_for_month, name='download-group-month-csv'),
+
+    url(r'^report-browser/$', report.report_browser, name='report-browser'),
+    url(r'^get-report-body/$', report.get_report_body, name='get-report-body'),
+
 ]

@@ -129,10 +129,11 @@
 
         $('#loading-modal').modal('show');
 
+        var eventTypeString = $("#event-type-label").text().replace(/ /g, '');
         var startHourString = $("#start-time-label").text().replace(/ /g, '');
         var endHourString = $("#end-time-label").text().replace(/ /g, '');
         var dateString = "{{ start_date_string }}";
-        var scrapeUrl = "/scrape/" + dateString + "/" + startHourString + "/" + endHourString;
+        var scrapeUrl = "/scrape/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
 
         $.get(scrapeUrl, function (data) {
             if (data["stats"]["average_attendance"] == 0) {

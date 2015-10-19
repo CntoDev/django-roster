@@ -1,0 +1,7 @@
+{% extends "cnto/base-with-nav.html" %}
+
+{% block navbar-list %}
+    <li class="active"><a href="{% url 'event-browser' %}">Events</a></li>
+    <li><a href="{% url 'list-members' %}">Manage</a></li>
+    <li><a href="{% url 'report-browser' %}">Report</a></li>
+{% endblock %}
