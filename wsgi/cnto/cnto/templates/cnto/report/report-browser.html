@@ -1,8 +1,33 @@
 {% extends "cnto/report/base.html" %}
+{% load staticfiles %}
 
 {% block content %}
-<div id="report-container" class="container col-md-10 col-md-offset-1">
-    Loading default report...
+<div class="container col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class='col-sm-2'>
+            Month for report
+        </div>
+    </div>
+    <div class="row">
+        <div class='col-sm-2'>
+            <div class="form-group">
+                <div class='input-group date' id='month-picker'>
+                    <input id='selected-date-text' type='text' class="form-control"/>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class='col-sm-1'>
+            <button id="generate-report" class="btn btn-primary">Generate</button>
+        </div>
+        <div class='col-sm-1'>
+            <img id="generate-report-throbber" style="display: none;" src="{% static 'cnto/images/throbber.gif' %}">
+        </div>
+    </div>
+    <div id="report-container" class="row">
+    </div>
 </div>
 {% endblock %}
 
@@ -10,32 +35,55 @@
 <script type="text/template" id="report-body-template">
     <div id='report-body'>
         <h3><%= start_dt %> to <%= end_dt %></h3>
-        <% _.each(attendances,function(item,key,arr) { %>
+        <%= event_count %> events were recorded.
+        <% if (event_count > 0) { %>
+            <% _.each(attendances,function(item,key,arr) { %>
             <h4><%=key %></h4>
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <tr>
                     <th>Member</th>
                     <% _.each(events.start_dates,function(item,key,arr) { %>
-                        <th><%=item %></th>
+                    <th><%=item %></th>
                     <% }); %>
                 </tr>
                 <% _.each(item,function(item,key,arr) { %>
-                    <tr>
-                        <td><%=key %></td>
-                        <% _.each(item,function(attended,key,arr) { %>
-                            <td><%=attended %></td>
-                        <% }); %>
-                    </tr>
+                <tr>
+                    <td><%=key %></td>
+                    <% _.each(item,function(attended,key,arr) { %>
+                    <td><%=attended %></td>
+                    <% }); %>
+                </tr>
                 <% }); %>
             </table>
-        <% }); %>
-        <%= event_count %> events took place.
-
+            <% }); %>
+        <% } %>
     </div>
 </script>
 
-<script
 <script>
-    {% include "cnto/report/report-browser.js" %}
+    $(document).ready(function () {
+        $('#generate-report-throbber').hide();
+
+        $("#month-picker").datetimepicker({
+                                              defaultDate: moment().subtract(1, 'months'),
+                                              viewMode: 'months',
+                                                format: 'YYYY-MM'
+                                          }
+        );
+
+        $('#generate-report').on('click', function (e) {
+            $('#generate-report-throbber').show();
+            var dateString = $("#selected-date-text").val();
+            var reportUrl = "{% url 'get-report-body-for-month' '1234-56' %}".replace('1234-56', dateString);
+            $.get(reportUrl, function (data) {
+                $('#generate-report-throbber').hide();
+                var tpl = _.template($("#report-body-template").html());
+                $("#report-container").html(tpl(data));
+            });
+        });
+    });
+
+
+
 </script>
 {% endblock %}

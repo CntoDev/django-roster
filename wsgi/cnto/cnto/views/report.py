@@ -54,14 +54,16 @@ def get_report_context_for_date_range(start_dt, end_dt):
     return context
 
 
-def get_report_body(request):
+def get_report_body_for_month(request, month_string):
     """Get reports
     """
-
     if not request.user.is_authenticated():
         return redirect("login")
 
-    context = get_report_context_for_date_range(datetime(2015, 9, 1, 0, 0), datetime(2015, 9, 30, 23, 59))
+    month_dt = datetime.strptime(month_string, "%Y-%m")
+
+    context = get_report_context_for_date_range(datetime(month_dt.year, month_dt.month, 1, 0, 0),
+                                                datetime(month_dt.year, month_dt.month, 30, 23, 59))
 
     return JsonResponse(context)
 
