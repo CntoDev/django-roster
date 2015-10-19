@@ -106,6 +106,39 @@ class Attendance(models.Model):
     class Meta:
         unique_together = ('event', 'member',)
 
+    @staticmethod
+    def was_adequate_for_period(member, events, start_dt, end_dt):
+        start_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=start_dt)
+        end_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=end_dt, end_dt__gte=end_dt)
+        inside_absences_for_period = Absence.objects.filter(member=member, start_dt__gte=start_dt, end_dt__lte=end_dt)
+        overlap_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=end_dt)
+
+        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + overlap_absences_for_period.count() > 0:
+            return True
+
+        attendances_for_period = Attendance.objects.filter(member=member, event__in=events)
+
+        attended_training = 0
+        attended_other = 0
+
+        training_event_type = EventType.objects.get(name__iexact="training")
+
+        for attendance in attendances_for_period:
+            if attendance.was_adequate():
+                if attendance.event.event_type == training_event_type:
+                    attended_training += 1
+                else:
+                    attended_other += 1
+
+        if attended_training + attended_other < 3:
+            return False
+        if attended_training < 1:
+            return False
+        if attended_other < 2:
+            return False
+
+        return True
+
     def was_adequate(self):
         attendance_minutes = self.event.duration_minutes * self.attendance
         base_required_attendance_minutes = 60

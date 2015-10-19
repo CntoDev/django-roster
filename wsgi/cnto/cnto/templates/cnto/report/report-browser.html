@@ -39,18 +39,18 @@
         <% if (event_count > 0) { %>
             <% _.each(attendances,function(item,key,arr) { %>
             <h4><%=key %></h4>
-            <table class="table table-striped table-bordered">
+            <table class="table table-bordered">
                 <tr>
                     <th>Member</th>
-                    <% _.each(events.start_dates,function(item,key,arr) { %>
-                    <th><%=item %></th>
+                    <% _.each(events.start_dates,function(event_start_date,key,arr) { %>
+                    <th class="<%=events.css_classes[key] %>"><%=event_start_date %></th>
                     <% }); %>
                 </tr>
-                <% _.each(item,function(item,key,arr) { %>
-                <tr>
-                    <td><%=key %></td>
-                    <% _.each(item,function(attended,key,arr) { %>
-                    <td><%=attended %></td>
+                <% _.each(item,function(member,member_name,arr) { %>
+                <tr <% if (member.attendance_adequate) { %>class="good-attendance-row"<% } else { %>class="bad-attendance-row"<% } %> >
+                    <td><%=member_name %></td>
+                    <% _.each(member.attendances,function(attend_status,key,arr) { %>
+                        <td><%=attend_status %></td>
                     <% }); %>
                 </tr>
                 <% }); %>

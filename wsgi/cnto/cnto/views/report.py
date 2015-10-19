@@ -5,7 +5,7 @@ from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from ..models import MemberGroup, Event, Member, Attendance
+from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceType
 
 
 def report_browser(request):
@@ -26,10 +26,14 @@ def get_report_context_for_date_range(start_dt, end_dt):
     events = Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt).order_by("start_dt")
     context["event_count"] = events.count()
 
-    event_start_dates = [event.start_dt for event in events]
-
-    events_dict = {"start_dates": [event_start_dt.strftime("%Y-%m-%d") for event_start_dt in event_start_dates]}
+    events_dict = {
+        "start_dates": [event.start_dt.strftime("%Y-%m-%d") for event in events],
+        "css_classes": [event.event_type.css_class_name for event in events]
+    }
     context["events"] = events_dict
+
+    reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
+    loa_absence_type = AbsenceType.objects.get(name__iexact="leave of absence")
 
     groups = MemberGroup.objects.all().order_by("name")
     attendance_dict = {}
@@ -37,14 +41,34 @@ def get_report_context_for_date_range(start_dt, end_dt):
         attendance_dict[group.name] = {}
         members = Member.objects.filter(member_group=group).order_by("name")
         for member in members:
-            attendance_dict[group.name][member.name] = []
+            attendance_dict[group.name][member.name] = {
+                "attendance_adequate": Attendance.was_adequate_for_period(member, events, start_dt, end_dt),
+                "attendances": []
+            }
             for event in events:
+                presence_marker = " "
                 try:
-                    attendance = Attendance.objects.get(member=member, event=event)
-                    was_adequate = attendance.was_adequate()
-                except Attendance.DoesNotExist:
-                    was_adequate = False
-                attendance_dict[group.name][member.name].append("X" if was_adequate else " ")
+                    absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt, end_dt__gte=event.start_dt)
+                    if absence.absence_type == reservist_absence_type:
+                        absence_type = "R"
+                    else:
+                        absence_type = "LOA"
+                except Absence.DoesNotExist:
+                    absence_type = None
+
+                if absence_type is not None:
+                    presence_marker = absence_type
+                else:
+                    try:
+                        attendance = Attendance.objects.get(member=member, event=event)
+                        was_adequate = attendance.was_adequate()
+                    except Attendance.DoesNotExist:
+                        was_adequate = False
+
+                    if was_adequate:
+                        presence_marker = "X"
+
+                attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
     context["attendances"] = attendance_dict
 

@@ -33,3 +33,11 @@
 .sub-header {
     font-size: 16pt;
 }
+
+.good-attendance-row {
+    background-color: #E0FFD1;
+}
+
+.bad-attendance-row {
+    background-color: #FAE6E6;
+}
