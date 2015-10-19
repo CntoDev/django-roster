@@ -29,6 +29,7 @@ class Member(models.Model):
     member_group = models.ForeignKey(MemberGroup, null=True)
     join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=timezone.now)
     discharged = models.BooleanField(default=False, null=False)
+    mods_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
 
     def get_absolute_url(self):

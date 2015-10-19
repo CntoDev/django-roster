@@ -46,7 +46,6 @@ def get_report_context_for_date_range(start_dt, end_dt):
                 "attendances": []
             }
             for event in events:
-                presence_marker = " "
                 try:
                     absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
                                                   end_dt__gte=event.start_dt)
@@ -63,11 +62,16 @@ def get_report_context_for_date_range(start_dt, end_dt):
                     try:
                         attendance = Attendance.objects.get(member=member, event=event)
                         was_adequate = attendance.was_adequate()
-                    except Attendance.DoesNotExist:
-                        was_adequate = False
+                        if was_adequate:
+                            presence_marker = "X"
+                        else:
+                            presence_marker = "?"
 
-                    if was_adequate:
-                        presence_marker = "X"
+                    except Attendance.DoesNotExist:
+                        presence_marker = " "
+
+
+
 
                 attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 

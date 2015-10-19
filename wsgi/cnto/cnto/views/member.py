@@ -40,18 +40,20 @@ def handle_member_change_view(request, edit_mode=False, member=None):
             form.save()
             return redirect('list-members')
     else:
-        initial = {}
         if member is None:
             try:
-                gnt_rank = Rank.objects.get(name__iexact="Gnt")
+                rec_rank = Rank.objects.get(name__iexact="Rec")
             except Rank.DoesNotExist:
-                gnt_rank = Rank(name="Gnt")
-                gnt_rank.save()
+                rec_rank = Rank(name="Rec")
+                rec_rank.save()
 
             initial = {
-                'rank': gnt_rank
+                'rank': rec_rank,
+                'mods_assessed': False
             }
-        form = MemberForm(instance=member, initial=initial)
+            form = MemberForm(initial=initial)
+        else:
+            form = MemberForm(instance=member)
 
     args = {}
     args.update(csrf(request))
