@@ -7,7 +7,10 @@
     <tr id="dischargedmember-{{ member.pk }}">
         <td><a href="{% url 'edit-member' member.pk %}">{{ member.name }}</a></td>
         <td>
-            <a class="delete-discharged-member" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+            <a href="{% url 'edit-member' member.pk %}"><span class="glyphicon glyphicon-edit"
+                                                              aria-hidden="true"></span></a>
+            <a class="delete-discharged-member" href="#"><span class="glyphicon glyphicon-remove-circle"
+                                                               aria-hidden="true"></span></a>
         </td>
     </tr>
     {% endfor %}
