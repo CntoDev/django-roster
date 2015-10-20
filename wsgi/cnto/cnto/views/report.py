@@ -39,7 +39,7 @@ def get_report_context_for_date_range(start_dt, end_dt):
     attendance_dict = {}
     for group in groups:
         attendance_dict[group.name] = {}
-        members = Member.objects.filter(member_group=group).order_by("name")
+        members = Member.objects.filter(member_group=group, discharged=False, deleted=False).order_by("name")
         for member in members:
             attendance_dict[group.name][member.name] = {
                 "attendance_adequate": Attendance.was_adequate_for_period(member, events, start_dt, end_dt),
@@ -47,12 +47,15 @@ def get_report_context_for_date_range(start_dt, end_dt):
             }
             for event in events:
                 try:
-                    absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
-                                                  end_dt__gte=event.start_dt)
-                    if absence.absence_type == reservist_absence_type:
-                        absence_type = "R"
+                    if member.join_dt > event.start_dt:
+                        absence_type = "-"
                     else:
-                        absence_type = "LOA"
+                        absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
+                                                      end_dt__gte=event.start_dt)
+                        if absence.absence_type == reservist_absence_type:
+                            absence_type = "R"
+                        else:
+                            absence_type = "LOA"
                 except Absence.DoesNotExist:
                     absence_type = None
 
@@ -69,9 +72,6 @@ def get_report_context_for_date_range(start_dt, end_dt):
 
                     except Attendance.DoesNotExist:
                         presence_marker = " "
-
-
-
 
                 attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
