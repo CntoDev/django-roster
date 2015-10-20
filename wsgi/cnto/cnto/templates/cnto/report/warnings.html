@@ -2,15 +2,19 @@
 
 <table class="table">
     {% if warnings %}
-        <tr>
-            <th>Member</th><th>Warning</th>
-        </tr>
-        {% for member, reason in warnings %}
-            <tr>
-                <td><a href="{{ member|value_of:'get_absolute_url' }}">{{ member.name }}</a></td><td>{{ reason }}</td>
-            </tr>
-        {% endfor %}
+    <tr>
+        <th>Member</th>
+        <th>Rank</th>
+        <th>Warning</th>
+    </tr>
+    {% for member, reason in warnings %}
+    <tr>
+        <td><a href="{{ member|value_of:'get_absolute_url' }}">{{ member.name }}</a></td>
+        <td>{{ member.rank.name }}</td>
+        <td>{{ reason }}</td>
+    </tr>
+    {% endfor %}
     {% else %}
-        <h3>No current warnings!</h3>
+    <h3>No current warnings!</h3>
     {% endif %}
 </table>
