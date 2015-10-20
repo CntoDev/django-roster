@@ -136,8 +136,6 @@ def event_browser(request):
 
     event_data = {}
     for event in Event.objects.all():
-        if event.duration_minutes <= 0:
-            continue
         stats = Attendance.get_stats_for_event(event)
 
         start_dt = event.start_dt
