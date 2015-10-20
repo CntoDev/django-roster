@@ -1,0 +1,14 @@
+{% extends "cnto/member/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container col-md-4 col-md-offset-4">
+    <div class="sub-header">Edit member</div>
+
+    {% crispy form %}
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

@@ -28,10 +28,15 @@ class Member(models.Model):
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
+
     join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=timezone.now)
+
     discharged = models.BooleanField(default=False, null=False)
+    discharge_dt = models.DateTimeField(verbose_name="Discharge date", null=True, default=None)
+
     mods_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
+
 
     @staticmethod
     def active_members():

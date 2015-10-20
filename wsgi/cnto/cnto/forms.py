@@ -55,7 +55,7 @@ class EventTypeForm(forms.models.ModelForm):
 class MemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
-        fields = ['name', 'member_group', 'rank', 'join_dt', 'mods_assessed', 'discharged']
+        fields = ['name', 'member_group', 'rank', 'join_dt', 'mods_assessed', 'discharged', 'discharge_dt']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
@@ -67,6 +67,10 @@ class MemberForm(forms.models.ModelForm):
     mods_assessed = forms.BooleanField(required=False)
     discharged = forms.BooleanField(required=False)
 
+    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                                          "pickTime": False}),
+                                   required=False)
+
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
@@ -76,6 +80,34 @@ class MemberForm(forms.models.ModelForm):
         Field('join_dt'),
         Field('mods_assessed'),
         Field('discharged'),
+        Field('discharge_dt', type='hidden'),
+        FormActions(
+            AcceptButton('save_changes', 'Save changes'),
+            CancelButton('cancel', 'Cancel'),
+        )
+    )
+
+
+class DischargedMemberForm(forms.models.ModelForm):
+    class Meta:
+        model = Member
+        fields = ['name', 'join_dt', 'discharged', 'discharge_dt']
+
+    name = forms.CharField()
+    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                                "pickTime": False}))
+    discharged = forms.BooleanField(required=False)
+    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                                                                          "pickTime": False}),
+                                   required=False)
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.layout = Layout(
+        Field('name'),
+        Field('join_dt'),
+        Field('discharged'),
+        Field('discharge_dt'),
         FormActions(
             AcceptButton('save_changes', 'Save changes'),
             CancelButton('cancel', 'Cancel'),

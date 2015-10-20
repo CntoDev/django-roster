@@ -41,6 +41,7 @@ urlpatterns = [
 
     url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(?P<pk>\d+)/$', member.edit_member, name='edit-member'),
+    url(r'^edit-discharged-member/(?P<pk>\d+)/$', member.edit_discharged_member, name='edit-discharged-member'),
     url(r'^create-member/$', member.create_member, name='create-member'),
 
     url(r'^delete-group/(\d+)/$', group.delete_group, name='delete-group'),

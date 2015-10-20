@@ -2,14 +2,19 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th>Join date</th>
+            <th>Discharge date</th>
             <th></th>
         </tr>
     </thead>
     {% for member in discharges %}
     <tr id="dischargedmember-{{ member.pk }}">
-        <td><a href="{% url 'edit-member' member.pk %}">{{ member.name }}</a></td>
+        <td><a href="{% url 'edit-discharged-member' member.pk %}">{{ member.name }}</a></td>
+        <td>{{ member.join_dt|date:'Y-m-d' }}</td>
+        <td>{{ member.discharge_dt|date:'Y-m-d' }}</td>
+
         <td>
-            <a href="{% url 'edit-member' member.pk %}"><span class="glyphicon glyphicon-edit"
+            <a href="{% url 'edit-discharged-member' member.pk %}"><span class="glyphicon glyphicon-edit"
                                                               aria-hidden="true"></span></a>
             <a class="delete-discharged-member" href="#"><span class="glyphicon glyphicon-remove-circle"
                                                                aria-hidden="true"></span></a>
