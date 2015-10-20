@@ -1,14 +1,16 @@
 {% load cnto-tags %}
 
-<table class="table table-striped">
-    <tr>
-        <th>Member</th>
-        <th>Type</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Due days</th>
-        <th></th>
-    </tr>
+<table id="absence-list-table" class="table table-striped tablesorter">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Type</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Due days</th>
+            <th></th>
+        </tr>
+    </thead>
     {% for absence in current_absences %}
     <tr>
         <td><a href="{% url 'edit-absence' absence.pk %}">{{ absence.member.name }}</a></td>
@@ -25,3 +27,15 @@
     </tr>
     {% endfor %}
 </table>
+
+<script>
+    $(document).ready(function()
+        {
+            $("#absence-list-table").tablesorter({
+                headers: {
+                    5: { sorter: false }
+                }
+            });
+        }
+    );
+</script>

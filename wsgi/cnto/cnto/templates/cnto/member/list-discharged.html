@@ -1,8 +1,10 @@
-<table class="table table-striped">
-    <tr>
-        <th>Name</th>
-        <th></th>
-    </tr>
+<table id="discharge-list-table" class="table table-striped tablesorter">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
     {% for member in discharges %}
     <tr id="dischargedmember-{{ member.pk }}">
         <td><a href="{% url 'edit-member' member.pk %}">{{ member.name }}</a></td>
@@ -15,3 +17,16 @@
     </tr>
     {% endfor %}
 </table>
+
+<script>
+    $(document).ready(function()
+        {
+            $("#discharge-list-table").tablesorter({
+                headers: {
+                    // assign the secound column (we start counting zero)
+                    1: { sorter: false }
+                }
+            });
+        }
+    );
+</script>

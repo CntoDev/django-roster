@@ -1,11 +1,13 @@
-<table class="table table-striped">
-    <tr>
-        <th>Name</th>
-        <th>Rank</th>
-        <th>Group</th>
-        <th>Joined</th>
-        <th></th>
-    </tr>
+<table id="member-list-table" class="table table-striped tablesorter">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Rank</th>
+            <th>Group</th>
+            <th>Joined</th>
+            <th></th>
+        </tr>
+    </thead>
     {% for member in members %}
     <tr id="member-{{ member.pk }}">
         <td><a href="{% url 'edit-member' member.pk %}">{{ member.name }}</a></td>
@@ -39,3 +41,15 @@
     </div>
     <!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script>
+    $(document).ready(function()
+        {
+            $("#member-list-table").tablesorter({
+                headers: {
+                    4: { sorter: false }
+                }
+            });
+        }
+    );
+</script>

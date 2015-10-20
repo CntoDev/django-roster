@@ -1,10 +1,12 @@
-<table class="table table-striped">
-    <tr>
-        <th>Name</th>
-        <th>Start</th>
-        <th>End</th>
-        <th></th>
-    </tr>
+<table id="event-type-list-table" class="table table-striped tablesorter">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th></th>
+        </tr>
+    </thead>
     {% for event_type in event_types %}
     <tr id="eventtype-{{ event_type.pk }}">
         <td><a href="{% url 'edit-event-type' event_type.pk %}">{{ event_type.name }}</td>
@@ -38,3 +40,16 @@
     </div>
     <!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script>
+    $(document).ready(function()
+        {
+            $("#event-type-list-table").tablesorter({
+                headers: {
+                    // assign the secound column (we start counting zero)
+                    3: { sorter: false }
+                }
+            });
+        }
+    );
+</script>

@@ -1,12 +1,14 @@
 {% load cnto-tags %}
 
-<table class="table">
+<table id="warning-list-table" class="table tablesorter">
     {% if warnings %}
-    <tr>
-        <th>Member</th>
-        <th>Rank</th>
-        <th>Warning</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Rank</th>
+            <th>Warning</th>
+        </tr>
+    </thead>
     {% for member, reason in warnings %}
     <tr>
         <td><a href="{{ member|value_of:'get_absolute_url' }}">{{ member.name }}</a></td>
@@ -18,3 +20,13 @@
     <h3>No current warnings!</h3>
     {% endif %}
 </table>
+
+<script>
+    $(document).ready(function()
+        {
+            $("#warning-list-table").tablesorter({
+
+            });
+        }
+    );
+</script>
