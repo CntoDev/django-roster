@@ -28,6 +28,7 @@ class Member(models.Model):
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
+    email = models.EmailField(null=True)
 
     join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=timezone.now)
 
@@ -36,7 +37,6 @@ class Member(models.Model):
 
     mods_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
-
 
     @staticmethod
     def active_members():

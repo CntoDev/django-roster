@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
 
-from libs.utils.attendance_scraper import get_all_event_attendances_between
+from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
 
 

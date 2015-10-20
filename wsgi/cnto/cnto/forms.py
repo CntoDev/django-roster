@@ -55,7 +55,7 @@ class EventTypeForm(forms.models.ModelForm):
 class MemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
-        fields = ['name', 'member_group', 'rank', 'join_dt', 'mods_assessed', 'discharged', 'discharge_dt']
+        fields = ['name', 'member_group', 'rank', 'join_dt', 'mods_assessed', 'discharged', 'discharge_dt', 'email']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
@@ -64,13 +64,15 @@ class MemberForm(forms.models.ModelForm):
                                   empty_label="<Select rank>")
     join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                                                                 "pickTime": False}))
+
+    email = forms.EmailField(required=False)
+
     mods_assessed = forms.BooleanField(required=False)
     discharged = forms.BooleanField(required=False)
 
     discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                                                                           "pickTime": False}),
                                    required=False)
-
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
@@ -78,6 +80,7 @@ class MemberForm(forms.models.ModelForm):
         Field('member_group'),
         Field('rank'),
         Field('join_dt'),
+        Field('email'),
         Field('mods_assessed'),
         Field('discharged'),
         Field('discharge_dt', type='hidden'),

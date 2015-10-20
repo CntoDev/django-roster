@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'bootstrap3_datetime',
     'cnto',
+    'cnto_notes',
     'crispy_forms',
 )
 
