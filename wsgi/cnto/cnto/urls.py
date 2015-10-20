@@ -57,7 +57,7 @@ urlpatterns = [
     url(r'^download-group-month-csv/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<group_pk>\d+)/$',
         report.download_report_for_month, name='download-group-month-csv'),
 
-    url(r'^report-browser/$', report.report_browser, name='report-browser'),
+    url(r'^report-main/$', report.report_main, name='report-main'),
     url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month, name='get-report-body-for-month'),
 
 ]

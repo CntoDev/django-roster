@@ -1,7 +1,7 @@
 import csv
 
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
@@ -9,22 +9,52 @@ from django.shortcuts import redirect, render
 from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceType
 
 
-def report_browser(request):
+def get_warnings_for_date_range(start_dt, end_dt):
+    warnings = []
+    events = Event.all_for_time_period(start_dt, end_dt)
+    members = Member.active_members()
+    for member in members:
+        adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
+        if not adequate:
+            warnings.append([member, reason])
+
+        recruit_warning, reason = member.get_recruit_warning()
+        if recruit_warning:
+            warnings.append([member, reason])
+
+    return sorted(warnings, key=lambda warning: warning[0].name)
+
+
+def report_main(request):
     """Browse reports
     """
 
     if not request.user.is_authenticated():
         return redirect("login")
 
-    context = {}
+    current_dt = timezone.now()
+    previous_year_number = current_dt.year
+    previous_month_number = current_dt.month - 1
+    if previous_month_number == 0:
+        previous_year_number -= 1
+        previous_month_number = 12
 
-    return render(request, 'cnto/report/report-browser.html', context)
+    previous_month_start_dt = datetime(year=previous_year_number, month=previous_month_number, day=1, hour=0, minute=0)
+    previous_month_end_dt = datetime(year=previous_year_number, month=previous_month_number,
+                                     day=calendar.monthrange(previous_year_number, previous_month_number)[1], hour=23,
+                                     minute=59)
+
+    context = {
+        "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt)
+    }
+
+    return render(request, 'cnto/report/report-main.html', context)
 
 
 def get_report_context_for_date_range(start_dt, end_dt):
     context = {}
 
-    events = Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt).order_by("start_dt")
+    events = Event.all_for_time_period(start_dt, end_dt).order_by("start_dt")
     context["event_count"] = events.count()
 
     events_dict = {
@@ -41,8 +71,9 @@ def get_report_context_for_date_range(start_dt, end_dt):
         attendance_dict[group.name] = {}
         members = Member.objects.filter(member_group=group, discharged=False, deleted=False).order_by("name")
         for member in members:
+            period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
             attendance_dict[group.name][member.name] = {
-                "attendance_adequate": Attendance.was_adequate_for_period(member, events, start_dt, end_dt),
+                "attendance_adequate": period_attendance_adequate,
                 "attendances": []
             }
             for event in events:

@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
+from datetime import timedelta
 
 
 class Rank(models.Model):
@@ -32,8 +33,29 @@ class Member(models.Model):
     mods_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
 
+    @staticmethod
+    def active_members():
+        return Member.objects.all().filter(deleted=False, discharged=False)
+
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
+
+    def get_recruit_warning(self):
+        if "rec" not in self.rank.name.lower():
+            return False, "Not recruit."
+
+        current_dt = timezone.now()
+        if self.join_dt < current_dt - timedelta(days=42):
+            # Six weeks grunt notice
+            return True, "Has not qualified as grunt in required time period.  Member since %s." % (
+                self.join_dt.strftime("%Y-%m-%d"), )
+        if self.join_dt < current_dt - timedelta(days=14) and not self.mods_assessed:
+            # Two weeks mod assessment
+            return True, "Has not assessed mods in required time period.  Member since %s." % (
+                self.join_dt.strftime("%Y-%m-%d"), )
+
+        return False, "No warnings."
+
 
     def __str__(self):
         return self.name
@@ -53,6 +75,10 @@ class EventType(models.Model):
 
 
 class Event(models.Model):
+    @staticmethod
+    def all_for_time_period(start_dt, end_dt):
+        return Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt)
+
     name = models.TextField()
     event_type = models.ForeignKey(EventType, null=False)
     start_dt = models.DateTimeField(null=False)
@@ -107,16 +133,16 @@ class Attendance(models.Model):
 
     @staticmethod
     def was_adequate_for_period(member, events, start_dt, end_dt):
+        if member.join_dt > start_dt:
+            return True, "Was not a member for entire period."
+
         start_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=start_dt)
         end_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=end_dt, end_dt__gte=end_dt)
         inside_absences_for_period = Absence.objects.filter(member=member, start_dt__gte=start_dt, end_dt__lte=end_dt)
         overlap_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=end_dt)
 
-        if member.join_dt > start_dt:
-            return True
-
         if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + overlap_absences_for_period.count() > 0:
-            return True
+            return True, "Was marked absent during period."
 
         attendances_for_period = Attendance.objects.filter(member=member, event__in=events)
 
@@ -132,14 +158,24 @@ class Attendance(models.Model):
                 else:
                     attended_other += 1
 
-        if attended_training + attended_other < 3:
-            return False
-        if attended_training < 1:
-            return False
-        if attended_other < 2:
-            return False
+        attended_total = attended_training + attended_other
 
-        return True
+        min_total_events = 3
+        min_trainings = 1
+
+        between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))
+
+        if attended_total < min_total_events:
+            return False, "Did not attend enough events %s (%s < %s)." % (
+                between_string, attended_total, min_total_events)
+        if attended_training < min_trainings:
+            return False, "Did not attend enough trainings %s (%s < %s)." % (
+                between_string, attended_training, min_trainings)
+        if attended_other < min_total_events - min_trainings:
+            return False, "Did not attend enough non-training events %s (%s < %s)." % (
+                between_string, attended_other, min_total_events - min_trainings)
+
+        return True, "No attendance issues."
 
     def was_adequate(self):
         attendance_minutes = self.event.duration_minutes * self.attendance
