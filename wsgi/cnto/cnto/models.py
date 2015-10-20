@@ -42,6 +42,13 @@ class Member(models.Model):
     def active_members():
         return Member.objects.all().filter(deleted=False, discharged=False)
 
+    @staticmethod
+    def active_members_after_dt(dt):
+        members = Member.active_members()
+        members = members.filter(join_dt__lte=dt)
+
+        return members
+
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
 
@@ -50,17 +57,30 @@ class Member(models.Model):
             return False, "Not recruit."
 
         current_dt = timezone.now()
-        if self.join_dt < current_dt - timedelta(days=42):
+        absences = Absence.objects.filter(member=self)
+        total_absent_duration_days = 0
+        for absence in absences:
+            total_absent_duration_days += (absence.end_dt - absence.start_dt).days
+
+        mod_assessment_deadline = self.join_dt + timedelta(days=14) + timedelta(days=total_absent_duration_days)
+        grunt_qualification_deadline = self.join_dt + timedelta(days=42) + timedelta(days=total_absent_duration_days)
+        if current_dt > grunt_qualification_deadline:
             # Six weeks grunt notice
-            return True, "Has not qualified as grunt in required time period.  Member since %s." % (
-                self.join_dt.strftime("%Y-%m-%d"), )
-        if self.join_dt < current_dt - timedelta(days=14) and not self.mods_assessed:
+            message = "Grunt qualification overdue by %s days.  Member since %s." % (
+                (current_dt - grunt_qualification_deadline).days, self.join_dt.strftime("%Y-%m-%d"), )
+            if total_absent_duration_days > 0:
+                message += "  Absent for %s days." % (total_absent_duration_days, )
+            return True, message
+
+        if current_dt > mod_assessment_deadline and not self.mods_assessed:
             # Two weeks mod assessment
-            return True, "Has not assessed mods in required time period.  Member since %s." % (
-                self.join_dt.strftime("%Y-%m-%d"), )
+            message = "Mod assessment overdue by %s days.  Member since %s." % (
+                (current_dt - mod_assessment_deadline).days, self.join_dt.strftime("%Y-%m-%d"), )
+            if total_absent_duration_days > 0:
+                message += "  Absent for %s days." % (total_absent_duration_days, )
+            return True, message
 
         return False, "No warnings."
-
 
     def __str__(self):
         return self.name

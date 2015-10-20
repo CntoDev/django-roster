@@ -66,10 +66,11 @@ def get_report_context_for_date_range(start_dt, end_dt):
     reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
 
     groups = MemberGroup.objects.all().order_by("name")
+    all_members = Member.active_members_after_dt(start_dt)
     attendance_dict = {}
     for group in groups:
         attendance_dict[group.name] = {}
-        members = Member.objects.filter(member_group=group, discharged=False, deleted=False).order_by("name")
+        members = all_members.filter(member_group=group).order_by("name")
         for member in members:
             period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
             attendance_dict[group.name][member.name] = {
