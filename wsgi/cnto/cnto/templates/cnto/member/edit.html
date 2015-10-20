@@ -6,7 +6,8 @@
     {% if edit_mode %}
         <div class="row">
             <div class="container col-md-5"><div class="sub-header">Edit member</div></div>
-            <div class="container col-md-offset-5 col-md-1"><a href="{% url 'edit-absences' form.instance.pk %}" class="btn btn-default">Absences</a></div>
+            <div class="container col-md-offset-2 col-md-2"><a href="{% url 'edit-note-collection' form.instance.pk %}" class="btn btn-default">Notes</a></div>
+            <div class="container col-md-3"><a href="{% url 'edit-absences' form.instance.pk %}" class="btn btn-default">Absences</a></div>
         </div>
     {% else %}
         <div class="sub-header">Create member</div>

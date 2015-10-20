@@ -41,3 +41,7 @@
 .bad-attendance-row {
     background-color: #FAE6E6;
 }
+
+.message-column {
+    width: 500px;
+}

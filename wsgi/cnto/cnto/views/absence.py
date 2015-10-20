@@ -18,7 +18,7 @@ def delete_absence(request, absence_pk):
         absence.deleted = True
         absence.save()
         return JsonResponse({"success": True})
-    except MemberGroup.DoesNotExist:
+    except Absence.DoesNotExist:
         return JsonResponse({"success": False})
 
 
@@ -51,7 +51,7 @@ def create_absence(request, member_pk):
 
     try:
         member = Member.objects.get(pk=member_pk)
-    except MemberGroup.DoesNotExist:
+    except Member.DoesNotExist:
         raise Http404()
 
     absence = Absence(member=member)
@@ -81,7 +81,7 @@ def edit_absences(request, member_pk):
 
     try:
         member = Member.objects.get(pk=member_pk)
-    except MemberGroup.DoesNotExist:
+    except Member.DoesNotExist:
         raise Http404()
 
     context = {

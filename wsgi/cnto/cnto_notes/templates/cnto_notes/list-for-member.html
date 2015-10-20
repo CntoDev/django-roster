@@ -1,0 +1,61 @@
+{% extends "cnto_notes/base.html" %}
+{% load cnto-tags %}
+
+{% block content %}
+<div class="container col-md-8 col-md-offset-2">
+    <h4>Notes for {{ member.name }}</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Active</th>
+                <th>Time</th>
+                <th>Message</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for note in notes %}
+        <tr id="note-{{ note.pk }}">
+            <td><input disabled="true" type="checkbox" {% if note.active %}checked="true"{% endif %}/></td>
+            <td>{{ note.dt|date:'Y-m-d H:i:s' }}</td>
+            <td><div class="message-column">{{ note|value_of:"get_width_limited_message" }}</div></td>
+            <td>
+                <a href="{% url 'edit-note' note.pk %}"><span class="glyphicon glyphicon-edit"
+                                                                    aria-hidden="true"></span></a>
+                <a class="delete-note" href="#"><span class="glyphicon glyphicon-remove-circle"
+                                                         aria-hidden="true"></span></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="row">
+        <a href="{% url 'create-note' member.pk %}" class="btn btn-primary" id="create-note" type="button">
+            Create note
+        </a>
+        <a href="{% url 'list-members' %}" class="btn btn-default" id="back" type="button">
+            Back
+        </a>
+    </div>
+
+    <div class="modal fade" id="deleting-note-modal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Deleting</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please wait while deleting note...</p>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    {% include 'cnto_notes/list-for-member.js' %}
+</script>
+{% endblock %}

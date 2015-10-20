@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.views.generic.base import RedirectView
 
+import cnto_notes.urls as note_urls
+
 from views import scrape, login_user, event, member, report, group, manage, absence
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -60,5 +62,7 @@ urlpatterns = [
 
     url(r'^report-main/$', report.report_main, name='report-main'),
     url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month, name='get-report-body-for-month'),
+
+    url(r'^notes/', include(note_urls))
 
 ]
