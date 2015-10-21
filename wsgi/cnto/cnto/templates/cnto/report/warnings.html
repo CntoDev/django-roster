@@ -5,14 +5,14 @@
     <thead>
         <tr>
             <th>Member</th>
-            <th>Rank</th>
+            <th>Group</th>
             <th>Warning</th>
         </tr>
     </thead>
     {% for member, reason in warnings %}
     <tr>
         <td><a href="{{ member|value_of:'get_absolute_url' }}">{{ member.name }}</a></td>
-        <td>{{ member.rank.name }}</td>
+        <td>{{ member.member_group.name }}</td>
         <td>{{ reason }}</td>
     </tr>
     {% endfor %}

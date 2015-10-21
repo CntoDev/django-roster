@@ -4,6 +4,7 @@
     <thead>
         <tr>
             <th>Member</th>
+            <th>Group</th>
             <th>Type</th>
             <th>Start</th>
             <th>End</th>
@@ -14,6 +15,7 @@
     {% for absence in current_absences %}
     <tr>
         <td><a href="{% url 'edit-absence' absence.pk %}">{{ absence.member.name }}</a></td>
+        <td>{{ absence.member.member_group.name }}</td>
         <td>{{ absence.absence_type }}</td>
         <td>{{ absence.start_dt|date:'Y-m-d' }}</td>
         <td>{{ absence.end_dt|date:'Y-m-d' }}</td>
