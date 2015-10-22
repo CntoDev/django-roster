@@ -75,23 +75,28 @@ function generateChart(data) {
       .call(yAxis);
 
     chart.selectAll(".bar")
-      .data(data)
+        .data(data)
     .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.week_start_dt); })
-      .attr("y", function(d) { return y(d.week_max); })
-      .attr("height", function(d) { return height - y(d.week_max); })
-      .attr("width", x.rangeBand());
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.week_start_dt); })
+        .attr("y", function(d) { return y(d.week_max); })
+        .attr("height", function(d) { return height - y(d.week_max); })
+        .attr("width", x.rangeBand());
 
-    chart.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-        .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Attendances");
+    chart.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Week start");
+
+    // Add the text label for the Y axis
+    chart.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Max attendance");
+
 }
 
 $(document).ready(function () {
