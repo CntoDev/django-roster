@@ -2,6 +2,15 @@ var CNTOCharts = CNTOCharts || {};
 
 CNTOCharts.Summary = {};
 
+CNTOCharts.Summary.color = d3.scale.ordinal().range(['steelblue', 'limegreen']);
+
+CNTOCharts.Summary.lineGen = d3.svg.line()
+        .x(function(d) {
+            return CNTOCharts.Summary.xScale(d.week_start_dt) + CNTOCharts.Summary.xScale.rangeBand() / 2;
+        }).y(function(d) {
+            return CNTOCharts.Summary.yScale(d.week_avg);
+        });
+
 CNTOCharts.Summary.setupChart = function(data) {
     CNTOCharts.Summary.totalWidth = 1200;
     CNTOCharts.Summary.totalHeight = 500;
@@ -26,20 +35,19 @@ CNTOCharts.Summary.setupChart = function(data) {
         .ticks(20, "");
 
     CNTOCharts.Summary.chart = d3.select(".chart")
-//        .attr("CNTOCharts.Summary.width", CNTOCharts.Summary.width + CNTOCharts.Summary.margin.left + CNTOCharts.Summary.margin.right)
-//        .attr("CNTOCharts.Summary.height", CNTOCharts.Summary.height + CNTOCharts.Summary.margin.top + CNTOCharts.Summary.margin.bottom)
       .append("g")
         .attr("transform", "translate(" + CNTOCharts.Summary.margin.left + "," + CNTOCharts.Summary.margin.top + ")");
 
-    CNTOCharts.Summary.xScale.domain(data.map(function(d) { return d.week_start_dt; }));
-    CNTOCharts.Summary.yScale.domain([0, d3.max(data, function(d) { return d.week_max; })]);
+    CNTOCharts.Summary.updateData(data);
 
-    var lineGen = d3.svg.line()
-        .x(function(d) {
-            return CNTOCharts.Summary.xScale(d.week_start_dt) + CNTOCharts.Summary.xScale.rangeBand() / 2;
-        }).y(function(d) {
-            return CNTOCharts.Summary.yScale(d.week_avg);
-        });
+    CNTOCharts.Summary.updateLegend();
+
+    CNTOCharts.Summary.updateLabels();
+};
+
+CNTOCharts.Summary.updateData = function(data) {
+        CNTOCharts.Summary.xScale.domain(data.map(function(d) { return d.week_start_dt; }));
+    CNTOCharts.Summary.yScale.domain([0, d3.max(data, function(d) { return d.week_max; })]);
 
     CNTOCharts.Summary.chart.append("g")
       .attr("class", "x axis")
@@ -49,8 +57,6 @@ CNTOCharts.Summary.setupChart = function(data) {
     CNTOCharts.Summary.chart.append("g")
       .attr("class", "y axis")
       .call(CNTOCharts.Summary.yAxis);
-
-    CNTOCharts.Summary.color = d3.scale.ordinal().range(['steelblue', 'limegreen']);
 
     // Bars
     CNTOCharts.Summary.chartEnter = CNTOCharts.Summary.chart.selectAll(".bar").data(data).enter();
@@ -66,13 +72,33 @@ CNTOCharts.Summary.setupChart = function(data) {
 
     // Line
     CNTOCharts.Summary.chartEnter.append('svg:path')
-        .attr('d', lineGen(data))
+        .attr('d', CNTOCharts.Summary.lineGen(data))
         .attr('stroke', function(d, i) {
             return CNTOCharts.Summary.color("Average");
         })
         .attr('stroke-width', 2)
         .attr('fill', 'none');
 
+};
+
+CNTOCharts.Summary.updateLabels = function() {
+    // Add the text label for the X axis
+    CNTOCharts.Summary.chart.append("text")
+        .attr("transform", "translate(" + (CNTOCharts.Summary.width / 2) + " ," + (CNTOCharts.Summary.height + CNTOCharts.Summary.margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Week start");
+
+    // Add the text label for the Y axis
+    CNTOCharts.Summary.chart.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - CNTOCharts.Summary.margin.left)
+        .attr("x",0 - (CNTOCharts.Summary.height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Attendance");
+};
+
+CNTOCharts.Summary.updateLegend = function() {
     // Legend
     CNTOCharts.Summary.legendRectSize = 18;
     CNTOCharts.Summary.legendSpacing = 4;
@@ -100,21 +126,6 @@ CNTOCharts.Summary.setupChart = function(data) {
         .attr('x', CNTOCharts.Summary.legendRectSize + CNTOCharts.Summary.legendSpacing)
         .attr('y', CNTOCharts.Summary.legendRectSize - CNTOCharts.Summary.legendSpacing)
         .text(function(d) { return d; });
-
-    // Add the text label for the X axis
-    CNTOCharts.Summary.chart.append("text")
-        .attr("transform", "translate(" + (CNTOCharts.Summary.width / 2) + " ," + (CNTOCharts.Summary.height + CNTOCharts.Summary.margin.bottom) + ")")
-        .style("text-anchor", "middle")
-        .text("Week start");
-
-    // Add the text label for the Y axis
-    CNTOCharts.Summary.chart.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - CNTOCharts.Summary.margin.left)
-        .attr("x",0 - (CNTOCharts.Summary.height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Attendance");
 };
 
 $(document).ready(function () {
