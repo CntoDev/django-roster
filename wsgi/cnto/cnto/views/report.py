@@ -1,4 +1,5 @@
 import csv
+import json
 
 import calendar
 from datetime import datetime, timedelta
@@ -7,6 +8,46 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceType
+from django.db.models import Max, Min
+
+
+def get_summary_data():
+    first_event_dt = Event.objects.all().aggregate(Min('start_dt'))["start_dt__min"]
+    last_event_dt = Event.objects.all().aggregate(Max('start_dt'))["start_dt__max"]
+
+    first_event_sunday = first_event_dt
+
+    while first_event_sunday.weekday() != 6:
+        first_event_sunday = first_event_sunday - timedelta(days=1)
+
+    week_start_dt = first_event_sunday
+    week_end_dt = first_event_sunday + timedelta(days=7)
+
+    event_data = []
+
+    while week_start_dt < last_event_dt:
+        week_events = Event.objects.filter(start_dt__gte=week_start_dt, end_dt__lt=week_end_dt)
+
+        week_event_count = len(week_events)
+        total_attendances = 0
+        max_attendance = 0
+        for event in week_events:
+            event_attendances = Attendance.objects.filter(event=event)
+            event_attendance_count = len(event_attendances)
+            total_attendances += event_attendance_count
+            max_attendance = max(max_attendance, event_attendance_count)
+
+        event_data.append({
+            "week_start_dt": week_start_dt.strftime("%Y-%m-%d"),
+            "week_end_dt": week_end_dt.strftime("%Y-%m-%d"),
+            "week_max": max_attendance,
+            "week_avg": float(total_attendances) / week_event_count if week_event_count > 0 else 0
+        })
+
+        week_start_dt = week_end_dt
+        week_end_dt += timedelta(days=7)
+
+    return event_data
 
 
 def get_warnings_for_date_range(start_dt, end_dt):
@@ -45,7 +86,8 @@ def report_main(request):
                                      minute=59)
 
     context = {
-        "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt)
+        "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt),
+        "event_data": json.dumps(get_summary_data())
     }
 
     return render(request, 'cnto/report/report-main.html', context)

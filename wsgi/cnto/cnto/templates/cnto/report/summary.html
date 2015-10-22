@@ -1,0 +1,28 @@
+{% load staticfiles %}
+{% load cnto-tags %}
+
+<style>
+    .bar {
+      fill: steelblue;
+    }
+
+    .axis text {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+</style>
+
+<script src="{% static 'cnto/js/d3.min.js' %}"></script>
+
+<svg class="chart"></svg>
+</svg>
