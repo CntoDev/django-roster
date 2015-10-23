@@ -1,14 +1,17 @@
 from django import template
+from django.contrib.auth.models import Group
 from cnto_notes.models import Note
 
 register = template.Library()
 
 
+@register.filter(name='value_of')
 def value_of(value, arg):
     func = getattr(value, arg)
     return func()
 
 
+@register.filter(name='active_note_message')
 def active_note_message(member):
     try:
         member_note = Note.objects.get(member=member, active=True)
@@ -22,5 +25,6 @@ def active_note_message(member):
         return ""
 
 
-register.filter('value_of', value_of)
-register.filter('active_note_message', active_note_message)
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    return user.groups.filter(name=group_name).exists()

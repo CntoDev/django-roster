@@ -24,3 +24,7 @@ def management(request):
     }
 
     return render(request, 'cnto/manage/main.html', context)
+
+
+def home(request):
+    return redirect("event-browser")

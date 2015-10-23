@@ -16,6 +16,7 @@ Including another URLconf
 from django.views.generic.base import RedirectView
 
 import cnto_notes.urls as note_urls
+import cnto_users.urls as user_urls
 
 from views import scrape, login_user, event, member, report, group, manage, absence
 from django.conf.urls import include, url
@@ -23,8 +24,9 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/event-browser/', permanent=True)),
-    url(r'^/', RedirectView.as_view(url='/event-browser/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/event-browser/')),
+    url(r'^/', RedirectView.as_view(url='/event-browser/')),
+    url(r'^home/', manage.home, name="home"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
 
@@ -64,6 +66,7 @@ urlpatterns = [
     url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month, name='get-report-body-for-month'),
     url(r'^get-summary-data/$', report.get_summary_data, name='get-summary-data'),
 
-    url(r'^notes/', include(note_urls))
+    url(r'^notes/', include(note_urls)),
+    url(r'^users/', include(user_urls))
 
 ]

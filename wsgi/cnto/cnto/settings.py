@@ -91,9 +91,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap3_datetime',
+    'crispy_forms',
+
     'cnto',
     'cnto_notes',
-    'crispy_forms',
+    'cnto_users',
 )
 
 MIDDLEWARE_CLASSES = (
