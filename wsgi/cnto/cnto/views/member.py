@@ -24,11 +24,16 @@ def delete_member(request, member_pk):
     return JsonResponse({"success": True})
 
 
-def handle_member_change_view(request, edit_mode=False, member=None):
+def handle_member_change_view(request, edit_mode=False, member=None, recruit_only=False):
+    rec_queryset = Rank.objects.filter(name__iexact="Rec")
+
     if request.POST:
         form = MemberForm(request.POST, instance=member)
+        if recruit_only:
+            form.fields["rank"].queryset = rec_queryset
+
         if request.POST.get("cancel"):
-            return redirect('list-members')
+            return redirect('manage')
         elif form.is_valid():
             if form.cleaned_data["rank"] is None:
                 try:
@@ -43,7 +48,7 @@ def handle_member_change_view(request, edit_mode=False, member=None):
                 form.instance.discharge_dt = datetime.now()
 
             form.save()
-            return redirect('list-members')
+            return redirect('manage')
     else:
         if member is None:
             try:
@@ -57,8 +62,12 @@ def handle_member_change_view(request, edit_mode=False, member=None):
                 'mods_assessed': False
             }
             form = MemberForm(initial=initial)
+            if recruit_only:
+                form.fields["rank"].queryset = rec_queryset
         else:
             form = MemberForm(instance=member)
+            if recruit_only:
+                form.fields["rank"].queryset = rec_queryset
 
     args = {}
     args.update(csrf(request))
@@ -73,13 +82,13 @@ def handle_discharged_member_change_view(request, member):
     if request.POST:
         form = DischargedMemberForm(request.POST, instance=member)
         if request.POST.get("cancel"):
-            return redirect('list-members')
+            return redirect('manage')
         elif form.is_valid():
             if not form.cleaned_data["discharged"]:
                 form.instance.discharge_dt = None
 
             form.save()
-            return redirect('list-members')
+            return redirect('manage')
     else:
         form = DischargedMemberForm(instance=member)
 
@@ -98,6 +107,15 @@ def create_member(request):
         return redirect("login")
 
     return handle_member_change_view(request)
+
+
+def create_recruit(request):
+    """View Member
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    return handle_member_change_view(request, recruit_only=True)
 
 
 def edit_discharged_member(request, pk):

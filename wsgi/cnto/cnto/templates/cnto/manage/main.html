@@ -1,11 +1,12 @@
 {% extends "cnto/member/base.html" %}
 
 {% block content %}
-<div class="container col-md-6 col-md-offset-3">
+<div class="container col-md-8 col-md-offset-2">
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
+    <li role="presentation" class="active"><a href="#recruits" aria-controls="profile" role="tab" data-toggle="tab">Recruits</a></li>
+    <li role="presentation"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
     <li role="presentation"><a href="#absences" aria-controls="profile" role="tab" data-toggle="tab">Absentees</a></li>
     <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
     <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
@@ -14,7 +15,10 @@
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active row" id="members">
+    <div role="tabpanel" class="tab-pane row active" id="recruits">
+        {% include 'cnto/member/list-recruits.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="members">
         {% include 'cnto/member/list.html' %}
     </div>
     <div role="tabpanel" class="tab-pane row" id="absences">

@@ -29,10 +29,10 @@ def handle_event_type_change_view(request, edit_mode, event_type=None):
     if request.POST:
         form = EventTypeForm(request.POST, instance=event_type)
         if request.POST.get("cancel"):
-            return redirect('list-members')
+            return redirect('manage')
         elif form.is_valid():
             form.save()
-            return redirect('list-members')
+            return redirect('manage')
     else:
         form = EventTypeForm(instance=event_type)
 

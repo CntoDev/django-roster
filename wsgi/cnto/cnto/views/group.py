@@ -25,10 +25,10 @@ def handle_group_change_view(request, edit_mode, group=None):
     if request.POST:
         form = MemberGroupForm(request.POST, instance=group)
         if request.POST.get("cancel"):
-            return redirect('list-members')
+            return redirect('manage')
         elif form.is_valid():
             form.save()
-            return redirect('list-members')
+            return redirect('manage')
     else:
         form = MemberGroupForm(instance=group)
 

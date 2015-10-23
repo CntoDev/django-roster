@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 class Rank(models.Model):
@@ -43,11 +43,43 @@ class Member(models.Model):
         return Member.objects.all().filter(deleted=False, discharged=False)
 
     @staticmethod
+    def recruits():
+        return Member.objects.all().filter(rank__name__iexact="rec", deleted=False, discharged=False)
+
+    @staticmethod
     def active_members_after_dt(dt):
         members = Member.active_members()
         members = members.filter(join_dt__lte=dt)
 
         return members
+
+    def gqf_due_days(self):
+        if "rec" not in self.rank.name.lower():
+            return "-"
+        else:
+            return (self.get_gqf_deadline_dt() - datetime.now()).days
+
+    def mod_due_days(self):
+        if "rec" not in self.rank.name.lower() or self.mods_assessed:
+            return "-"
+        else:
+            return (self.get_mod_assessment_deadline_dt() - datetime.now()).days
+
+    def get_total_days_absent(self):
+        absences = Absence.objects.filter(member=self)
+        total_absent_duration_days = 0
+        for absence in absences:
+            total_absent_duration_days += (absence.end_dt - absence.start_dt).days
+
+        return total_absent_duration_days
+
+    def get_gqf_deadline_dt(self):
+        absent_days = self.get_total_days_absent()
+        return self.join_dt + timedelta(days=42) + timedelta(days=absent_days)
+
+    def get_mod_assessment_deadline_dt(self):
+        absent_days = self.get_total_days_absent()
+        return self.join_dt + timedelta(days=14) + timedelta(days=absent_days)
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
@@ -57,13 +89,11 @@ class Member(models.Model):
             return False, "Not recruit."
 
         current_dt = timezone.now()
-        absences = Absence.objects.filter(member=self)
-        total_absent_duration_days = 0
-        for absence in absences:
-            total_absent_duration_days += (absence.end_dt - absence.start_dt).days
+        total_absent_duration_days = self.get_total_days_absent()
 
-        mod_assessment_deadline = self.join_dt + timedelta(days=14) + timedelta(days=total_absent_duration_days)
-        grunt_qualification_deadline = self.join_dt + timedelta(days=42) + timedelta(days=total_absent_duration_days)
+        mod_assessment_deadline = self.get_mod_assessment_deadline_dt()
+        grunt_qualification_deadline = self.get_gqf_deadline_dt()
+
         if current_dt > grunt_qualification_deadline:
             # Six weeks grunt notice
             message = "Grunt qualification overdue by %s days.  Member since %s." % (

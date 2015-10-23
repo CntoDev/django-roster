@@ -16,7 +16,7 @@ def active_note_message(member):
     try:
         member_note = Note.objects.get(member=member, active=True)
         note_message = member_note.message
-        message_length_limit = 60
+        message_length_limit = 70
         if len(note_message) > message_length_limit:
             return note_message[0:message_length_limit - 3] + "..."
         else:

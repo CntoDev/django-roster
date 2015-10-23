@@ -15,6 +15,8 @@ def management(request):
     context = {
         "members": sorted(Member.active_members(),
                           key=lambda x: x.name.lower()),
+        "recruits": sorted(Member.recruits(),
+                          key=lambda x: x.name.lower()),
         "current_absences": sorted(
             Absence.objects.all().filter(start_dt__lt=current_dt, end_dt__gt=current_dt, deleted=False),
             key=lambda x: x.end_dt),

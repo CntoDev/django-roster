@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -60,9 +61,8 @@ class MemberForm(forms.models.ModelForm):
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
-    rank = forms.ModelChoiceField(queryset=Rank.objects.all(),
-                                  empty_label="<Select rank>")
-    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+    rank = forms.ModelChoiceField(queryset=Rank.objects.all(), empty_label=None)
+    join_dt = forms.DateField(initial=datetime.now(), label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                                                                 "pickTime": False}))
 
     email = forms.EmailField(required=False)
@@ -73,6 +73,7 @@ class MemberForm(forms.models.ModelForm):
     discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                                                                           "pickTime": False}),
                                    required=False)
+
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(

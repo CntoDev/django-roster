@@ -12,8 +12,12 @@ class EditUserView(LoginRequiredMixin, TemplateView):
     template_name = "cnto_users/edit.html"
     login_url = "/login"
 
-
     def post(self, request):
+        """
+
+        :param request:
+        :return:
+        """
         form = EditPasswordForm(request.POST)
 
         if request.POST.get("cancel"):
@@ -35,7 +39,14 @@ class EditUserView(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
+        """
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
         form = EditPasswordForm(initial={
             "username": request.user.username
         })

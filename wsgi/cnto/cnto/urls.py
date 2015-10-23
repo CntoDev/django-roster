@@ -41,12 +41,13 @@ urlpatterns = [
     url(r'^edit-event-type/(?P<pk>\d+)/$', event.edit_event_type, name='edit-event-type'),
     url(r'^create-event-type/$', event.create_event_type, name='create-event-type'),
 
-    url(r'^list-members/$', manage.management, name='list-members'),
+    url(r'^manage/$', manage.management, name='manage'),
 
     url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(?P<pk>\d+)/$', member.edit_member, name='edit-member'),
     url(r'^edit-discharged-member/(?P<pk>\d+)/$', member.edit_discharged_member, name='edit-discharged-member'),
     url(r'^create-member/$', member.create_member, name='create-member'),
+    url(r'^create-recruit/$', member.create_recruit, name='create-recruit'),
 
     url(r'^delete-group/(\d+)/$', group.delete_group, name='delete-group'),
     url(r'^edit-group/(?P<pk>\d+)/$', group.edit_group, name='edit-group'),
