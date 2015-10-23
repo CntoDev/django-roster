@@ -11,7 +11,7 @@ from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceTyp
 from django.db.models import Max, Min
 
 
-def get_summary_data():
+def get_summary_data(request):
     first_event_dt = Event.objects.all().aggregate(Min('start_dt'))["start_dt__min"]
     last_event_dt = Event.objects.all().aggregate(Max('start_dt'))["start_dt__max"]
 
@@ -47,7 +47,9 @@ def get_summary_data():
         week_start_dt = week_end_dt
         week_end_dt += timedelta(days=7)
 
-    return event_data
+    return JsonResponse({
+        "event-data": event_data
+    })
 
 
 def get_warnings_for_date_range(start_dt, end_dt):
@@ -87,7 +89,6 @@ def report_main(request):
 
     context = {
         "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt),
-        "event_data": json.dumps(get_summary_data())
     }
 
     return render(request, 'cnto/report/report-main.html', context)

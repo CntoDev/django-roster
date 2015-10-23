@@ -62,6 +62,7 @@ urlpatterns = [
 
     url(r'^report-main/$', report.report_main, name='report-main'),
     url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month, name='get-report-body-for-month'),
+    url(r'^get-summary-data/$', report.get_summary_data, name='get-summary-data'),
 
     url(r'^notes/', include(note_urls))
 
