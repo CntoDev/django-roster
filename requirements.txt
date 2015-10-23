@@ -3,3 +3,4 @@ beautifulsoup4
 pytz
 django-crispy-forms
 django-bootstrap3-datetimepicker
+django-braces
