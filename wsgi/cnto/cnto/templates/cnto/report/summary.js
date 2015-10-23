@@ -86,8 +86,6 @@ CNTOCharts.Summary.updateData = function(data) {
                 return CNTOCharts.Summary.color("Maximum");
             });
 
-
-
     // Line
     chartUpdated.select("path.summary-line").transition().duration(750)
             .attr('d', CNTOCharts.Summary.lineGen(data))
