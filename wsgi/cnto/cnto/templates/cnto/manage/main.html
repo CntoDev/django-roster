@@ -6,11 +6,13 @@
   <!-- Nav tabs -->
   <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#recruits" aria-controls="profile" role="tab" data-toggle="tab">Recruits</a></li>
+    {% if user.is_superuser %}
     <li role="presentation"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
     <li role="presentation"><a href="#absences" aria-controls="profile" role="tab" data-toggle="tab">Absentees</a></li>
     <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
     <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
     <li role="presentation"><a href="#members-discharged" aria-controls="profile" role="tab" data-toggle="tab">Discharges</a></li>
+    {% endif %}
   </ul>
 
   <!-- Tab panes -->
@@ -18,6 +20,8 @@
     <div role="tabpanel" class="tab-pane row active" id="recruits">
         {% include 'cnto/member/list-recruits.html' %}
     </div>
+
+    {% if user.is_superuser %}
     <div role="tabpanel" class="tab-pane row" id="members">
         {% include 'cnto/member/list.html' %}
     </div>
@@ -33,6 +37,7 @@
     <div role="tabpanel" class="tab-pane row" id="members-discharged">
         {% include 'cnto/member/list-discharged.html' %}
     </div>
+    {% endif %}
   </div>
 
 </div>

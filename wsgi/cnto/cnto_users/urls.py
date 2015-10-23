@@ -19,4 +19,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^edit-user/$', user_views.EditUserView.as_view(), name='edit-user'),
+    url(r'^logout/$', user_views.logout_user, name='logout'),
 ]

@@ -1,11 +1,16 @@
 from braces.views import LoginRequiredMixin
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.template.context_processors import csrf
 from cnto_users.forms import EditPasswordForm
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("login")
 
 
 class EditUserView(LoginRequiredMixin, TemplateView):
