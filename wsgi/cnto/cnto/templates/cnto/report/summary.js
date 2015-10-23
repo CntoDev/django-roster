@@ -68,11 +68,19 @@ CNTOCharts.Summary.updateData = function(data) {
         .attr("y", 0)
         .attr("height", 0)
         .attr("width", 0)
+        .attr("fill-opacity", 0)
+        .attr("fill", function(d, i) {
+            return CNTOCharts.Summary.color("Maximum");
+        });
 
     if (CNTOCharts.Summary.path == null) {
         CNTOCharts.Summary.path = chartGroup.append('svg:path')
             .attr("class", "summary-line")
             .attr("d", CNTOCharts.Summary.starterLineGen(data))
+            .attr("stroke-opacity", 0)
+            .attr('stroke', function(d, i) {
+                return CNTOCharts.Summary.color("Average");
+            });
     }
 
     // Bar
@@ -82,6 +90,7 @@ CNTOCharts.Summary.updateData = function(data) {
             .attr("y", function(d) { return CNTOCharts.Summary.yScale(d.week_max); })
             .attr("height", function(d) { return CNTOCharts.Summary.height - CNTOCharts.Summary.yScale(d.week_max); })
             .attr("width", CNTOCharts.Summary.xScale.rangeBand())
+            .attr("fill-opacity", 1.0)
             .attr("fill", function(d, i) {
                 return CNTOCharts.Summary.color("Maximum");
             });
@@ -93,7 +102,8 @@ CNTOCharts.Summary.updateData = function(data) {
                 return CNTOCharts.Summary.color("Average");
             })
             .attr('stroke-width', 2)
-            .attr('fill', 'none');
+            .attr('fill', 'none')
+            .attr("stroke-opacity", 1.0);
 
 //    chartUpdated.bar(function(d) { return d; });
 
