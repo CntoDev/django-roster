@@ -77,7 +77,7 @@ CNTOCharts.Summary.updateData = function(data) {
 
     // Bar
     chartUpdated.select("rect.summary-rect")
-        .attr("class", "bar summary-rect").transition().duration(750)
+        .attr("class", "bar summary-rect").transition().duration(function(d) { return CNTOCharts.Summary.xScale(d.week_start_dt) * 2 + 100; })
             .attr("x", function(d) { return CNTOCharts.Summary.xScale(d.week_start_dt); })
             .attr("y", function(d) { return CNTOCharts.Summary.yScale(d.week_max); })
             .attr("height", function(d) { return CNTOCharts.Summary.height - CNTOCharts.Summary.yScale(d.week_max); })
