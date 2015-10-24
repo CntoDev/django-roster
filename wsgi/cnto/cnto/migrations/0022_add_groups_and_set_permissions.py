@@ -44,8 +44,8 @@ def add_groups_and_set_permissions(apps, schema_editor):
         interviewer_group.save()
     interviewer_group.permissions.clear()
 
-    add_permission_to_group(apps, schema_editor, "cnto_edit_member", "Officer")
-    # add_permission_to_group(apps, schema_editor, "cnto_edit_member", "Interviewer")
+    add_permission_to_group(apps, schema_editor, "cnto_edit_members", "Officer")
+    # add_permission_to_group(apps, schema_editor, "cnto_edit_members", "Interviewer")
 
     add_permission_to_group(apps, schema_editor, "cnto_view_absentees", "Officer")
     # add_permission_to_group(apps, schema_editor, "cnto_view_absentees", "Interviewer")

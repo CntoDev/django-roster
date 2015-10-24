@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.db.models import Q
 
 
 class Rank(models.Model):
@@ -27,7 +28,7 @@ class MemberGroup(models.Model):
 class Member(models.Model):
     class Meta:
         permissions = (
-            ("cnto_edit_member", u"Edit members"),
+            ("cnto_edit_members", u"Edit members"),
             ("cnto_view_absentees", u"View absentees"),
             ("cnto_view_reports", u"View reports"),
             ("cnto_edit_groups", u"Edit groups"),
@@ -50,8 +51,14 @@ class Member(models.Model):
     deleted = models.BooleanField(default=False, null=False)
 
     @staticmethod
-    def active_members():
-        return Member.objects.all().filter(deleted=False, discharged=False)
+    def active_members(include_recruits=True):
+        members = Member.objects.all().filter(deleted=False, discharged=False)
+
+        if not include_recruits:
+            recruit_rank = Rank.objects.get(name__iexact="rec")
+            members = members.filter(~Q(rank=recruit_rank))
+
+        return members
 
     @staticmethod
     def recruits():
@@ -108,17 +115,17 @@ class Member(models.Model):
         if current_dt > grunt_qualification_deadline:
             # Six weeks grunt notice
             message = "Grunt qualification overdue by %s days.  Member since %s." % (
-                (current_dt - grunt_qualification_deadline).days, self.join_dt.strftime("%Y-%m-%d"), )
+                (current_dt - grunt_qualification_deadline).days, self.join_dt.strftime("%Y-%m-%d"),)
             if total_absent_duration_days > 0:
-                message += "  Absent for %s days." % (total_absent_duration_days, )
+                message += "  Absent for %s days." % (total_absent_duration_days,)
             return True, message
 
         if current_dt > mod_assessment_deadline and not self.mods_assessed:
             # Two weeks mod assessment
             message = "Mod assessment overdue by %s days.  Member since %s." % (
-                (current_dt - mod_assessment_deadline).days, self.join_dt.strftime("%Y-%m-%d"), )
+                (current_dt - mod_assessment_deadline).days, self.join_dt.strftime("%Y-%m-%d"),)
             if total_absent_duration_days > 0:
-                message += "  Absent for %s days." % (total_absent_duration_days, )
+                message += "  Absent for %s days." % (total_absent_duration_days,)
             return True, message
 
         return False, "No warnings."
@@ -187,8 +194,10 @@ class Attendance(models.Model):
         else:
             average_attendance = 0
 
-        return {"duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
-                "player_count": len(attendances)}
+        return {
+            "duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
+            "player_count": len(attendances)
+            }
 
     event = models.ForeignKey(Event, null=False)
     member = models.ForeignKey(Member, null=False)
@@ -207,7 +216,8 @@ class Attendance(models.Model):
         inside_absences_for_period = Absence.objects.filter(member=member, start_dt__gte=start_dt, end_dt__lte=end_dt)
         overlap_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=end_dt)
 
-        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + overlap_absences_for_period.count() > 0:
+        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() +\
+            overlap_absences_for_period.count() > 0:
             return True, "Was marked absent during period."
 
         attendances_for_period = Attendance.objects.filter(member=member, event__in=events)

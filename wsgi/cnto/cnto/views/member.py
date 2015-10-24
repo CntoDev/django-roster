@@ -19,7 +19,7 @@ def delete_member(request, member_pk):
     try:
         member = Member.objects.get(pk=member_pk)
 
-        if not has_permission(request.user, "cnto_edit_member"):
+        if not has_permission(request.user, "cnto_edit_members"):
             if "rec" not in member.rank.name.lower():
                 return redirect("manage")
 
@@ -111,7 +111,7 @@ def create_member(request):
     """
     if not request.user.is_authenticated():
         return redirect("login")
-    elif not has_permission(request.user, "cnto_edit_member"):
+    elif not has_permission(request.user, "cnto_edit_members"):
         return redirect("manage")
 
     return handle_member_change_view(request)
@@ -137,7 +137,7 @@ def edit_discharged_member(request, pk):
     except Member.DoesNotExist:
         raise Http404()
 
-    if not has_permission(request.user, "cnto_edit_member"):
+    if not has_permission(request.user, "cnto_edit_members"):
         if "rec" not in member.rank.name.lower():
             return redirect("manage")
 
@@ -155,7 +155,7 @@ def edit_member(request, pk):
     except Member.DoesNotExist:
         raise Http404()
 
-    if not has_permission(request.user, "cnto_edit_member"):
+    if not has_permission(request.user, "cnto_edit_members"):
         if "rec" not in member.rank.name.lower():
             return redirect("manage")
 

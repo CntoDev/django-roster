@@ -7,11 +7,17 @@ from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from cnto.templatetags.cnto_tags import has_permission
 from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceType
 from django.db.models import Max, Min
 
 
 def get_summary_data(request):
+    if not request.user.is_authenticated():
+        return redirect("login")
+    elif not has_permission(request.user, "cnto_view_reports"):
+        return redirect("manage")
+
     first_event_dt = Event.objects.all().aggregate(Min('start_dt'))["start_dt__min"]
     last_event_dt = Event.objects.all().aggregate(Max('start_dt'))["start_dt__max"]
 
@@ -52,10 +58,11 @@ def get_summary_data(request):
     })
 
 
-def get_warnings_for_date_range(start_dt, end_dt):
+def get_warnings_for_date_range(start_dt, end_dt, include_recruits=True):
     warnings = []
     events = Event.all_for_time_period(start_dt, end_dt)
-    members = Member.active_members()
+
+    members = Member.active_members(include_recruits=include_recruits)
     for member in members:
         adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
         if not adequate:
@@ -74,6 +81,12 @@ def report_main(request):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_view_reports"):
+        return redirect("manage")
+
+    include_recruits = True
+    if has_permission(request.user, "cnto_edit_members"):
+        include_recruits = False
 
     current_dt = timezone.now()
     previous_year_number = current_dt.year
@@ -88,7 +101,8 @@ def report_main(request):
                                      minute=59)
 
     context = {
-        "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt),
+        "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt,
+                                                include_recruits=include_recruits),
     }
 
     return render(request, 'cnto/report/report-main.html', context)
@@ -163,6 +177,8 @@ def get_report_body_for_month(request, month_string):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_view_reports"):
+        return redirect("manage")
 
     month_dt = datetime.strptime(month_string, "%Y-%m")
 
@@ -174,8 +190,11 @@ def get_report_body_for_month(request, month_string):
 
 
 def download_report_for_month(request, dt_string, group_pk=None):
+
     if not request.user.is_authenticated():
-        return HttpResponse("Unauthorised", status=403)
+        return redirect("login")
+    elif not has_permission(request.user, "cnto_view_reports"):
+        return redirect("manage")
 
     group = MemberGroup.objects.get(pk=group_pk)
     dt = datetime.strptime(dt_string, "%Y-%m-%d")
@@ -188,7 +207,7 @@ def download_report_for_month(request, dt_string, group_pk=None):
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % (filename, )
+    response['Content-Disposition'] = 'attachment; filename="%s"' % (filename,)
     writer = csv.writer(response)
 
     header_columns = ["Member"]

@@ -9,7 +9,7 @@
 
       <li role="presentation" class="active"><a href="#recruits" aria-controls="profile" role="tab" data-toggle="tab">Recruits</a></li>
 
-      {% if user|has_permission:"cnto_edit_member" %}
+      {% if user|has_permission:"cnto_edit_members" %}
       <li role="presentation"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
       {% endif %}
 
@@ -17,7 +17,7 @@
       <li role="presentation"><a href="#absences" aria-controls="profile" role="tab" data-toggle="tab">Absentees</a></li>
       {% endif %}
 
-      {% if user|has_permission:"cnto_view_groups" %}
+      {% if user|has_permission:"cnto_edit_groups" %}
       <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
       {% endif %}
 
@@ -34,7 +34,7 @@
         {% include 'cnto/member/list-recruits.html' %}
     </div>
 
-    {% if user|has_permission:"cnto_edit_member" %}
+    {% if user|has_permission:"cnto_edit_members" %}
     <div role="tabpanel" class="tab-pane row" id="members">
         {% include 'cnto/member/list.html' %}
     </div>
