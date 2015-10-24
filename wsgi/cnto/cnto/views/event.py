@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, render_to_response
 from ..models import Event, Attendance, MemberGroup, EventType
 from django.http import Http404
 from django.template.context_processors import csrf
+from cnto.templatetags.cnto_tags import has_permission
 
 from ..forms import EventTypeForm
 
@@ -16,6 +17,8 @@ def delete_event_type(request, event_type_pk):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_event_types"):
+        return redirect("manage")
 
     try:
         event_type = EventType.objects.get(pk=event_type_pk)
@@ -26,6 +29,11 @@ def delete_event_type(request, event_type_pk):
 
 
 def handle_event_type_change_view(request, edit_mode, event_type=None):
+    if not request.user.is_authenticated():
+        return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_event_types"):
+        return redirect("manage")
+
     if request.POST:
         form = EventTypeForm(request.POST, instance=event_type)
         if request.POST.get("cancel"):
@@ -50,6 +58,8 @@ def create_event_type(request):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_event_types"):
+        return redirect("manage")
 
     return handle_event_type_change_view(request, edit_mode=False)
 
@@ -59,6 +69,8 @@ def edit_event_type(request, pk):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_event_types"):
+        return redirect("manage")
 
     try:
         event_type = EventType.objects.get(pk=pk)
@@ -74,6 +86,8 @@ def delete_event(request, event_pk):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_events"):
+        return redirect("manage")
 
     try:
         event = Event.objects.get(pk=event_pk)
@@ -89,6 +103,8 @@ def view_event(request, year_string, month_string, day_string):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_view_events"):
+        return redirect("manage")
 
     selected_dt = datetime(year=int(year_string), month=int(month_string), day=int(day_string))
 
@@ -131,6 +147,8 @@ def event_browser(request):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_view_events"):
+        return redirect("manage")
 
     context = {}
 

@@ -29,4 +29,4 @@ def management(request):
 
 
 def home(request):
-    return redirect("event-browser")
+    return redirect("manage")

@@ -1,5 +1,5 @@
 from django import template
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from cnto_notes.models import Note
 
 register = template.Library()
@@ -27,4 +27,16 @@ def active_note_message(member):
 
 @register.filter(name='has_group')
 def has_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+    return user.groups.filter(name__iexact=group_name).exists()
+
+
+@register.filter(name='has_permission')
+def has_permission(user, permission_name):
+    if user.is_superuser:
+        return True
+
+    for group in user.groups.all():
+        if group.permissions.all().filter(codename=permission_name).exists():
+            return True
+
+    return False

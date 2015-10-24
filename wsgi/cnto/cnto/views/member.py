@@ -4,6 +4,7 @@ from django.http.response import JsonResponse
 from django.http import Http404
 from django.shortcuts import redirect, render_to_response
 from django.template.context_processors import csrf
+from cnto.templatetags.cnto_tags import has_permission
 from ..models import Member, Rank
 from ..forms import MemberForm, DischargedMemberForm
 
@@ -17,6 +18,11 @@ def delete_member(request, member_pk):
 
     try:
         member = Member.objects.get(pk=member_pk)
+
+        if not has_permission(request.user, "cnto_edit_member"):
+            if "rec" not in member.rank.name.lower():
+                return redirect("manage")
+
         member.deleted = True
         member.save()
     except Member.DoesNotExist:
@@ -105,6 +111,8 @@ def create_member(request):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_member"):
+        return redirect("manage")
 
     return handle_member_change_view(request)
 
@@ -129,6 +137,10 @@ def edit_discharged_member(request, pk):
     except Member.DoesNotExist:
         raise Http404()
 
+    if not has_permission(request.user, "cnto_edit_member"):
+        if "rec" not in member.rank.name.lower():
+            return redirect("manage")
+
     return handle_discharged_member_change_view(request, member=member)
 
 
@@ -143,4 +155,12 @@ def edit_member(request, pk):
     except Member.DoesNotExist:
         raise Http404()
 
-    return handle_member_change_view(request, edit_mode=True, member=member)
+    if not has_permission(request.user, "cnto_edit_member"):
+        if "rec" not in member.rank.name.lower():
+            return redirect("manage")
+
+        recruit_only = True
+    else:
+        recruit_only = False
+
+    return handle_member_change_view(request, edit_mode=True, member=member, recruit_only=recruit_only)

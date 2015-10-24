@@ -1,5 +1,6 @@
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
+from cnto.templatetags.cnto_tags import has_permission
 from ..models import Member, MemberGroup
 from ..forms import MemberGroupForm
 from django.http import Http404
@@ -12,6 +13,8 @@ def delete_group(request, pk):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_groups"):
+        return redirect("manage")
 
     try:
         group = MemberGroup.objects.get(pk=pk)
@@ -22,6 +25,11 @@ def delete_group(request, pk):
 
 
 def handle_group_change_view(request, edit_mode, group=None):
+    if not request.user.is_authenticated():
+        return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_groups"):
+        return redirect("manage")
+
     if request.POST:
         form = MemberGroupForm(request.POST, instance=group)
         if request.POST.get("cancel"):
@@ -46,6 +54,8 @@ def create_group(request):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_groups"):
+        return redirect("manage")
 
     return handle_group_change_view(request, edit_mode=False)
 
@@ -55,6 +65,8 @@ def edit_group(request, pk):
     """
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_groups"):
+        return redirect("manage")
 
     try:
         group = MemberGroup.objects.get(pk=pk)

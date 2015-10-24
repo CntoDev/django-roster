@@ -25,6 +25,17 @@ class MemberGroup(models.Model):
 
 
 class Member(models.Model):
+    class Meta:
+        permissions = (
+            ("cnto_edit_member", u"Edit members"),
+            ("cnto_view_absentees", u"View absentees"),
+            ("cnto_view_reports", u"View reports"),
+            ("cnto_edit_groups", u"Edit groups"),
+            ("cnto_edit_event_types", u"Edit event types"),
+            ("cnto_view_events", u"View events"),
+            ("cnto_edit_events", u"Edit events"),
+        )
+
     name = models.TextField(null=False, unique=True)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)

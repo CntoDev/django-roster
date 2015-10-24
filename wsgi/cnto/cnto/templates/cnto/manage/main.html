@@ -1,18 +1,31 @@
 {% extends "cnto/member/base.html" %}
+{% load cnto_tags %}
 
 {% block content %}
 <div class="container col-md-8 col-md-offset-2">
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#recruits" aria-controls="profile" role="tab" data-toggle="tab">Recruits</a></li>
-    {% if user.is_superuser %}
-    <li role="presentation"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
-    <li role="presentation"><a href="#absences" aria-controls="profile" role="tab" data-toggle="tab">Absentees</a></li>
-    <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
-    <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
-    <li role="presentation"><a href="#members-discharged" aria-controls="profile" role="tab" data-toggle="tab">Discharges</a></li>
-    {% endif %}
+
+      <li role="presentation" class="active"><a href="#recruits" aria-controls="profile" role="tab" data-toggle="tab">Recruits</a></li>
+
+      {% if user|has_permission:"cnto_edit_member" %}
+      <li role="presentation"><a href="#members" aria-controls="home" role="tab" data-toggle="tab">Members</a></li>
+      {% endif %}
+
+      {% if user|has_permission:"cnto_view_absentees" %}
+      <li role="presentation"><a href="#absences" aria-controls="profile" role="tab" data-toggle="tab">Absentees</a></li>
+      {% endif %}
+
+      {% if user|has_permission:"cnto_view_groups" %}
+      <li role="presentation"><a href="#groups" aria-controls="profile" role="tab" data-toggle="tab">Groups</a></li>
+      {% endif %}
+
+      {% if user|has_permission:"cnto_edit_event_types" %}
+      <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
+      {% endif %}
+
+      <li role="presentation"><a href="#members-discharged" aria-controls="profile" role="tab" data-toggle="tab">Discharges</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -21,10 +34,11 @@
         {% include 'cnto/member/list-recruits.html' %}
     </div>
 
-    {% if user.is_superuser %}
+    {% if user|has_permission:"cnto_edit_member" %}
     <div role="tabpanel" class="tab-pane row" id="members">
         {% include 'cnto/member/list.html' %}
     </div>
+    {% endif %}
     <div role="tabpanel" class="tab-pane row" id="absences">
         {% include 'cnto/absence/list.html' %}
     </div>
@@ -37,7 +51,6 @@
     <div role="tabpanel" class="tab-pane row" id="members-discharged">
         {% include 'cnto/member/list-discharged.html' %}
     </div>
-    {% endif %}
   </div>
 
 </div>

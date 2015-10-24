@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
+from cnto.templatetags.cnto_tags import has_permission
 
 from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
@@ -13,6 +14,8 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
 
     if not request.user.is_authenticated():
         return redirect("login")
+    elif not has_permission(request.user, "cnto_edit_events"):
+        return redirect("manage")
 
     event_type = EventType.objects.get(name__iexact=event_type_name)
 

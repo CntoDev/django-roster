@@ -24,8 +24,8 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/event-browser/')),
-    url(r'^/', RedirectView.as_view(url='/event-browser/')),
+    url(r'^$', RedirectView.as_view(url='/manage/')),
+    url(r'^/', RedirectView.as_view(url='/manage/')),
     url(r'^home/', manage.home, name="home"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', login_user.login_user, name='login'),
