@@ -7,7 +7,12 @@
         <div class="col-md-2">
             <h4>{{ user.username }}</h4>
         </div>
-        <div class="col-md-offset-8 col-md-2">
+        <div class="col-md-offset-6 col-md-2">
+            {% if user.is_superuser %}
+            <a class="btn btn-warning" href="/admin/auth/user/">Manage users</a>
+            {% endif %}
+        </div>
+        <div class="col-md-2">
             <a class="btn btn-warning" href="{% url 'logout' %}">Log out</a>
         </div>
     </div>
