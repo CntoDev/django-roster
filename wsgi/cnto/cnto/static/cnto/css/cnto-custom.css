@@ -42,6 +42,10 @@
     background-color: #FAE6E6;
 }
 
+.absent-status-col {
+    background-color: #DAD5F0;
+}
+
 .message-column {
     width: 500px;
 }
