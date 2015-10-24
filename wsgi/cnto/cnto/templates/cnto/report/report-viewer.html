@@ -31,7 +31,7 @@
         <h3><%= start_dt %> to <%= end_dt %></h3>
         <%= event_count %> events were recorded.
         <% if (event_count > 0) { %>
-            <% _.each(attendances,function(group,group_name,arr) { %>
+            <% _.each(group_names,function(group_name,key,arr) { %>
             <h4><%=group_name %></h4>
             <table class="table table-bordered">
                 <thead>
@@ -42,10 +42,10 @@
                         <% }); %>
                     </tr>
                 </thead>
-                <% _.each(group,function(member,member_name,arr) { %>
-                <tr <% if (member.attendance_adequate) { %>class="good-attendance-row"<% } else { %>class="bad-attendance-row"<% } %> >
+                <% _.each(group_members[group_name],function(member_name,key,arr) { %>
+                <tr <% if (attendances[group_name][member_name].attendance_adequate) { %>class="good-attendance-row"<% } else { %>class="bad-attendance-row"<% } %> >
                     <td><%=member_name %></td>
-                    <% _.each(member.attendances,function(attend_status,key,arr) { %>
+                    <% _.each(attendances[group_name][member_name].attendances,function(attend_status,key,arr) { %>
                         <td><%=attend_status %></td>
                     <% }); %>
                 </tr>

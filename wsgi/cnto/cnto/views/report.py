@@ -124,9 +124,12 @@ def get_report_context_for_date_range(start_dt, end_dt):
 
     groups = MemberGroup.objects.all().order_by("name")
     all_members = Member.active_members_after_dt(start_dt)
+
     attendance_dict = {}
+    group_members = {}
     for group in groups:
         attendance_dict[group.name] = {}
+        group_members[group.name] = []
         members = all_members.filter(member_group=group).order_by("name")
         for member in members:
             period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
@@ -134,6 +137,8 @@ def get_report_context_for_date_range(start_dt, end_dt):
                 "attendance_adequate": period_attendance_adequate,
                 "attendances": []
             }
+            group_members[group.name].append(member.name)
+
             for event in events:
                 try:
                     if member.join_dt > event.start_dt:
@@ -165,7 +170,8 @@ def get_report_context_for_date_range(start_dt, end_dt):
                 attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
     context["attendances"] = attendance_dict
-
+    context["group_names"] = sorted([group.name for group in groups])
+    context["group_members"] = group_members
     context["start_dt"] = start_dt.strftime("%Y-%m-%d")
     context["end_dt"] = end_dt.strftime("%Y-%m-%d")
 
