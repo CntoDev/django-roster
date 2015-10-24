@@ -170,7 +170,12 @@ def get_report_context_for_date_range(start_dt, end_dt):
                 attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
     context["attendances"] = attendance_dict
-    context["group_names"] = sorted([group.name for group in groups])
+    group_names = []
+    for group in groups:
+        if group.member_count() > 0:
+            group_names.append(group.name)
+
+    context["group_names"] = sorted(group_names)
     context["group_members"] = group_members
     context["start_dt"] = start_dt.strftime("%Y-%m-%d")
     context["end_dt"] = end_dt.strftime("%Y-%m-%d")
