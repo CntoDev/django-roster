@@ -24,6 +24,9 @@ class MemberGroup(models.Model):
     def lowered_name(self):
         return self.name.lower()
 
+    def member_count(self):
+        return Member.objects.all().filter(member_group=self).count()
+
 
 class Member(models.Model):
     class Meta:
