@@ -4,6 +4,8 @@ CNTOCharts.Summary = {};
 
 CNTOCharts.Summary.xAxisTicks = null;
 CNTOCharts.Summary.yAxisTicks = null;
+CNTOCharts.Summary.topLayer = null;
+CNTOCharts.Summary.bottomLayer = null;
 
 CNTOCharts.Summary.color = d3.scale.ordinal().range(['steelblue', 'limegreen']);
 
@@ -51,13 +53,16 @@ CNTOCharts.Summary.setupChart = function() {
     CNTOCharts.Summary.chartBody = CNTOCharts.Summary.chart
       .append("g")
         .attr("transform", "translate(" + CNTOCharts.Summary.margin.left + "," + CNTOCharts.Summary.margin.top + ")");
+
+    CNTOCharts.Summary.bottomLayer = CNTOCharts.Summary.chartBody.append("g")
+    CNTOCharts.Summary.topLayer = CNTOCharts.Summary.chartBody.append("g")
 };
 
 CNTOCharts.Summary.updateData = function(data) {
     CNTOCharts.Summary.xScale.domain(data.map(function(d) { return d.week_start_dt; }));
     CNTOCharts.Summary.yScale.domain([0, d3.max(data, function(d) { return Math.max(d.week_max, d.week_avg); })]);
 
-    var chartUpdated = CNTOCharts.Summary.chartBody.selectAll(".summary-group").data(data, function(d) { return d.week_start_dt; });
+    var chartUpdated = CNTOCharts.Summary.bottomLayer.selectAll(".summary-group").data(data, function(d) { return d.week_start_dt; });
 
     var chartEnter = chartUpdated.enter();
 
@@ -74,7 +79,7 @@ CNTOCharts.Summary.updateData = function(data) {
         });
 
     if (CNTOCharts.Summary.path == null) {
-        CNTOCharts.Summary.path = chartGroup.append('svg:path')
+        CNTOCharts.Summary.path = CNTOCharts.Summary.topLayer.append('svg:path')
             .attr("class", "summary-line")
             .attr("d", CNTOCharts.Summary.starterLineGen(data))
             .attr("stroke-opacity", 0)
@@ -96,7 +101,7 @@ CNTOCharts.Summary.updateData = function(data) {
             });
 
     // Line
-    chartUpdated.select("path.summary-line").transition().duration(750)
+    CNTOCharts.Summary.chartBody.select("path.summary-line").transition().duration(750)
             .attr('d', CNTOCharts.Summary.lineGen(data))
             .attr('stroke', function(d, i) {
                 return CNTOCharts.Summary.color("Average");
@@ -191,13 +196,13 @@ $(document).ready(function () {
 //        setInterval(function() {
 //            data.push({
 //                week_start_dt: "2015-99-" + counter,
-//                week_max: counter,
-//                week_avg: counter * 2
+//                week_max: Math.random() * counter,
+//                week_avg: Math.random() * counter
 //            });
 //
 //            CNTOCharts.Summary.updateData(data);
 //            counter += 5;
-//        }, 1500);
+//        }, 2000);
 //
 //
         CNTOCharts.Summary.updateData(data);
