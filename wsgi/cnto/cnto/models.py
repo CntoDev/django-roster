@@ -65,7 +65,7 @@ class Member(models.Model):
 
     @staticmethod
     def recruits():
-        return Member.objects.all().filter(rank__name__iexact="rec", deleted=False, discharged=False)
+        return Member.active_members().filter(rank__name__iexact="rec", deleted=False, discharged=False)
 
     @staticmethod
     def active_members_after_dt(dt):

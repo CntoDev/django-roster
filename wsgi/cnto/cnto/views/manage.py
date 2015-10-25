@@ -11,8 +11,6 @@ def management(request):
     if not request.user.is_authenticated():
         return redirect("login")
 
-    current_dt = timezone.now()
-
     recruits = sorted(Member.recruits(), key=lambda x: x.name.lower())
     discharges = sorted(Member.objects.all().filter(discharged=True, deleted=False), key=lambda x: x.name.lower())
 
@@ -23,7 +21,7 @@ def management(request):
     absentees = []
     if has_permission(request.user, "cnto_view_absentees"):
         absentees = sorted(
-                Absence.objects.all().filter(concluded=False, deleted=False),
+                Absence.objects.all().filter(member__discharged=False, concluded=False, deleted=False),
                 key=lambda x: x.end_dt)
 
     groups = []
