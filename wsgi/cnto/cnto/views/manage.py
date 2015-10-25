@@ -23,7 +23,7 @@ def management(request):
     absentees = []
     if has_permission(request.user, "cnto_view_absentees"):
         absentees = sorted(
-                Absence.objects.all().filter(start_dt__lt=current_dt, end_dt__gt=current_dt, deleted=False),
+                Absence.objects.all().filter(concluded=False, deleted=False),
                 key=lambda x: x.end_dt)
 
     groups = []

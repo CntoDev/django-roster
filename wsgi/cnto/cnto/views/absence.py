@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from ..models import Member, MemberGroup, Absence
@@ -28,6 +29,10 @@ def handle_absence_change_view(request, edit_mode, absence):
         if request.POST.get("cancel"):
             return redirect('edit-absences', absence.member.pk)
         elif form.is_valid():
+            current_dt = datetime.now()
+            if form.instance.end_dt > current_dt:
+                form.instance.end_dt = current_dt
+
             form.save()
             return redirect('edit-absences', absence.member.pk)
     else:

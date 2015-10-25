@@ -140,7 +140,7 @@ class MemberGroupForm(forms.models.ModelForm):
 class AbsenceForm(forms.models.ModelForm):
     class Meta:
         model = Absence
-        fields = ['absence_type', 'start_dt', 'end_dt', 'member']
+        fields = ['absence_type', 'start_dt', 'end_dt', 'member', 'concluded']
 
     absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all())
 
@@ -150,12 +150,15 @@ class AbsenceForm(forms.models.ModelForm):
     end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                                                               "pickTime": False}))
 
+    concluded = forms.BooleanField(required=False)
+
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
         Field('absence_type'),
         Field('start_dt'),
         Field('end_dt'),
+        Field('concluded'),
         Field('member', type="hidden"),
         FormActions(
             AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
