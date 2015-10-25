@@ -15,6 +15,8 @@ def set_default_absence_concluded_state(apps, schema_editor):
         else:
             absence.concluded = True
 
+        # Without a save, this migration doesn't actually do anything!
+
 
 def clear_default_absence_concluded_state(apps, schema_editor):
     pass
