@@ -1,0 +1,2 @@
+#!/bin/bash
+date >> ${OPENSHIFT_PYTHON_LOG_DIR}/test.txt

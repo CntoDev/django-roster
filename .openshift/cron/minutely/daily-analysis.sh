@@ -1,1 +1,0 @@
-echo "TEST" >> ../test.txt
