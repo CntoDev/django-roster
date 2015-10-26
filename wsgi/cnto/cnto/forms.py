@@ -22,7 +22,8 @@ class CancelButton(BaseInput):
 class EventTypeForm(forms.models.ModelForm):
     class Meta:
         model = EventType
-        fields = ['name', 'default_start_hour', 'default_end_hour', 'css_class_name']
+        fields = ['name', 'default_start_hour', 'default_end_hour', 'minimum_required_attendance_minutes',
+                  'css_class_name']
 
     def __init__(self, *args, **kwargs):
         super(EventTypeForm, self).__init__(*args, **kwargs)
@@ -31,6 +32,7 @@ class EventTypeForm(forms.models.ModelForm):
     name = forms.CharField()
     default_start_hour = forms.IntegerField()
     default_end_hour = forms.IntegerField()
+    minimum_required_attendance_minutes = forms.IntegerField()
     css_class_name = forms.CharField(help_text="Class name may be left blank and is used for calendar styling.")
 
     helper = FormHelper()
@@ -39,6 +41,7 @@ class EventTypeForm(forms.models.ModelForm):
         Field('name'),
         Field('default_start_hour'),
         Field('default_end_hour'),
+        Field('minimum_required_attendance_minutes'),
         Field('css_class_name'),
         FormActions(
             AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
@@ -62,16 +65,20 @@ class MemberForm(forms.models.ModelForm):
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
     rank = forms.ModelChoiceField(queryset=Rank.objects.all(), empty_label=None)
-    join_dt = forms.DateField(initial=datetime.now(), label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                                "pickTime": False}))
+    join_dt = forms.DateField(initial=datetime.now(), label="Join date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }))
 
     email = forms.EmailField(required=False)
 
     mods_assessed = forms.BooleanField(required=False)
     discharged = forms.BooleanField(required=False)
 
-    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                                          "pickTime": False}),
+    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }),
                                    required=False)
 
     helper = FormHelper()
@@ -98,11 +105,15 @@ class DischargedMemberForm(forms.models.ModelForm):
         fields = ['name', 'join_dt', 'discharged', 'discharge_dt']
 
     name = forms.CharField()
-    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                                "pickTime": False}))
+    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }))
     discharged = forms.BooleanField(required=False)
-    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                                          "pickTime": False}),
+    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }),
                                    required=False)
 
     helper = FormHelper()
@@ -144,11 +155,15 @@ class AbsenceForm(forms.models.ModelForm):
 
     absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all())
 
-    start_dt = forms.DateField(label="Start date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                                  "pickTime": False}))
+    start_dt = forms.DateField(label="Start date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }))
 
-    end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                                                              "pickTime": False}))
+    end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+        }))
 
     concluded = forms.BooleanField(required=False)
 

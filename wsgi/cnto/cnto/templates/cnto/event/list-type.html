@@ -4,6 +4,7 @@
             <th>Name</th>
             <th>Start</th>
             <th>End</th>
+            <th>Minimum required attendance</th>
             <th></th>
         </tr>
     </thead>
@@ -12,6 +13,7 @@
         <td><a href="{% url 'edit-event-type' event_type.pk %}">{{ event_type.name }}</td>
         <td>{{ event_type.default_start_hour }}h</td>
         <td>{{ event_type.default_end_hour }}h</td>
+        <td>{{ event_type.minimum_required_attendance_minutes }} min</td>
         <td>
             <a href="{% url 'edit-event-type' event_type.pk %}"><span class="glyphicon glyphicon-edit"
                                                                       aria-hidden="true"></span></a>
