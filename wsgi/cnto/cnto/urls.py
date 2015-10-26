@@ -36,6 +36,7 @@ urlpatterns = [
         scrape.scrape, name='scrape'),
 
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
+    url(r'^view-event/([0-9]{4})-([0-9]{2})-([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^delete-event/(\d+)/$', event.delete_event, name='delete-event'),
     url(r'^delete-event-type/(\d+)/$', event.delete_event_type, name='delete-event-type'),
     url(r'^edit-event-type/(?P<pk>\d+)/$', event.edit_event_type, name='edit-event-type'),

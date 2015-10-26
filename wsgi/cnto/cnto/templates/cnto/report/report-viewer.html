@@ -38,7 +38,7 @@
                     <tr>
                         <th>Member</th>
                         <% _.each(events.start_dates,function(event_start_date,key,arr) { %>
-                        <th class="<%=events.css_classes[key] %>"><%=event_start_date %></th>
+                        <th class="<%=events.css_classes[key] %>"><a href="/view-event/<%=event_start_date %>"><%=event_start_date %></a></th>
                         <% }); %>
                     </tr>
                 </thead>
