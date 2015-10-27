@@ -7,6 +7,7 @@
             <th>Member</th>
             <th>Group</th>
             <th>Warning</th>
+            <th>Acknowledged</th>
         </tr>
     </thead>
     {% for warning in warnings %}
@@ -14,6 +15,7 @@
         <td><a href="{{ warning.member|value_of:'get_absolute_url' }}">{{ warning.member.name }}</a></td>
         <td>{{ warning.member.member_group.name }}</td>
         <td>{{ warning.message }}</td>
+        <td><input disabled="true" type="checkbox" {% if warning.acknowledged %}checked="true"{% endif %}/></td>
     </tr>
     {% endfor %}
     {% else %}
