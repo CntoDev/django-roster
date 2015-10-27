@@ -6,7 +6,6 @@
             <th>Name</th>
             <th>Rank</th>
             <th>Group</th>
-            <th>Joined</th>
             <th>Note</th>
         </tr>
     </thead>
@@ -15,7 +14,6 @@
         <td><a href="{% url 'edit-member' member.pk %}">{{ member.name }}</a></td>
         <td>{{ member.rank }}</td>
         <td>{{ member.member_group.name }}</td>
-        <td>{{ member.join_dt|date:'Y-m-d' }}</td>
         <td>{{ member|active_note_message }}</td>
     </tr>
     {% endfor %}
@@ -44,7 +42,7 @@
         {
             $("#member-list-table").tablesorter({
                 headers: {
-                    5: { sorter: false }
+                    4: { sorter: false }
                 }
             });
         }
