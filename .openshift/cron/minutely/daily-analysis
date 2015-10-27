@@ -1,5 +1,5 @@
 #!/bin/bash
 date >> ${OPENSHIFT_PYTHON_LOG_DIR}/test.txt
 cd ${OPENSHIFT_REPO_DIR}/wsgi/cnto/scripts
-python add_and_update_warnings.py
+python add_and_update_warnings.py >> ${OPENSHIFT_PYTHON_LOG_DIR}/warnings.log
 
