@@ -1,31 +1,29 @@
-{% extends 'cnto_warnings/base.html' %}
+{% extends 'cnto/member/base.html' %}
 {% load cnto_tags %}
 
 {% block content %}
 <div class="container col-md-8 col-md-offset-2">
-    <table id="warning-list-table" class="table tablesorter">
-        {% if warnings %}
-        <thead>
-            <tr>
-                <th>Member</th>
-                <th>Group</th>
-                <th>Warning</th>
-                <th>Acknowledged</th>
+    {% if warnings %}
+        <table id="warning-list-table" class="table tablesorter">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Warning</th>
+                    <th>Acknowledged</th>
+                </tr>
+            </thead>
+            {% for warning in warnings %}
+            <tr id="warning-{{ warning.pk }}">
+                <td>{{ warning.created }}</td>
+                <td>{{ warning.message }}</td>
+                <td><input class="toggle-acknowledge-warning" type="checkbox" {% if warning.acknowledged %}checked="checked"{% endif %}/></td>
             </tr>
-        </thead>
-        {% for warning in warnings %}
-        <tr id="warning-{{ warning.pk }}">
-            <td><a href="{{ warning.member|value_of:'get_absolute_url' }}">{{ warning.member.name }}</a></td>
-            <td>{{ warning.member.member_group.name }}</td>
-            <td>{{ warning.message }}</td>
-            <td><input class="toggle-acknowledge-warning" type="checkbox" {% if warning.acknowledged %}checked="checked"{% endif %}/></td>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <h4>No unacknowledged warnings!</h4>
-        {% endif %}
-    </table>
-
+            {% endfor %}
+        </table>
+    {% else %}
+        <h4>No recorded warnings!</h4>
+    {% endif %}
+    <a href="{{ member|value_of:'get_absolute_url' }}" class="btn btn-default">Back</a>
     <script>
         $(document).ready(function()
             {

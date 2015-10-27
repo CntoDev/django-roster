@@ -16,8 +16,10 @@ Including another URLconf
 import cnto_warnings.views as warning_views
 from django.conf.urls import include, url
 
-
 urlpatterns = [
     url(r'^list/$', warning_views.list_warnings, name='list-warnings'),
-    url(r'^toggle-warning-acknowledge/(?P<pk>\d+)/$', warning_views.toggle_member_acknowledge, name='toggle-warning-acknowledge'),
+    url(r'^list-for-member/(?P<member_pk>\d+)/$', warning_views.list_warnings_for_member,
+        name='list-warnings-for-member'),
+    url(r'^toggle-warning-acknowledge/(?P<pk>\d+)/$', warning_views.toggle_member_acknowledge,
+        name='toggle-warning-acknowledge'),
 ]

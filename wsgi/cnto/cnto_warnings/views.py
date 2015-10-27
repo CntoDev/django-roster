@@ -1,9 +1,10 @@
 from braces.views import JSONResponseMixin
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, Http404
 from django.shortcuts import render, redirect
 
 
 # Create your views here.
+from cnto.models import Member
 from cnto.templatetags.cnto_tags import has_permission
 from cnto_warnings.models import MemberWarning
 
@@ -33,7 +34,6 @@ def toggle_member_acknowledge(request, pk):
     })
 
 
-
 def list_warnings(request):
     """Browse reports
     """
@@ -44,7 +44,29 @@ def list_warnings(request):
         return redirect("manage")
 
     context = {
-        "warnings": MemberWarning.objects.all()
+        "warnings": MemberWarning.objects.filter(acknowledged=False)
     }
 
     return render(request, 'cnto_warnings/list.html', context)
+
+
+def list_warnings_for_member(request, member_pk):
+    """Browse reports
+    """
+
+    if not request.user.is_authenticated():
+        return redirect("login")
+    elif not has_permission(request.user, "cnto_view_reports"):
+        return redirect("manage")
+
+    try:
+        member = Member.objects.get(pk=member_pk)
+    except Member.DoesNotExist:
+        raise Http404()
+
+    context = {
+        "member": member,
+        "warnings": MemberWarning.objects.filter(member=member)
+    }
+
+    return render(request, 'cnto_warnings/list-for-member.html', context)

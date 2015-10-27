@@ -31,7 +31,7 @@
         <a href="{% url 'create-note' member.pk %}" class="btn btn-primary" id="create-note" type="button">
             Create note
         </a>
-        <a href="{% url 'manage' %}" class="btn btn-default" id="back" type="button">
+        <a href="{{ member|value_of:'get_absolute_url'}}" class="btn btn-default" id="back" type="button">
             Back
         </a>
     </div>

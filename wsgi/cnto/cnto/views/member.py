@@ -78,6 +78,7 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
     args = {}
     args.update(csrf(request))
 
+    args["user"] = request.user
     args['form'] = form
     args["edit_mode"] = edit_mode
 
