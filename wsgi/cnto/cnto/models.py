@@ -6,7 +6,6 @@ from django.db.models import Q
 
 
 class CreatedModifiedMixin(models.Model):
-
     class Meta:
         abstract = True
 
@@ -82,7 +81,7 @@ class Member(models.Model):
 
     @staticmethod
     def recruits():
-        return Member.active_members().filter(rank__name__iexact="rec", deleted=False, discharged=False)
+        return Member.active_members(include_recruits=True).filter(rank__name__iexact="rec")
 
     @staticmethod
     def active_members_after_dt(dt):
@@ -122,31 +121,41 @@ class Member(models.Model):
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
 
+    def is_mod_assessment_due(self):
+        current_dt = timezone.now()
+
+        mod_assessment_deadline = self.get_mod_assessment_deadline_dt()
+        if current_dt > mod_assessment_deadline and not self.mods_assessed:
+            # Two weeks mod assessment
+            message = "Mod assessment overdue."
+            return True, message
+
+        return False, None
+
+    def is_grunt_qualification_due(self):
+        current_dt = timezone.now()
+
+        grunt_qualification_deadline = self.get_gqf_deadline_dt()
+        if current_dt > grunt_qualification_deadline:
+            # Six weeks grunt notice
+            message = "Grunt qualification overdue."
+            return True, message
+
+        return False, None
+
     def get_recruit_warning(self):
         if "rec" not in self.rank.name.lower():
             return False, "Not recruit."
 
-        current_dt = timezone.now()
-        total_absent_duration_days = self.get_total_days_absent()
+        mod_assessment_due, reason = self.is_mod_assessment_due()
 
-        mod_assessment_deadline = self.get_mod_assessment_deadline_dt()
-        grunt_qualification_deadline = self.get_gqf_deadline_dt()
+        if mod_assessment_due:
+            return True, reason
 
-        if current_dt > grunt_qualification_deadline:
-            # Six weeks grunt notice
-            message = "Grunt qualification overdue by %s days.  Member since %s." % (
-                (current_dt - grunt_qualification_deadline).days, self.join_dt.strftime("%Y-%m-%d"),)
-            if total_absent_duration_days > 0:
-                message += "  Absent for %s days." % (total_absent_duration_days,)
-            return True, message
+        grunt_qualification_due, reason = self.is_grunt_qualification_due()
 
-        if current_dt > mod_assessment_deadline and not self.mods_assessed:
-            # Two weeks mod assessment
-            message = "Mod assessment overdue by %s days.  Member since %s." % (
-                (current_dt - mod_assessment_deadline).days, self.join_dt.strftime("%Y-%m-%d"),)
-            if total_absent_duration_days > 0:
-                message += "  Absent for %s days." % (total_absent_duration_days,)
-            return True, message
+        if grunt_qualification_due:
+            return True, reason
 
         return False, "No warnings."
 
@@ -219,7 +228,7 @@ class Attendance(models.Model):
         return {
             "duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
             "player_count": len(attendances)
-            }
+        }
 
     event = models.ForeignKey(Event, null=False)
     member = models.ForeignKey(Member, null=False)
@@ -238,7 +247,7 @@ class Attendance(models.Model):
         inside_absences_for_period = Absence.objects.filter(member=member, start_dt__gte=start_dt, end_dt__lte=end_dt)
         overlap_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=end_dt)
 
-        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() +\
+        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + \
             overlap_absences_for_period.count() > 0:
             return True, "Was marked absent during period."
 
@@ -264,14 +273,11 @@ class Attendance(models.Model):
         between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))
 
         if attended_total < min_total_events:
-            return False, "Did not attend enough events %s (%s < %s)." % (
-                between_string, attended_total, min_total_events)
+            return False, "Did not attend enough events %s." % (between_string, )
         if attended_training < min_trainings:
-            return False, "Did not attend enough trainings %s (%s < %s)." % (
-                between_string, attended_training, min_trainings)
+            return False, "Did not attend enough trainings %s." % (between_string, )
         if attended_other < min_total_events - min_trainings:
-            return False, "Did not attend enough non-training events %s (%s < %s)." % (
-                between_string, attended_other, min_total_events - min_trainings)
+            return False, "Did not attend enough non-training events %s." % (between_string, )
 
         return True, "No attendance issues."
 

@@ -4,7 +4,9 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
-from cnto_warnings.utils import add_and_update_low_attendace_for_previous_month
+from cnto_warnings.models import MemberWarning
+from cnto_warnings.utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
+    add_and_update_grunt_qualification_due
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
 ## GETTING-STARTED: make sure the next line points to your django project dir:
@@ -23,4 +25,23 @@ if __name__ == "__main__":
     django.setup()
     print "Django ready!"
 
+    print "Adding and updating attendance warnings..."
+    start_count = MemberWarning.objects.all().count()
+
     add_and_update_low_attendace_for_previous_month()
+    add_and_update_mod_assessment_due()
+    add_and_update_grunt_qualification_due()
+
+    end_count = MemberWarning.objects.all().count()
+
+    if start_count < end_count:
+        print "Added %s warnings!" % (end_count - start_count)
+    elif end_count < start_count:
+        print "Removed %s warnings!" % (start_count - end_count)
+    else:
+        print "No change to warnings!"
+
+
+    add_and_update_low_attendace_for_previous_month()
+    add_and_update_mod_assessment_due()
+    add_and_update_grunt_qualification_due()
