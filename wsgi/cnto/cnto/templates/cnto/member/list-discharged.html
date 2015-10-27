@@ -1,9 +1,12 @@
+{% load cnto_tags %}
+
 <table id="discharge-list-table" class="table table-striped tablesorter">
     <thead>
         <tr>
             <th>Name</th>
             <th>Join date</th>
             <th>Discharge date</th>
+            <th>Note</th>
             <th></th>
         </tr>
     </thead>
@@ -12,7 +15,7 @@
         <td><a href="{% url 'edit-discharged-member' member.pk %}">{{ member.name }}</a></td>
         <td>{{ member.join_dt|date:'Y-m-d' }}</td>
         <td>{{ member.discharge_dt|date:'Y-m-d' }}</td>
-
+        <td>{{ member|active_note_message }}</td>
         <td>
             <a class="delete-discharged-member" href="#"><span class="glyphicon glyphicon-remove-circle"
                                                                aria-hidden="true"></span></a>
@@ -27,7 +30,7 @@
             $("#discharge-list-table").tablesorter({
                 headers: {
                     // assign the secound column (we start counting zero)
-                    3: { sorter: false }
+                    4: { sorter: false }
                 }
             });
         }
