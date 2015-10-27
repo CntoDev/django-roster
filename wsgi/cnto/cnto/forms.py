@@ -102,7 +102,7 @@ class MemberForm(forms.models.ModelForm):
         name = self.cleaned_data['name']
 
         undischarged_members_with_name = Member.objects.filter(name=name, discharged=False, deleted=False)
-        if len(undischarged_members_with_name) > 0:
+        if len(undischarged_members_with_name) > 0 and undischarged_members_with_name[0] != self.instance:
             raise forms.ValidationError(
                 "Undischarged member with this name already exists.  Choose another name or discharge the other "
                 "member.")
@@ -144,7 +144,7 @@ class DischargedMemberForm(forms.models.ModelForm):
         name = self.cleaned_data['name']
 
         undischarged_members_with_name = Member.objects.filter(name=name, discharged=False, deleted=False)
-        if len(undischarged_members_with_name) > 0:
+        if len(undischarged_members_with_name) > 0 and undischarged_members_with_name[0] != self.instance:
             raise forms.ValidationError(
                 "Undischarged member with this name already exists.  Choose another name or discharge the other "
                 "member.")
