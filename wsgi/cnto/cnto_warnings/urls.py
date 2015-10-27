@@ -19,4 +19,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^list/$', warning_views.list_warnings, name='list-warnings'),
+    url(r'^toggle-warning-acknowledge/(?P<pk>\d+)/$', warning_views.toggle_member_acknowledge, name='toggle-warning-acknowledge'),
 ]
