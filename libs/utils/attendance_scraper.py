@@ -3,6 +3,7 @@ import logging
 import urllib
 import threading
 
+from django.utils import timezone
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -136,7 +137,7 @@ def get_all_events_from_start_to_end(start_dt, end_dt):
     relevant_events = {}
     for event_start_dt in sorted_start_dts:
         event = all_event_dicts[event_start_dt]
-        event_end_dt = event["end_dt"] if event["end_dt"] is not None else datetime.now()
+        event_end_dt = event["end_dt"] if event["end_dt"] is not None else timezone.now()
 
         player_count = event["player_count"]
 

@@ -2,12 +2,12 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from datetime import datetime
+from django.utils import timezone
 from cnto.models import Absence
 
 
 def set_default_absence_concluded_state(apps, schema_editor):
-    current_dt = datetime.now()
+    current_dt = timezone.now()
 
     for absence in Absence.objects.all():
         if absence.start_dt <= current_dt <= absence.end_dt:

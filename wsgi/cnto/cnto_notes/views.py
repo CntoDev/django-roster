@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from django.http import Http404
@@ -40,7 +40,7 @@ def handle_note_change_view(request, edit_mode, note):
                 pass
 
             form.instance.active = True
-            form.instance.dt = datetime.now()
+            form.instance.dt = timezone.now()
             form.save()
             return redirect('edit-note-collection', note.member.pk)
     else:

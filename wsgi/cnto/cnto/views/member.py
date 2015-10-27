@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.http.response import JsonResponse
 
 from django.http import Http404
@@ -51,7 +51,7 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
                 form.cleaned_data["rank"] = rec_rank
 
             if form.cleaned_data["discharged"] and form.cleaned_data["discharge_dt"] is None:
-                form.instance.discharge_dt = datetime.now()
+                form.instance.discharge_dt = timezone.now()
 
             form.save()
             return redirect('manage')

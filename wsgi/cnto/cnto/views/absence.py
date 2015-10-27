@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from ..models import Member, MemberGroup, Absence
@@ -29,7 +29,7 @@ def handle_absence_change_view(request, edit_mode, absence):
         if request.POST.get("cancel"):
             return redirect('edit-absences', absence.member.pk)
         elif form.is_valid():
-            current_dt = datetime.now()
+            current_dt = timezone.now()
             if form.instance.end_dt > current_dt:
                 form.instance.end_dt = current_dt
 

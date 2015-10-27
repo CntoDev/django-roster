@@ -15,6 +15,7 @@ import sys
 
 from socket import gethostname
 
+
 DJ_PROJECT_DIR = os.path.dirname(__file__)
 BASE_DIR = os.path.dirname(DJ_PROJECT_DIR)
 WSGI_DIR = os.path.dirname(BASE_DIR)
@@ -96,6 +97,7 @@ INSTALLED_APPS = (
     'cnto',
     'cnto_notes',
     'cnto_users',
+    'cnto_warnings',
 )
 
 MIDDLEWARE_CLASSES = (

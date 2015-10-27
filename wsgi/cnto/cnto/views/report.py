@@ -100,11 +100,11 @@ def report_main(request):
                                      day=calendar.monthrange(previous_year_number, previous_month_number)[1], hour=23,
                                      minute=59)
 
+
     context = {
         "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt,
                                                 include_recruits=include_recruits),
     }
-
     return render(request, 'cnto/report/report-main.html', context)
 
 

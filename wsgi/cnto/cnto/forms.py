@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from django.utils import timezone
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -65,7 +65,7 @@ class MemberForm(forms.models.ModelForm):
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
     rank = forms.ModelChoiceField(queryset=Rank.objects.all(), empty_label=None)
-    join_dt = forms.DateField(initial=datetime.now(), label="Join date", widget=DateTimePicker(options={
+    join_dt = forms.DateField(initial=timezone.now(), label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
         }))

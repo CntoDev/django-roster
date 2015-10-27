@@ -1,8 +1,25 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.db.models import Q
+
+
+class CreatedModifiedMixin(models.Model):
+
+    class Meta:
+        abstract = True
+
+    created = models.DateTimeField(null=False, default=timezone.now)
+    modified = models.DateTimeField(null=False, default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.created = timezone.now()
+
+        self.modified = timezone.now()
+
+        super(CreatedModifiedMixin, self).save(*args, **kwargs)
 
 
 class Rank(models.Model):
@@ -78,13 +95,13 @@ class Member(models.Model):
         if "rec" not in self.rank.name.lower():
             return "-"
         else:
-            return (self.get_gqf_deadline_dt() - datetime.now()).days
+            return (self.get_gqf_deadline_dt() - timezone.now()).days
 
     def mod_due_days(self):
         if "rec" not in self.rank.name.lower() or self.mods_assessed:
             return "-"
         else:
-            return (self.get_mod_assessment_deadline_dt() - datetime.now()).days
+            return (self.get_mod_assessment_deadline_dt() - timezone.now()).days
 
     def get_total_days_absent(self):
         absences = Absence.objects.filter(member=self)
