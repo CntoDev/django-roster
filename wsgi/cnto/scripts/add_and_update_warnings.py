@@ -4,11 +4,8 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
-from cnto_warnings.models import MemberWarning
-from cnto_warnings.utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
-    add_and_update_grunt_qualification_due
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
+
 ## GETTING-STARTED: make sure the next line points to your django project dir:
 if 'OPENSHIFT_REPO_DIR' in os.environ:
     sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'cnto'))
@@ -17,6 +14,9 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
     os.environ['PYTHON_EGG_CACHE'] = get_python_lib()
 
 import django
+from cnto_warnings.models import MemberWarning
+from cnto_warnings.utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
+    add_and_update_grunt_qualification_due
 
 
 if __name__ == "__main__":

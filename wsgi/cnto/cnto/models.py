@@ -122,6 +122,10 @@ class Member(models.Model):
         return reverse('edit-member', kwargs={'pk': self.pk})
 
     def is_mod_assessment_due(self):
+        """
+
+        :return:
+        """
         current_dt = timezone.now()
 
         mod_assessment_deadline = self.get_mod_assessment_deadline_dt()
@@ -133,6 +137,10 @@ class Member(models.Model):
         return False, None
 
     def is_grunt_qualification_due(self):
+        """
+
+        :return:
+        """
         current_dt = timezone.now()
 
         grunt_qualification_deadline = self.get_gqf_deadline_dt()
