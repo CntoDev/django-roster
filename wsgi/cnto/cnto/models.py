@@ -57,7 +57,7 @@ class Member(models.Model):
             ("cnto_edit_events", u"Edit events"),
         )
 
-    name = models.TextField(null=False, unique=True)
+    name = models.TextField(null=False, unique=False)
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
     email = models.EmailField(null=True)
