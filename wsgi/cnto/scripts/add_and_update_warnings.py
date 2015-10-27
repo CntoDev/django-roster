@@ -41,7 +41,6 @@ if __name__ == "__main__":
     else:
         print "No change to warnings!"
 
-
     add_and_update_low_attendace_for_previous_month()
     add_and_update_mod_assessment_due()
     add_and_update_grunt_qualification_due()

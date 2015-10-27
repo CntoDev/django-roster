@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from cnto.templatetags.cnto_tags import has_permission
+from cnto_warnings.models import MemberWarning
 from ..models import MemberGroup, Event, Member, Attendance, Absence, AbsenceType
 from django.db.models import Max, Min
 
@@ -66,20 +67,9 @@ def get_warnings_for_date_range(start_dt, end_dt, include_recruits=True):
     :param include_recruits:
     :return:
     """
-    warnings = []
-    events = Event.all_for_time_period(start_dt, end_dt)
+    warnings = MemberWarning.objects.all()
 
-    members = Member.active_members(include_recruits=include_recruits)
-    for member in members:
-        adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
-        if not adequate:
-            warnings.append([member, reason])
-
-        recruit_warning, reason = member.get_recruit_warning()
-        if recruit_warning:
-            warnings.append([member, reason])
-
-    return sorted(warnings, key=lambda warning: warning[0].name)
+    return sorted(warnings, key=lambda warning: warning.member.name)
 
 
 def report_main(request):

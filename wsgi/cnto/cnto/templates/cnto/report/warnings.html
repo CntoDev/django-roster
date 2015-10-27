@@ -9,11 +9,11 @@
             <th>Warning</th>
         </tr>
     </thead>
-    {% for member, reason in warnings %}
+    {% for warning in warnings %}
     <tr>
-        <td><a href="{{ member|value_of:'get_absolute_url' }}">{{ member.name }}</a></td>
-        <td>{{ member.member_group.name }}</td>
-        <td>{{ reason }}</td>
+        <td><a href="{{ warning.member|value_of:'get_absolute_url' }}">{{ warning.member.name }}</a></td>
+        <td>{{ warning.member.member_group.name }}</td>
+        <td>{{ warning.message }}</td>
     </tr>
     {% endfor %}
     {% else %}
