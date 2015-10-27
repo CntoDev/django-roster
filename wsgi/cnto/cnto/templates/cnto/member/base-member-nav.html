@@ -7,6 +7,7 @@
     {% endif %}
     <li class="active"><a href="{% url 'manage' %}">Manage</a></li>
     {% if user.is_superuser or user|has_permission:"cnto_view_reports" %}
+    <li><a href="{% url 'list-warnings' %}">Warnings</a></li>
     <li><a href="{% url 'report-main' %}">Report</a></li>
     {% endif %}
 {% endblock %}

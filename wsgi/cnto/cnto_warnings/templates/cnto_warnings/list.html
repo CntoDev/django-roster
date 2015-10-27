@@ -1,0 +1,39 @@
+{% extends 'cnto_warnings/base.html' %}
+{% load cnto_tags %}
+
+{% block content %}
+<div class="container col-md-8 col-md-offset-2">
+    <table id="warning-list-table" class="table tablesorter">
+        {% if warnings %}
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Group</th>
+                <th>Warning</th>
+                <th>Acknowledged</th>
+            </tr>
+        </thead>
+        {% for warning in warnings %}
+        <tr>
+            <td><a href="{{ warning.member|value_of:'get_absolute_url' }}">{{ warning.member.name }}</a></td>
+            <td>{{ warning.member.member_group.name }}</td>
+            <td>{{ warning.message }}</td>
+            <td><input disabled="true" type="checkbox" {% if warning.acknowledged %}checked="true"{% endif %}/></td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <h3>No current warnings!</h3>
+        {% endif %}
+    </table>
+
+    <script>
+        $(document).ready(function()
+            {
+                $("#warning-list-table").tablesorter({
+
+                });
+            }
+        );
+    </script>
+</div>
+{% endblock %}

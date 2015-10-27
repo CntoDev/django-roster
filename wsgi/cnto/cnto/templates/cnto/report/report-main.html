@@ -7,7 +7,6 @@
   <!-- Nav tabs -->
   <ul class="nav nav-tabs member-table" id="major-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">Summary</a></li>
-    <li role="presentation"><a href="#warnings" aria-controls="home" role="tab" data-toggle="tab">Warnings</a></li>
     <li role="presentation"><a href="#reports" aria-controls="profile" role="tab" data-toggle="tab">Reports</a></li>
   </ul>
 
@@ -15,9 +14,6 @@
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active row" id="summary">
         {% include 'cnto/report/summary.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane row" id="warnings">
-        {% include 'cnto/report/warnings.html' %}
     </div>
     <div role="tabpanel" class="tab-pane row" id="reports">
         {% include 'cnto/report/report-viewer.html' %}
@@ -29,8 +25,6 @@
 
 {% block js %}
 <script>
-    {% include 'cnto/report/warnings.js' %}
-
     {% include 'cnto/report/report-viewer.js' %}
 
     {% include 'cnto/report/summary.js' %}

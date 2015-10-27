@@ -17,6 +17,7 @@ from django.views.generic.base import RedirectView
 
 import cnto_notes.urls as note_urls
 import cnto_users.urls as user_urls
+import cnto_warnings.urls as warning_urls
 
 from views import scrape, login_user, event, member, report, group, manage, absence
 from django.conf.urls import include, url
@@ -69,6 +70,6 @@ urlpatterns = [
     url(r'^get-summary-data/$', report.get_summary_data, name='get-summary-data'),
 
     url(r'^notes/', include(note_urls)),
-    url(r'^users/', include(user_urls))
-
+    url(r'^users/', include(user_urls)),
+    url(r'^warnings/', include(warning_urls))
 ]
