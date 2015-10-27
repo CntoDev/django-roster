@@ -2,7 +2,7 @@ import calendar
 
 from django.db import models
 from django.utils import timezone
-from datetime import datetime
+from django.utils.timezone import datetime
 from cnto.models import Event, Member, CreatedModifiedMixin, Attendance
 
 

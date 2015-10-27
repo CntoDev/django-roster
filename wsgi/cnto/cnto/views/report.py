@@ -2,7 +2,7 @@ import csv
 import json
 
 import calendar
-from datetime import datetime, timedelta
+from django.utils.timezone import datetime, timedelta
 from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
@@ -59,6 +59,13 @@ def get_summary_data(request):
 
 
 def get_warnings_for_date_range(start_dt, end_dt, include_recruits=True):
+    """
+
+    :param start_dt:
+    :param end_dt:
+    :param include_recruits:
+    :return:
+    """
     warnings = []
     events = Event.all_for_time_period(start_dt, end_dt)
 
@@ -95,11 +102,14 @@ def report_main(request):
         previous_year_number -= 1
         previous_month_number = 12
 
-    previous_month_start_dt = datetime(year=previous_year_number, month=previous_month_number, day=1, hour=0, minute=0)
-    previous_month_end_dt = datetime(year=previous_year_number, month=previous_month_number,
-                                     day=calendar.monthrange(previous_year_number, previous_month_number)[1], hour=23,
-                                     minute=59)
+    previous_month_start_dt = timezone.make_aware(
+        datetime(year=previous_year_number, month=previous_month_number, day=1, hour=0, minute=0),
+        timezone.get_default_timezone())
 
+    previous_month_end_dt = timezone.make_aware(datetime(year=previous_year_number, month=previous_month_number,
+                                                         day=calendar.monthrange(previous_year_number,
+                                                                                 previous_month_number)[1], hour=23,
+                                                         minute=59), timezone.get_default_timezone())
 
     context = {
         "warnings": get_warnings_for_date_range(previous_month_start_dt, previous_month_end_dt,
@@ -191,15 +201,16 @@ def get_report_body_for_month(request, month_string):
 
     month_dt = datetime.strptime(month_string, "%Y-%m")
 
-    context = get_report_context_for_date_range(datetime(month_dt.year, month_dt.month, 1, 0, 0),
-                                                datetime(month_dt.year, month_dt.month,
-                                                         calendar.monthrange(month_dt.year, month_dt.month)[1], 23, 59))
+    context = get_report_context_for_date_range(
+        timezone.make_aware(datetime(month_dt.year, month_dt.month, 1, 0, 0), timezone.get_default_timezone()),
+        timezone.make_aware(datetime(month_dt.year, month_dt.month,
+                                     calendar.monthrange(month_dt.year, month_dt.month)[1], 23, 59),
+                            timezone.get_default_timezone()))
 
     return JsonResponse(context)
 
 
 def download_report_for_month(request, dt_string, group_pk=None):
-
     if not request.user.is_authenticated():
         return redirect("login")
     elif not has_permission(request.user, "cnto_view_reports"):

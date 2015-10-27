@@ -4,8 +4,9 @@ import urllib
 import threading
 
 from django.utils import timezone
-from datetime import datetime
+from django.utils.timezone import datetime
 from bs4 import BeautifulSoup
+import pytz
 
 LOG = logging.getLogger("roster-tracker")
 LOG.setLevel(logging.DEBUG)
@@ -33,7 +34,8 @@ class ScrapeThread(threading.Thread):
             scraped_result, scrape_stats = get_all_event_attendances_between(self._start_dt, self._end_dt)
             self._viewer.scraped_result_signal.emit(self._start_dt.date(), scraped_result)
             self._viewer.show_message_signal.emit("Success",
-                                                  "Scraped succesfully for %s players with an average attendance of %s\n"
+                                                  "Scraped succesfully for %s players with an average attendance of "
+                                                  "%s\n"
                                                   "minutes out of a total played time of %s minutes!" % (
                                                       len(scraped_result),
                                                       int(scrape_stats["minutes"] * scrape_stats["average_attendance"]),
@@ -101,17 +103,19 @@ def get_all_events_for_page(page_number=1):
         event_url = column_values[0]("a")[0]["href"]
         players_string = column_values[1].text
         start_dt_string = column_values[3].text
-        start_dt = datetime.strptime(start_dt_string, "%Y-%m-%d %H:%M")
+        current_start_dt = timezone.make_aware(datetime.strptime(start_dt_string, "%Y-%m-%d %H:%M"),
+                                               pytz.utc)
         end_dt_string = column_values[4].text
         try:
-            end_dt = datetime.strptime(end_dt_string, "%Y-%m-%d %H:%M")
+            current_end_dt = timezone.make_aware(datetime.strptime(end_dt_string, "%Y-%m-%d %H:%M"),
+                                                 pytz.utc)
         except ValueError:
-            end_dt = None
+            current_end_dt = None
 
-        all_event_dicts[start_dt] = {
+        all_event_dicts[current_start_dt] = {
             "player_count": int(players_string.split("/")[0]),
             "event_url": complete_event_url(event_url),
-            "end_dt": end_dt
+            "end_dt": current_end_dt
         }
 
     return all_event_dicts
@@ -201,7 +205,8 @@ def get_attendance_rates_from_event_url(event_url):
             part_parts = part.split(":")
             attendance_parts_dict[part_parts[0].strip()] = int(part_parts[1].strip().replace("%", ""))
 
-        # print "%s, %s, %s" % (attendance_parts_dict["margin-left"], attendance_parts_dict["width"], attendance_parts_dict["margin-right"])
+        # print "%s, %s, %s" % (attendance_parts_dict["margin-left"], attendance_parts_dict["width"],
+        # attendance_parts_dict["margin-right"])
         attendance = attendance_parts_dict["width"] / 100.0
         if player_name not in all_player_attendances:
             all_player_attendances[player_name] = attendance
@@ -265,7 +270,14 @@ if __name__ == "__main__":
 
     overall_attendances = get_all_event_attendances_between(start_dt, end_dt)
     print overall_attendances
-    # overall_attendances = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 0.27631578947368424, u'Anders [CNTO - SPC]': 0.7236842105263158, u'Guilly': 0.7236842105263158, u'Hellfire [CNTO - SPC]': 1.0, u'Rush [CNTO - Gnt]': 0.7236842105263158, u'Hateborder [CNTO - Gnt]': 0.7236842105263158, u'Peltier [CNTO - Gnt]': 0.5394736842105263, u'John [CNTO - JrNCO]': 0.7236842105263158, u'Alos': 1.0, u'Highway [CNTO - Gnt]': 0.27631578947368424, u'Mars [CNTO - Gnt]': 0.7236842105263158, u'Skywalker [CNTO - Gnt]': 0.6052631578947368, u'Supreme [CNTO - Gnt]': 0.7236842105263158, u'Dachi [CNTO - Gnt]': 0.7236842105263158, u'Postma [CNTO - Gnt]': 0.7236842105263158, u'Obi [CNTO - JrNCO]': 0.39473684210526316, u'Chris [CNTO - SPC]': 1.0, u'Cody [CNTO - SPC]': 1.0}
+    # overall_attendances = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 0.27631578947368424,
+    # u'Anders [CNTO - SPC]': 0.7236842105263158, u'Guilly': 0.7236842105263158, u'Hellfire [CNTO - SPC]': 1.0,
+    # u'Rush [CNTO - Gnt]': 0.7236842105263158, u'Hateborder [CNTO - Gnt]': 0.7236842105263158, u'Peltier [CNTO -
+    # Gnt]': 0.5394736842105263, u'John [CNTO - JrNCO]': 0.7236842105263158, u'Alos': 1.0, u'Highway [CNTO - Gnt]':
+    # 0.27631578947368424, u'Mars [CNTO - Gnt]': 0.7236842105263158, u'Skywalker [CNTO - Gnt]': 0.6052631578947368,
+    # u'Supreme [CNTO - Gnt]': 0.7236842105263158, u'Dachi [CNTO - Gnt]': 0.7236842105263158, u'Postma [CNTO - Gnt]':
+    #  0.7236842105263158, u'Obi [CNTO - JrNCO]': 0.39473684210526316, u'Chris [CNTO - SPC]': 1.0, u'Cody [CNTO -
+    # SPC]': 1.0}
     #
     # db = RosterDatabase("temp.sqlite")
     # db.insert_attendances(start_dt.date(), overall_attendances)

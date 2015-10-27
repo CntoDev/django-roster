@@ -1,8 +1,10 @@
 import json
 
-from datetime import datetime
+from django.utils import timezone
+from django.utils.timezone import datetime
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
+import pytz
 from ..models import Event, Attendance, MemberGroup, EventType
 from django.http import Http404
 from django.template.context_processors import csrf
@@ -106,7 +108,8 @@ def view_event(request, year_string, month_string, day_string):
     elif not has_permission(request.user, "cnto_view_events"):
         return redirect("manage")
 
-    selected_dt = datetime(year=int(year_string), month=int(month_string), day=int(day_string))
+    selected_dt = timezone.make_aware(datetime(year=int(year_string), month=int(month_string), day=int(day_string)),
+                                      timezone.get_default_timezone())
 
     context = {
         "event": None,
@@ -125,13 +128,14 @@ def view_event(request, year_string, month_string, day_string):
 
         for attendance in attendances:
             attendance_values.append(
-                (attendance.member.name, "%.2f" % (attendance.attendance * 100.0, ),
+                (attendance.member.name, "%.2f" % (attendance.attendance * 100.0,),
                  not attendance.was_adequate()))
 
         attendance_values.sort(key=lambda x: x[0])
-        context["start_date_string"] = event.start_dt.strftime("%Y-%m-%d")
-        context["start_time_string"] = event.start_dt.strftime("%H:%M")
-        context["end_time_string"] = event.end_dt.strftime("%H:%M")
+
+        context["start_date_string"] = event.start_dt.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d")
+        context["start_time_string"] = event.start_dt.astimezone(timezone.get_default_timezone()).strftime("%H:%M")
+        context["end_time_string"] = event.end_dt.astimezone(timezone.get_default_timezone()).strftime("%H:%M")
         context["event"] = event
 
     except Event.DoesNotExist:
@@ -159,10 +163,10 @@ def event_browser(request):
         start_dt = event.start_dt
         end_dt = event.end_dt
 
-        event_data[start_dt.strftime("%Y-%m-%d %H:%M")] = {
+        event_data[start_dt.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M")] = {
             "title": "\n%s minutes\n%.2f %% attendance\n%s players" % (
                 event.duration_minutes, stats["average_attendance"] * 100.0, stats["player_count"]),
-            "end_dt_string": end_dt.strftime("%Y-%m-%d %H:%M"),
+            "end_dt_string": end_dt.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M"),
             "css_class_name": event.event_type.css_class_name,
         }
 

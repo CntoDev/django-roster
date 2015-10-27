@@ -68,7 +68,7 @@ class MemberForm(forms.models.ModelForm):
     join_dt = forms.DateField(initial=timezone.now(), label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }))
+    }))
 
     email = forms.EmailField(required=False)
 
@@ -78,7 +78,7 @@ class MemberForm(forms.models.ModelForm):
     discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }),
+    }),
                                    required=False)
 
     helper = FormHelper()
@@ -98,6 +98,17 @@ class MemberForm(forms.models.ModelForm):
         )
     )
 
+    def clean_name(self):
+        name = self.cleaned_data['name']
+
+        undischarged_members_with_name = Member.objects.filter(name=name, discharged=False)
+        if len(undischarged_members_with_name) > 0:
+            raise forms.ValidationError(
+                "Undischarged member with this name already exists.  Choose another name or discharge the other "
+                "member.")
+
+        return name
+
 
 class DischargedMemberForm(forms.models.ModelForm):
     class Meta:
@@ -108,12 +119,12 @@ class DischargedMemberForm(forms.models.ModelForm):
     join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }))
+    }))
     discharged = forms.BooleanField(required=False)
     discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }),
+    }),
                                    required=False)
 
     helper = FormHelper()
@@ -128,6 +139,17 @@ class DischargedMemberForm(forms.models.ModelForm):
             CancelButton('cancel', 'Cancel'),
         )
     )
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+
+        undischarged_members_with_name = Member.objects.filter(name=name, discharged=False)
+        if len(undischarged_members_with_name) > 0:
+            raise forms.ValidationError(
+                "Undischarged member with this name already exists.  Choose another name or discharge the other "
+                "member.")
+
+        return name
 
 
 class MemberGroupForm(forms.models.ModelForm):
@@ -158,12 +180,12 @@ class AbsenceForm(forms.models.ModelForm):
     start_dt = forms.DateField(label="Start date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }))
+    }))
 
     end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
-        }))
+    }))
 
     concluded = forms.BooleanField(required=False)
 

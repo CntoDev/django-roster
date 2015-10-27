@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils.timezone import datetime
 from django.utils import timezone
 from cnto_warnings.models import LowAttendanceWarning
 

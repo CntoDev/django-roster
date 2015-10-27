@@ -1,4 +1,9 @@
-from datetime import datetime, timedelta
+import traceback
+
+import pytz
+
+from django.utils import timezone
+from django.utils.timezone import datetime, timedelta
 
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
@@ -21,15 +26,26 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
 
     dt = datetime.strptime(dt_string, "%Y-%m-%d")
 
-    start_dt = datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00)
+    start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00),
+                                   timezone.get_default_timezone())
+    pytz.timezone("Europe/Stockholm")
 
-    end_dt = datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00)
+    if int(end_hour) >= 24:
+        end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
+                                     timezone.get_default_timezone())
+        end_dt += timedelta(days=1, hours=int(end_hour) - 24)
+    else:
+        end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
+                                     timezone.get_default_timezone())
+
     if end_dt < start_dt:
         end_dt += timedelta(hours=240)
 
     try:
-        scrape_result, scrape_stats = get_all_event_attendances_between(start_dt, end_dt)
+        scrape_result, scrape_stats = get_all_event_attendances_between(start_dt.astimezone(pytz.utc),
+                                                                        end_dt.astimezone(pytz.utc))
     except ValueError:
+        traceback.print_exc()
         scrape_result = {}
         scrape_stats = {'average_attendance': 0, 'minutes': 0}
 
@@ -40,11 +56,14 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
     # u'Chris [CNTO - SPC]': 0.14285714285714285, u'Hateborder [CNTO - Gnt]': 1.0,
     # u'Dusky [CNTO - Gnt]': 0.7142857142857143}
     # scrape_stats = {'average_attendance': 0.7795031055900622, 'minutes': 56.0}
+
     try:
         event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                   start_dt__day=start_dt.day)
+
         event.start_dt = start_dt
         event.end_dt = end_dt
+
         event.event_type = event_type
         event.duration_minutes = scrape_stats["minutes"]
         event.save()
@@ -74,7 +93,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
             rank.save()
 
         try:
-            member = Member.objects.get(name__iexact=username)
+            member = Member.objects.get(name__iexact=username, discharged=False)
         except Member.DoesNotExist:
             member = Member(name=username, rank=rank)
             member.save()

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import datetime
+from django.utils import timezone
 
 
 class Migration(migrations.Migration):
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='end_dt',
-            field=models.DateTimeField(default=datetime.datetime(2015, 10, 16, 6, 16, 41, 253763)),
+            field=models.DateTimeField(default=timezone.now),
             preserve_default=False,
         ),
     ]
