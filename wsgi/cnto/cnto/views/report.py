@@ -2,6 +2,7 @@ import csv
 import json
 
 import calendar
+import traceback
 from django.utils.timezone import datetime, timedelta
 from django.http.response import JsonResponse
 from django.utils import timezone
@@ -87,74 +88,78 @@ def report_main(request):
 
 
 def get_report_context_for_date_range(start_dt, end_dt):
-    context = {}
+    try:
+        context = {}
 
-    events = Event.all_for_time_period(start_dt, end_dt).order_by("start_dt")
-    context["event_count"] = events.count()
+        events = Event.all_for_time_period(start_dt, end_dt).order_by("start_dt")
+        context["event_count"] = events.count()
 
-    events_dict = {
-        "start_dates": [event.start_dt.strftime("%Y-%m-%d") for event in events],
-        "css_classes": [event.event_type.css_class_name for event in events]
-    }
-    context["events"] = events_dict
+        events_dict = {
+            "start_dates": [event.start_dt.strftime("%Y-%m-%d") for event in events],
+            "css_classes": [event.event_type.css_class_name for event in events]
+        }
+        context["events"] = events_dict
 
-    reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
+        reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
 
-    groups = MemberGroup.objects.all().order_by("name")
-    all_members = Member.active_members_after_dt(start_dt)
+        groups = MemberGroup.objects.all().order_by("name")
+        all_members = Member.active_members_after_dt(start_dt)
 
-    attendance_dict = {}
-    group_members = {}
-    for group in groups:
-        attendance_dict[group.name] = {}
-        members = all_members.filter(member_group=group).order_by("name")
-        for member in members:
-            period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
-            attendance_dict[group.name][member.name] = {
-                "attendance_adequate": period_attendance_adequate,
-                "attendances": []
-            }
-            if group.name not in group_members:
-                group_members[group.name] = []
+        attendance_dict = {}
+        group_members = {}
+        for group in groups:
+            attendance_dict[group.name] = {}
+            members = all_members.filter(member_group=group).order_by("name")
+            for member in members:
+                period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
+                attendance_dict[group.name][member.name] = {
+                    "attendance_adequate": period_attendance_adequate,
+                    "attendances": []
+                }
+                if group.name not in group_members:
+                    group_members[group.name] = []
 
-            group_members[group.name].append(member.name)
+                group_members[group.name].append(member.name)
 
-            for event in events:
-                try:
-                    if member.join_dt > event.start_dt:
-                        absence_type = "-"
-                    else:
-                        absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
-                                                      end_dt__gte=event.start_dt)
-                        if absence.absence_type == reservist_absence_type:
-                            absence_type = "R"
-                        else:
-                            absence_type = "LOA"
-                except Absence.DoesNotExist:
-                    absence_type = None
-
-                if absence_type is not None:
-                    presence_marker = absence_type
-                else:
+                for event in events:
                     try:
-                        attendance = Attendance.objects.get(member=member, event=event)
-                        was_adequate = attendance.was_adequate()
-                        if was_adequate:
-                            presence_marker = "X"
+                        if member.join_dt > event.start_dt:
+                            absence_type = "-"
                         else:
-                            presence_marker = "?"
+                            absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
+                                                          end_dt__gte=event.start_dt)
+                            if absence.absence_type == reservist_absence_type:
+                                absence_type = "R"
+                            else:
+                                absence_type = "LOA"
+                    except Absence.DoesNotExist:
+                        absence_type = None
 
-                    except Attendance.DoesNotExist:
-                        presence_marker = " "
+                    if absence_type is not None:
+                        presence_marker = absence_type
+                    else:
+                        try:
+                            attendance = Attendance.objects.get(member=member, event=event)
+                            was_adequate = attendance.was_adequate()
+                            if was_adequate:
+                                presence_marker = "X"
+                            else:
+                                presence_marker = "?"
 
-                attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
+                        except Attendance.DoesNotExist:
+                            presence_marker = " "
 
-    context["attendances"] = attendance_dict
+                    attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
-    context["group_names"] = sorted(group_members.keys())
-    context["group_members"] = group_members
-    context["start_dt"] = start_dt.strftime("%Y-%m-%d")
-    context["end_dt"] = end_dt.strftime("%Y-%m-%d")
+        context["attendances"] = attendance_dict
+
+        context["group_names"] = sorted(group_members.keys())
+        context["group_members"] = group_members
+        context["start_dt"] = start_dt.strftime("%Y-%m-%d")
+        context["end_dt"] = end_dt.strftime("%Y-%m-%d")
+    except Exception:
+        print str(traceback.format_exc())
+        raise
 
     return context
 

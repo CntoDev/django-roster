@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.utils import timezone
 from cnto.templatetags.cnto_tags import has_permission
 from ..models import Member, MemberGroup, EventType, Absence
 
