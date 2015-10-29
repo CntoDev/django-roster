@@ -12,6 +12,7 @@
     <tr id="group-{{ group.pk }}">
         <td><a href="{% url 'edit-group' group.pk %}">{{ group.name }}</td>
         <td>{{ group|value_of:"member_count" }}</td>
+
         <td>
             <a class="delete-group" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
         </td>
