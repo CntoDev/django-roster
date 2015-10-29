@@ -126,8 +126,7 @@ def get_report_context_for_date_range(start_dt, end_dt):
                         if member.join_dt > event.start_dt:
                             absence_type = "-"
                         else:
-                            absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
-                                                          end_dt__gte=event.start_dt)
+                            absence = Absence.get_absence_for_event(event, member)
                             if absence.absence_type == reservist_absence_type:
                                 absence_type = "R"
                             else:

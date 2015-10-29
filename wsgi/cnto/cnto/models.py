@@ -215,6 +215,12 @@ class Absence(models.Model):
     concluded = models.BooleanField(default=False, null=False)
     deleted = models.BooleanField(default=False, null=False)
 
+    @staticmethod
+    def get_absence_for_event(event, member):
+        absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
+                                      end_dt__gte=event.start_dt, concluded=False)
+        return absence
+
     def due_days(self):
         return (self.end_dt - timezone.now()).days
 
@@ -281,11 +287,11 @@ class Attendance(models.Model):
         between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))
 
         if attended_total < min_total_events:
-            return False, "Did not attend enough events %s." % (between_string, )
+            return False, "Did not attend enough events %s." % (between_string,)
         if attended_training < min_trainings:
-            return False, "Did not attend enough trainings %s." % (between_string, )
+            return False, "Did not attend enough trainings %s." % (between_string,)
         if attended_other < min_total_events - min_trainings:
-            return False, "Did not attend enough non-training events %s." % (between_string, )
+            return False, "Did not attend enough non-training events %s." % (between_string,)
 
         return True, "No attendance issues."
 
