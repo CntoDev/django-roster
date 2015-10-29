@@ -218,7 +218,7 @@ class Absence(models.Model):
     @staticmethod
     def get_absence_for_event(event, member):
         absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
-                                      end_dt__gte=event.start_dt, concluded=False)
+                                      end_dt__gte=event.start_dt, deleted=False)
         return absence
 
     def due_days(self):
