@@ -7,6 +7,7 @@ from models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, BaseInput
 from crispy_forms.bootstrap import FormActions
+from utils.date_utils import dates_overlap
 
 
 class AcceptButton(BaseInput):
@@ -202,3 +203,20 @@ class AbsenceForm(forms.models.ModelForm):
             CancelButton('cancel', 'Cancel', css_class="btn-default"),
         )
     )
+
+    def clean_end_dt(self):
+        member_pk = self.data['member']
+        member = Member.objects.get(pk=member_pk)
+        start_dt = self.cleaned_data['start_dt']
+        end_dt = self.cleaned_data['end_dt']
+
+        if end_dt <= start_dt:
+            raise forms.ValidationError("Absence end date on or before start date!")
+
+        print member
+        for absence in Absence.objects.filter(member=member, deleted=False):
+            if dates_overlap(start_dt, end_dt, absence.start_dt.date(), absence.end_dt.date()):
+                raise forms.ValidationError(
+                    "Absence overlaps with another absence from %s to %s!" % (absence.start_dt, absence.end_dt))
+
+        return end_dt

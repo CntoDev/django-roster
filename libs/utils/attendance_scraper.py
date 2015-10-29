@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.timezone import datetime
 from bs4 import BeautifulSoup
 import pytz
+from utils.date_utils import dates_overlap
 
 LOG = logging.getLogger("roster-tracker")
 LOG.setLevel(logging.DEBUG)
@@ -145,10 +146,9 @@ def get_all_events_from_start_to_end(start_dt, end_dt):
 
         player_count = event["player_count"]
 
-        event_overlaps = start_dt <= event_start_dt <= end_dt or start_dt <= event_end_dt <= end_dt
-        event_envelops = event_start_dt <= start_dt and event_end_dt >= end_dt
+        event_overlaps = dates_overlap(start_dt, end_dt, event_start_dt, event_end_dt)
 
-        if (event_overlaps or event_envelops) and player_count > MINIMUM_ATTENDANCE_NUMBER:
+        if event_overlaps and player_count > MINIMUM_ATTENDANCE_NUMBER:
             LOG.info("Event from %s to %s overlaps with %s to %s!", event_start_dt, event_end_dt, start_dt, end_dt)
             event_start_dt = max(event_start_dt, start_dt)
             event["end_dt"] = min(event_end_dt, end_dt)
