@@ -124,7 +124,7 @@ def get_report_context_for_date_range(start_dt, end_dt):
 
                 for event in events:
                     try:
-                        if member.join_dt > event.start_dt:
+                        if member.join_date > event.start_dt.date():
                             absence_type = "-"
                         else:
                             absence = Absence.get_absence_for_event(event, member)

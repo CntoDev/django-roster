@@ -21,7 +21,7 @@ def management(request):
     if has_permission(request.user, "cnto_view_absentees"):
         absentees = sorted(
                 Absence.objects.all().filter(member__discharged=False, concluded=False, deleted=False),
-                key=lambda x: x.end_dt)
+                key=lambda x: x.end_date)
 
     groups = []
     if has_permission(request.user, "cnto_edit_groups"):

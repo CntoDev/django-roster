@@ -61,10 +61,10 @@ class Member(models.Model):
     member_group = models.ForeignKey(MemberGroup, null=True)
     email = models.EmailField(null=True)
 
-    join_dt = models.DateTimeField(verbose_name="Join date", null=False, default=timezone.now)
+    join_date = models.DateField(verbose_name="Join date", null=False, default=timezone.now)
 
     discharged = models.BooleanField(default=False, null=False)
-    discharge_dt = models.DateTimeField(verbose_name="Discharge date", null=True, default=None)
+    discharge_date = models.DateField(verbose_name="Discharge date", null=True, default=None)
 
     mods_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
@@ -94,29 +94,29 @@ class Member(models.Model):
         if "rec" not in self.rank.name.lower():
             return "-"
         else:
-            return (self.get_gqf_deadline_dt() - timezone.now()).days
+            return (self.get_gqf_deadline_dt() - timezone.now().date()).days
 
     def mod_due_days(self):
         if "rec" not in self.rank.name.lower() or self.mods_assessed:
             return "-"
         else:
-            return (self.get_mod_assessment_deadline_dt() - timezone.now()).days
+            return (self.get_mod_assessment_deadline_dt() - timezone.now().date()).days
 
     def get_total_days_absent(self):
         absences = Absence.objects.filter(member=self)
         total_absent_duration_days = 0
         for absence in absences:
-            total_absent_duration_days += (absence.end_dt - absence.start_dt).days
+            total_absent_duration_days += (absence.end_date - absence.start_date).days
 
         return total_absent_duration_days
 
     def get_gqf_deadline_dt(self):
         absent_days = self.get_total_days_absent()
-        return self.join_dt + timedelta(days=42) + timedelta(days=absent_days)
+        return self.join_date + timedelta(days=42) + timedelta(days=absent_days)
 
     def get_mod_assessment_deadline_dt(self):
         absent_days = self.get_total_days_absent()
-        return self.join_dt + timedelta(days=14) + timedelta(days=absent_days)
+        return self.join_date + timedelta(days=14) + timedelta(days=absent_days)
 
     def get_absolute_url(self):
         return reverse('edit-member', kwargs={'pk': self.pk})
@@ -210,19 +210,21 @@ class AbsenceType(models.Model):
 class Absence(models.Model):
     member = models.ForeignKey(Member, null=False)
     absence_type = models.ForeignKey(AbsenceType, null=False)
-    start_dt = models.DateTimeField(null=False)
-    end_dt = models.DateTimeField(null=False)
+
+    start_date = models.DateField(null=False)
+    end_date = models.DateField(null=False)
+
     concluded = models.BooleanField(default=False, null=False)
     deleted = models.BooleanField(default=False, null=False)
 
     @staticmethod
     def get_absence_for_event(event, member):
-        absence = Absence.objects.get(member=member, start_dt__lte=event.start_dt,
-                                      end_dt__gte=event.start_dt, deleted=False)
+        absence = Absence.objects.get(member=member, start_dt__lte=event.start_date,
+                                      end_dt__gte=event.start_date, deleted=False)
         return absence
 
     def due_days(self):
-        return (self.end_dt - timezone.now()).days
+        return (self.end_date - timezone.now().date()).days
 
 
 class Attendance(models.Model):
@@ -253,7 +255,7 @@ class Attendance(models.Model):
 
     @staticmethod
     def was_adequate_for_period(member, events, start_dt, end_dt):
-        if member.join_dt > start_dt:
+        if member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
         start_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=start_dt)

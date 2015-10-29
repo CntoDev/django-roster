@@ -17,8 +17,8 @@
         <td><a href="{% url 'edit-absence' absence.pk %}">{{ absence.member.name }}</a></td>
         <td>{{ absence.member.member_group.name }}</td>
         <td>{{ absence.absence_type }}</td>
-        <td>{{ absence.start_dt|date:'Y-m-d' }}</td>
-        <td>{{ absence.end_dt|date:'Y-m-d' }}</td>
+        <td>{{ absence.start_date|date:'Y-m-d' }}</td>
+        <td>{{ absence.end_date|date:'Y-m-d' }}</td>
         <td>{{ absence|value_of:"due_days" }}</td>
         <td>
             <a class="delete-absence" href="#"><span class="glyphicon glyphicon-remove-circle"

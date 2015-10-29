@@ -13,8 +13,8 @@
     {% for member in discharges %}
     <tr id="dischargedmember-{{ member.pk }}">
         <td><a href="{% url 'edit-discharged-member' member.pk %}">{{ member.name }}</a></td>
-        <td>{{ member.join_dt|date:'Y-m-d' }}</td>
-        <td>{{ member.discharge_dt|date:'Y-m-d' }}</td>
+        <td>{{ member.join_date|date:'Y-m-d' }}</td>
+        <td>{{ member.discharge_date|date:'Y-m-d' }}</td>
         <td>{{ member|active_note_message }}</td>
         <td>
             <a class="delete-discharged-member" href="#"><span class="glyphicon glyphicon-remove-circle"

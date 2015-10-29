@@ -50,8 +50,8 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
 
                 form.cleaned_data["rank"] = rec_rank
 
-            if form.cleaned_data["discharged"] and form.cleaned_data["discharge_dt"] is None:
-                form.instance.discharge_dt = timezone.now()
+            if form.cleaned_data["discharged"] and form.cleaned_data["discharge_date"] is None:
+                form.instance.discharge_date = timezone.now()
 
             form.save()
             return redirect('manage')
@@ -92,7 +92,7 @@ def handle_discharged_member_change_view(request, member):
             return redirect('manage')
         elif form.is_valid():
             if not form.cleaned_data["discharged"]:
-                form.instance.discharge_dt = None
+                form.instance.discharge_date = None
 
             form.save()
             return redirect('manage')

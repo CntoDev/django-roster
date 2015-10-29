@@ -30,8 +30,8 @@ def handle_absence_change_view(request, edit_mode, absence):
             return redirect('edit-absences', absence.member.pk)
         elif form.is_valid():
             current_dt = timezone.now()
-            if form.instance.end_dt > current_dt:
-                form.instance.end_dt = current_dt
+            if form.instance.end_date > current_dt.date():
+                form.instance.end_date = current_dt.date()
 
             form.save()
             return redirect('edit-absences', absence.member.pk)
@@ -91,7 +91,7 @@ def edit_absences(request, member_pk):
 
     context = {
         "member": member,
-        "absences": sorted(Absence.objects.filter(member=member, deleted=False), key=lambda x: x.start_dt,
+        "absences": sorted(Absence.objects.filter(member=member, deleted=False), key=lambda x: x.start_date,
                            reverse=True),
     }
 

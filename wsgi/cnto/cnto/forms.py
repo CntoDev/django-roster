@@ -60,13 +60,13 @@ class EventTypeForm(forms.models.ModelForm):
 class MemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
-        fields = ['name', 'member_group', 'rank', 'join_dt', 'mods_assessed', 'discharged', 'discharge_dt', 'email']
+        fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'discharged', 'discharge_date', 'email']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
     rank = forms.ModelChoiceField(queryset=Rank.objects.all(), empty_label=None)
-    join_dt = forms.DateField(initial=timezone.now(), label="Join date", widget=DateTimePicker(options={
+    join_date = forms.DateField(initial=timezone.now(), label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }))
@@ -76,11 +76,11 @@ class MemberForm(forms.models.ModelForm):
     mods_assessed = forms.BooleanField(required=False)
     discharged = forms.BooleanField(required=False)
 
-    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
+    discharge_date = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }),
-                                   required=False)
+                                     required=False)
 
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
@@ -88,69 +88,72 @@ class MemberForm(forms.models.ModelForm):
         Field('name'),
         Field('member_group'),
         Field('rank'),
-        Field('join_dt'),
+        Field('join_date'),
         Field('email'),
         Field('mods_assessed'),
         Field('discharged'),
-        Field('discharge_dt', type='hidden'),
+        Field('discharge_date', type='hidden'),
         FormActions(
             AcceptButton('save_changes', 'Save changes'),
             CancelButton('cancel', 'Cancel'),
         )
     )
 
-    def clean_name(self):
+    def clean_discharged(self):
+        discharged = self.cleaned_data['discharged']
         name = self.cleaned_data['name']
 
         undischarged_members_with_name = Member.objects.filter(name=name, discharged=False, deleted=False)
-        if len(undischarged_members_with_name) > 0 and undischarged_members_with_name[0] != self.instance:
+        if not discharged and len(undischarged_members_with_name) > 0 and \
+                undischarged_members_with_name[0] != self.instance:
             raise forms.ValidationError(
                 "Undischarged member with this name already exists.  Choose another name or discharge the other "
                 "member.")
 
-        return name
+        return discharged
 
 
 class DischargedMemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
-        fields = ['name', 'join_dt', 'discharged', 'discharge_dt']
+        fields = ['name', 'join_date', 'discharged', 'discharge_date']
 
     name = forms.CharField()
-    join_dt = forms.DateField(label="Join date", widget=DateTimePicker(options={
+    join_date = forms.DateField(label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }))
     discharged = forms.BooleanField(required=False)
-    discharge_dt = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
+    discharge_date = forms.DateField(label="Discharge date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }),
-                                   required=False)
+                                     required=False)
 
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
         Field('name'),
-        Field('join_dt'),
+        Field('join_date'),
         Field('discharged'),
-        Field('discharge_dt'),
+        Field('discharge_date'),
         FormActions(
             AcceptButton('save_changes', 'Save changes'),
             CancelButton('cancel', 'Cancel'),
         )
     )
 
-    def clean_name(self):
+    def clean_discharged(self):
+        discharged = self.cleaned_data['discharged']
         name = self.cleaned_data['name']
-
         undischarged_members_with_name = Member.objects.filter(name=name, discharged=False, deleted=False)
-        if len(undischarged_members_with_name) > 0 and undischarged_members_with_name[0] != self.instance:
+        if not discharged and len(undischarged_members_with_name) > 0 and \
+                undischarged_members_with_name[0] != self.instance:
             raise forms.ValidationError(
                 "Undischarged member with this name already exists.  Choose another name or discharge the other "
                 "member.")
 
-        return name
+        return discharged
 
 
 class MemberGroupForm(forms.models.ModelForm):
@@ -174,16 +177,16 @@ class MemberGroupForm(forms.models.ModelForm):
 class AbsenceForm(forms.models.ModelForm):
     class Meta:
         model = Absence
-        fields = ['absence_type', 'start_dt', 'end_dt', 'member', 'concluded']
+        fields = ['absence_type', 'start_date', 'end_date', 'member', 'concluded']
 
     absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all())
 
-    start_dt = forms.DateField(label="Start date", widget=DateTimePicker(options={
+    start_date = forms.DateField(label="Start date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }))
 
-    end_dt = forms.DateField(label="End date", widget=DateTimePicker(options={
+    end_date = forms.DateField(label="End date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }))
@@ -194,8 +197,8 @@ class AbsenceForm(forms.models.ModelForm):
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
         Field('absence_type'),
-        Field('start_dt'),
-        Field('end_dt'),
+        Field('start_date'),
+        Field('end_date'),
         Field('concluded'),
         Field('member', type="hidden"),
         FormActions(
@@ -204,19 +207,18 @@ class AbsenceForm(forms.models.ModelForm):
         )
     )
 
-    def clean_end_dt(self):
+    def clean_end_date(self):
         member_pk = self.data['member']
         member = Member.objects.get(pk=member_pk)
-        start_dt = self.cleaned_data['start_dt']
-        end_dt = self.cleaned_data['end_dt']
+        start_date = self.cleaned_data['start_date']
+        end_date = self.cleaned_data['end_date']
 
-        if end_dt <= start_dt:
+        if end_date <= start_date:
             raise forms.ValidationError("Absence end date on or before start date!")
 
-        print member
         for absence in Absence.objects.filter(member=member, deleted=False):
-            if dates_overlap(start_dt, end_dt, absence.start_dt.date(), absence.end_dt.date()):
+            if dates_overlap(start_date, end_date, absence.start_date, absence.end_date) and absence != self.instance:
                 raise forms.ValidationError(
-                    "Absence overlaps with another absence from %s to %s!" % (absence.start_dt, absence.end_dt))
+                    "Absence overlaps with another absence from %s to %s!" % (absence.start_date, absence.end_date))
 
-        return end_dt
+        return end_date

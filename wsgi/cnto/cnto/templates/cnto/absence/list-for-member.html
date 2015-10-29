@@ -15,8 +15,8 @@
         {% for absence in absences %}
         <tr id="absence-{{ absence.pk }}">
             <td><a href="{% url 'edit-absence' absence.pk %}">{{ absence.absence_type }}</a></td>
-            <td>{{ absence.start_dt|date:'Y-m-d' }}</td>
-            <td>{{ absence.end_dt|date:'Y-m-d' }}</td>
+            <td>{{ absence.start_date|date:'Y-m-d' }}</td>
+            <td>{{ absence.end_date|date:'Y-m-d' }}</td>
             <td><input disabled="true" type="checkbox" {% if absence.concluded %}checked="true"{% endif %}/></td>
             <td>
                 <a class="delete-absence" href="#"><span class="glyphicon glyphicon-remove-circle"
