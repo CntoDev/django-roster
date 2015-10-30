@@ -86,7 +86,7 @@ class Member(models.Model):
     @staticmethod
     def active_members_after_dt(dt):
         members = Member.active_members()
-        members = members.filter(join_dt__lte=dt)
+        members = members.filter(join_date__lte=dt.date())
 
         return members
 
@@ -219,8 +219,8 @@ class Absence(models.Model):
 
     @staticmethod
     def get_absence_for_event(event, member):
-        absence = Absence.objects.get(member=member, start_dt__lte=event.start_date,
-                                      end_dt__gte=event.start_date, deleted=False)
+        absence = Absence.objects.get(member=member, start_date__lte=event.start_dt.date(),
+                                      end_date__gte=event.start_dt.date(), deleted=False)
         return absence
 
     def due_days(self):
@@ -258,10 +258,14 @@ class Attendance(models.Model):
         if member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
-        start_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=start_dt)
-        end_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=end_dt, end_dt__gte=end_dt)
-        inside_absences_for_period = Absence.objects.filter(member=member, start_dt__gte=start_dt, end_dt__lte=end_dt)
-        overlap_absences_for_period = Absence.objects.filter(member=member, start_dt__lte=start_dt, end_dt__gte=end_dt)
+        start_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
+                                                           end_date__gte=start_dt.date())
+        end_absences_for_period = Absence.objects.filter(member=member, start_date__lte=end_dt.date(),
+                                                         end_date__gte=end_dt.date())
+        inside_absences_for_period = Absence.objects.filter(member=member, start_date__gte=start_dt.date(),
+                                                            end_date__lte=end_dt.date())
+        overlap_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
+                                                             end_date__gte=end_dt.date())
 
         if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + \
             overlap_absences_for_period.count() > 0:
