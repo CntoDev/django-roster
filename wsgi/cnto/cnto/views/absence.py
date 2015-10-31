@@ -29,10 +29,6 @@ def handle_absence_change_view(request, edit_mode, absence):
         if request.POST.get("cancel"):
             return redirect('edit-absences', absence.member.pk)
         elif form.is_valid():
-            current_dt = timezone.now()
-            if form.instance.end_date > current_dt.date():
-                form.instance.end_date = current_dt.date()
-
             form.save()
             return redirect('edit-absences', absence.member.pk)
     else:
