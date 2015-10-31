@@ -46,6 +46,10 @@
     background-color: #DAD5F0;
 }
 
+.absent-link {
+    color: #A3C2C2;
+}
+
 .message-column {
     width: 500px;
 }

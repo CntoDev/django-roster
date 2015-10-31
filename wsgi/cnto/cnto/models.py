@@ -102,6 +102,14 @@ class Member(models.Model):
         else:
             return (self.get_mod_assessment_deadline_dt() - timezone.now().date()).days
 
+    def is_absent(self):
+        current_dt = timezone.now()
+        absences = Absence.objects.filter(deleted=False, concluded=False, member=self,
+                                          start_date__lte=current_dt.date(),
+                                          end_date__gte=current_dt.date())
+
+        return absences.count() > 0
+
     def get_total_days_absent(self):
         absences = Absence.objects.filter(member=self)
         total_absent_duration_days = 0
@@ -225,6 +233,9 @@ class Absence(models.Model):
 
     def due_days(self):
         return (self.end_date - timezone.now().date()).days
+
+    def __str__(self):
+        return "%s for %s: %s to %s" % (self.absence_type.name, self.member.name, self.start_date, self.end_date)
 
 
 class Attendance(models.Model):
