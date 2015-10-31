@@ -46,8 +46,8 @@
                 <tr <% if (attendances[group_name][member_name].attendance_adequate) { %>class="good-attendance-row"<% } else { %>class="bad-attendance-row"<% } %> >
                     <td><%=member_name %></td>
                     <% _.each(attendances[group_name][member_name].attendances,function(attend_status,key,arr) { %>
-                        <% if (attend_status == "LOA" || attend_status == "R") { %>
-                            <td class="absent-status-col"><%=attend_status %></td>
+                        <% if (attend_status.substring(0, 3) == "LOA" || attend_status.substring(0, 1) == "R") { %>
+                            <td class="absent-status-col"><%=attend_status.replace("LOA ", "").replace("R ", "") %></td>
                         <% } else { %>
                             <td><%=attend_status %></td>
                         <% }; %>

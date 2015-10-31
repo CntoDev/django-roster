@@ -135,19 +135,19 @@ def get_report_context_for_date_range(start_dt, end_dt):
                     except Absence.DoesNotExist:
                         absence_type = None
 
-                    if absence_type is not None:
-                        presence_marker = absence_type
-                    else:
-                        try:
-                            attendance = Attendance.objects.get(member=member, event=event)
-                            was_adequate = attendance.was_adequate()
-                            if was_adequate:
-                                presence_marker = "X"
-                            else:
-                                presence_marker = "?"
+                    try:
+                        attendance = Attendance.objects.get(member=member, event=event)
+                        was_adequate = attendance.was_adequate()
+                        if was_adequate:
+                            presence_marker = "X"
+                        else:
+                            presence_marker = "?"
 
-                        except Attendance.DoesNotExist:
-                            presence_marker = " "
+                    except Attendance.DoesNotExist:
+                        presence_marker = " "
+
+                    if absence_type is not None:
+                        presence_marker = absence_type + " " + presence_marker
 
                     attendance_dict[group.name][member.name]["attendances"].append(presence_marker)
 
