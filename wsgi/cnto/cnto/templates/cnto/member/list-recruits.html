@@ -13,7 +13,7 @@
     </thead>
     {% for recruit in recruits %}
     <tr id="recruit-{{ recruit.pk }}">
-        <td><a href="{% url 'edit-member' recruit.pk %}">{{ recruit.name }}</a></td>
+        <td><a {% if recruit.is_absent %}class="absent-link" {% endif %} href="{% url 'edit-member' recruit.pk %}">{{ recruit.name }}</a></td>
         <td>{{ recruit.join_date|date:'Y-m-d' }}</td>
         <td>{{ recruit|value_of:'mod_due_days' }}</td>
         <td>{{ recruit|value_of:'gqf_due_days' }}</td>
