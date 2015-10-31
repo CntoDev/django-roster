@@ -25,6 +25,10 @@
       <li role="presentation"><a href="#event-types" aria-controls="profile" role="tab" data-toggle="tab">Event types</a></li>
       {% endif %}
 
+      {% if user|has_permission:"cnto_edit_contributions" %}
+      <li role="presentation"><a href="#contributions" aria-controls="profile" role="tab" data-toggle="tab">Contributions</a></li>
+      {% endif %}
+
       <li role="presentation"><a href="#members-discharged" aria-controls="profile" role="tab" data-toggle="tab">Discharges</a></li>
   </ul>
 
@@ -47,6 +51,9 @@
     </div>
     <div role="tabpanel" class="tab-pane row" id="event-types">
         {% include 'cnto/event/list-type.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane row" id="contributions">
+        {% include 'cnto_contributions/list.html' %}
     </div>
     <div role="tabpanel" class="tab-pane row" id="members-discharged">
         {% include 'cnto/member/list-discharged.html' %}

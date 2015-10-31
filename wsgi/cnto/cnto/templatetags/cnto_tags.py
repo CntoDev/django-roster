@@ -1,5 +1,7 @@
 from django import template
 from django.contrib.auth.models import Group, Permission
+from django.utils import timezone
+from cnto_contributions.models import Contribution
 from cnto_notes.models import Note
 
 register = template.Library()
@@ -23,6 +25,16 @@ def active_note_message(member):
             return note_message
     except Note.DoesNotExist:
         return ""
+
+
+@register.filter(name='contribution_level')
+def contribution_level(member):
+    contributions = Contribution.objects.filter(member=member, end_date__gte=timezone.now().date())
+
+    if contributions.count() == 0:
+        return ""
+    else:
+        return contributions[0].type.name
 
 
 @register.filter(name='has_group')

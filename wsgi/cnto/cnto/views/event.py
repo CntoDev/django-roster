@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.utils.timezone import datetime
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
-import pytz
 from ..models import Event, Attendance, MemberGroup, EventType
 from django.http import Http404
 from django.template.context_processors import csrf

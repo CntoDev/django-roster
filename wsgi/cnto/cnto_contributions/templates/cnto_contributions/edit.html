@@ -1,0 +1,17 @@
+{% extends "cnto_contributions/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container col-md-4 col-md-offset-4">
+    {% if edit_mode %}
+        <div class="sub-header">Edit contribution for {{ member.name }}</div>
+    {% else %}
+        <div class="sub-header">Create contribution for {{ member.name }}</div>
+    {% endif %}
+    {% crispy form %}
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
