@@ -51,7 +51,6 @@ if __name__ == "__main__":
         add_and_update_mod_assessment_due()
         add_and_update_grunt_qualification_due()
         add_and_update_contribution_about_to_expire()
-        raise Exception("WOHOO it works")
     except Exception, e:
         send_exception_email(str(traceback.format_exc()))
         raise
