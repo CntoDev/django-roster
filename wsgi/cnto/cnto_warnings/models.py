@@ -50,7 +50,7 @@ class MemberWarning(CreatedModifiedMixin):
         """
         recipient_users = []
         if self.warning_type.is_warning("Mod Assessment Due") or self.warning_type.is_warning(
-                "Grunt Qualification Due"):
+            "Grunt Qualification Due"):
             recipient_users = [
                 User.objects.get(username__iexact="admin"),
                 User.objects.get(username__iexact="abuk"),
@@ -62,7 +62,7 @@ class MemberWarning(CreatedModifiedMixin):
                 User.objects.get(username__iexact="clarke"),
                 User.objects.get(username__iexact="ryujin"),
             ]
-        elif self.warning_type.is_warning("Low Attendance"):
+        else:
             recipient_users = [
                 User.objects.get(username__iexact="admin"),
             ]
@@ -71,7 +71,7 @@ class MemberWarning(CreatedModifiedMixin):
                 try:
                     recipient_users.append(User.objects.get(username__iexact=self.member.member_group.leader.name))
                 except User.DoesNotExist:
-                    print "Could not find user name %s!" % (self.member.member_group.leader.name, )
+                    print "Could not find user name %s!" % (self.member.member_group.leader.name,)
 
         if len(recipient_users) > 0:
             return recipients_to_recipient_string(recipient_users)
@@ -83,21 +83,7 @@ class MemberWarning(CreatedModifiedMixin):
 
         :return:
         """
-        subject = None
-        body = None
-
-        if self.warning_type.is_warning("Mod Assessment Due"):
-            subject = "Mod assessment for %s overdue" % (self.member.name,)
-            body = "%s didn't report to have his mods assessed within two weeks of joining our community." % (
-                self.member.name,)
-        elif self.warning_type.is_warning("Grunt Qualification Due"):
-            subject = "Grunt Qualification for %s overdue" % (self.member.name,)
-            body = "%s didn't qualify to become a Grunt within 6 weeks of joining our community." % (self.member.name,)
-        elif self.warning_type.is_warning("Contribution Expiring"):
-            subject = "Contribution for %s expiring" % (self.member.name,)
-            body = "%s" % (self.message,)
-        elif self.warning_type.is_warning("Low Attendance"):
-            subject = "Low Attendance for %s" % (self.member.name,)
-            body = "%s" % (self.message,)
+        subject = self.warning_type.name + " for " + self.member.name
+        body = self.message
 
         return subject, body

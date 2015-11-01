@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from django.utils.timezone import datetime
 from django.utils import timezone
-from cnto.models import Member, Event, Attendance
+from cnto.models import Member, Event, Attendance, Absence
 from cnto_contributions.models import Contribution
 from cnto_warnings.models import MemberWarning, MemberWarningType
 from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS, \
@@ -96,6 +96,44 @@ def add_and_update_grunt_qualification_due():
     for member in recruits:
         grunt_qualification_due, message = member.is_grunt_qualification_due()
         create_or_update_warning(member, grunt_qualification_due_warning_type, grunt_qualification_due, message)
+
+
+def add_absence_monitoring_warnings():
+    """
+
+    :return:
+    """
+    absence_starting_type = MemberWarningType.objects.get(name__iexact="Absence Starting")
+    absence_ending_type = MemberWarningType.objects.get(name__iexact="Absence Ending")
+    absence_violated_type = MemberWarningType.objects.get(name__iexact="Absence Violated")
+
+    absences = Absence.objects.filter(concluded=False, deleted=False)
+    for absence in absences:
+
+        # If the absence doesn't begin that day, it would be useful if notification would appear on warning tab and
+        # email on the date when the absence actually begin; i.e. absence start date, with text:
+        # "NAME's abesence begin today, please assign him the appropriate tag."
+        if absence.start_date == timezone.now().date():
+            create_or_update_warning(absence.member, absence_starting_type,
+                                     True, "%s's absence begins on %s, please assign him the appropriate tag." % (
+                                         absence.member.name, absence.start_date.strftime("%Y-%m-%d")))
+
+        # It would be very useful if we could have notification appear on the warning tab, a day after user's absence
+        #  has ended, along with the email with the text:
+        # "NAME's absence tag has ended on "DATE. Send him the stationary PM."
+        if absence.end_date == (timezone.now() - timedelta(days=1)).date():
+            create_or_update_warning(absence.member, absence_ending_type,
+                                     True, "%s's absence tag has ended on %s. Send him the stationary PM." % (
+                                         absence.member.name, absence.end_date.strftime("%Y-%m-%d")))
+
+        # If the absence hasn't been concluded within 15 days of the expiration date, a new notification should
+        # appear on the warning tab along with email with the text:
+        # "NAME didn't reply to the stationary PM within two weeks of the PM."
+        if absence.end_date == (timezone.now() - timedelta(days=15)).date():
+            create_or_update_warning(absence.member, absence_violated_type,
+                                     True,
+                                     "%s didn't reply to the stationary PM within two weeks of the ending date %s." % (
+                                        absence.member.name, absence.end_date.strftime("%Y-%m-%d")))
 
 
 def add_and_update_contribution_about_to_expire():

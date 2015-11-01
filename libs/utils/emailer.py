@@ -21,6 +21,7 @@ class Emailer(object):
     """Encapsulation for easy email sending
 
     """
+
     def __init__(self, host='localhost',
                  login_username=None,
                  login_password=None,
