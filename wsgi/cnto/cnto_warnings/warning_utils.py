@@ -41,23 +41,6 @@ def add_and_update_mod_assessment_due():
         create_or_update_warning(member, mod_assessment_due_warning_type, mod_assessment_due, message)
 
 
-def recipients_to_recipient_string(recipient_users):
-    """
-
-    :param recipient_users:
-    :return:
-    """
-    recipient_emails = []
-    for recipient in recipient_users:
-        if len(recipient.email) > 0:
-            recipient_emails.append(recipient.email)
-
-    if len(recipient_emails) == 0:
-        return None
-    else:
-        return ";".join(recipient_emails)
-
-
 def send_warning_emails():
     """
 
@@ -66,45 +49,25 @@ def send_warning_emails():
     emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
                       tls_port=SMTP_TLS_PORT)
 
-    # Mod assessment emails
-    mod_warning_type = MemberWarningType.objects.get(name__iexact="Mod Assessment Due")
-    mod_warnings = MemberWarning.objects.filter(warning_type=mod_warning_type, notified=False, acknowledged=False)
+    warnings = MemberWarning.objects.filter(notified=False, acknowledged=False)
 
-    for warning in mod_warnings:
-        recipient_users = [
-            User.objects.get(username__iexact="admin"),
-            User.objects.get(username__iexact="abuk"),
-            User.objects.get(username__iexact="john"),
-        ]
-        recipient_string = recipients_to_recipient_string(recipient_users)
-        if recipient_string is not None:
-            emailer.send_message(recipient_string, NOTIFICATION_EMAIL_ADDRESS,
-                                 NOTIFICATION_EMAIL_SUBJECT_LEAD + " Mod assessment for %s overdue" % (
-                                     warning.member.name,),
-                                 "%s didn't report to have his mods assessed within two weeks of joining our community." % (warning.member.name,))
+    for warning in warnings:
+        recipients_string = warning.get_recipients_string()
 
-            warning.notified = True
-            warning.save()
+        if recipients_string is None:
+            continue
 
-    # Grunt qualification emails
-    grunt_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Qualification Due")
-    grunt_warnings = MemberWarning.objects.filter(warning_type=grunt_warning_type, notified=False, acknowledged=False)
+        subject, body = warning.get_subject_and_body()
 
-    for warning in grunt_warnings:
-        recipient_users = [
-            User.objects.get(username__iexact="admin"),
-            User.objects.get(username__iexact="abuk"),
-            User.objects.get(username__iexact="john"),
-        ]
-        recipient_string = recipients_to_recipient_string(recipient_users)
-        if recipient_string is not None:
-            emailer.send_message(recipient_string, NOTIFICATION_EMAIL_ADDRESS,
-                                 NOTIFICATION_EMAIL_SUBJECT_LEAD + " Grunt Qualification for %s overdue" % (
-                                     warning.member.name,),
-                                 "%s didn't qualify to become a Grunt within 6 weeks of joining our community." % (
-                                     warning.member.name,))
-            warning.notified = True
-            warning.save()
+        if subject is None or body is None:
+            continue
+
+        emailer.send_message(recipients_string, NOTIFICATION_EMAIL_ADDRESS,
+                             NOTIFICATION_EMAIL_SUBJECT_LEAD + " %s" % (subject,),
+                             body)
+
+        warning.notified = True
+        warning.save()
 
 
 def add_and_update_grunt_qualification_due():
