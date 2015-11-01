@@ -68,7 +68,10 @@ class MemberWarning(CreatedModifiedMixin):
             ]
 
             if self.member.member_group.leader is not None:
-                recipient_users.append(self.member.member_group.leader)
+                try:
+                    recipient_users.append(User.objects.get(username__iexact=self.member.member_group.leader.name))
+                except User.DoesNotExist:
+                    print "Could not find user name %s!" % (self.member.member_group.leader.name, )
 
         if len(recipient_users) > 0:
             return recipients_to_recipient_string(recipient_users)
