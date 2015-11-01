@@ -1,9 +1,5 @@
-import calendar
-
 from django.db import models
-from django.utils import timezone
-from django.utils.timezone import datetime
-from cnto.models import Event, Member, CreatedModifiedMixin, Attendance
+from cnto.models import Member, CreatedModifiedMixin
 
 
 class MemberWarningType(models.Model):
@@ -15,4 +11,4 @@ class MemberWarning(CreatedModifiedMixin):
     warning_type = models.ForeignKey(MemberWarningType, null=False)
     message = models.TextField(null=False)
     acknowledged = models.BooleanField(default=False)
-
+    notified = models.BooleanField(default=False, null=False)

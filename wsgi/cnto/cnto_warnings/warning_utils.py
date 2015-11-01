@@ -1,9 +1,11 @@
 import calendar
+from django.contrib.auth.models import User
 from django.utils.timezone import datetime
 from django.utils import timezone
 from cnto.models import Member, Event, Attendance
 from cnto_warnings.models import MemberWarning, MemberWarningType
-from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS
+from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS, \
+    NOTIFICATION_EMAIL_SUBJECT_LEAD
 from utils.emailer import Emailer
 
 
@@ -39,6 +41,23 @@ def add_and_update_mod_assessment_due():
         create_or_update_warning(member, mod_assessment_due_warning_type, mod_assessment_due, message)
 
 
+def recipients_to_recipient_string(recipient_users):
+    """
+
+    :param recipient_users:
+    :return:
+    """
+    recipient_emails = []
+    for recipient in recipient_users:
+        if len(recipient.email) > 0:
+            recipient_emails.append(recipient.email)
+
+    if len(recipient_emails) == 0:
+        return None
+    else:
+        return ";".join(recipient_emails)
+
+
 def send_warning_emails():
     """
 
@@ -46,7 +65,26 @@ def send_warning_emails():
     """
     emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
                       tls_port=SMTP_TLS_PORT)
-    emailer.send_message("sakkie99@gmail.com", NOTIFICATION_EMAIL_ADDRESS, "It works", "Carpe noctem rules!")
+
+    # Grunt qualification emails
+    grunt_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Qualification Due")
+    grunt_warnings = MemberWarning.objects.filter(warning_type=grunt_warning_type, notified=False, acknowledged=False)
+
+    for warning in grunt_warnings:
+        recipient_users = [
+            User.objects.get(name__iexact="admin"),
+            User.objects.get(name__iexact="abuk"),
+            User.objects.get(name__iexact="john"),
+        ]
+        recipient_string = recipients_to_recipient_string(recipient_users)
+        if recipient_string is not None:
+            emailer.send_message(recipient_string, NOTIFICATION_EMAIL_ADDRESS,
+                                 NOTIFICATION_EMAIL_SUBJECT_LEAD + " Grunt Qualification for %s overdue" % (
+                                     warning.member.name,),
+                                 "%s didn't qualify to become a Grunt within 6 weeks of joining our community." % (
+                                     warning.member.name,))
+            warning.notified = True
+            warning.save()
 
 
 def add_and_update_grunt_qualification_due():
