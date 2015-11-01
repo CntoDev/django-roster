@@ -26,16 +26,20 @@ from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previou
 
 if __name__ == "__main__":
 
-    print "Configuring Django..."
     django.setup()
-    print "Django ready!"
 
-    print "Adding and updating attendance warnings..."
     start_count = MemberWarning.objects.all().count()
 
-    add_and_update_low_attendace_for_previous_month()
-    add_and_update_mod_assessment_due()
-    add_and_update_grunt_qualification_due()
+    print "Adding and updating warnings..."
+    try:
+        add_and_update_low_attendace_for_previous_month()
+        add_and_update_mod_assessment_due()
+        add_and_update_grunt_qualification_due()
+        add_and_update_contribution_about_to_expire()
+        add_absence_monitoring_warnings()
+    except Exception, e:
+        send_exception_email(str(traceback.format_exc()))
+        raise
 
     end_count = MemberWarning.objects.all().count()
 
@@ -47,16 +51,7 @@ if __name__ == "__main__":
         print "No change to warnings!"
 
     try:
-        add_and_update_low_attendace_for_previous_month()
-        add_and_update_mod_assessment_due()
-        add_and_update_grunt_qualification_due()
-        add_and_update_contribution_about_to_expire()
-        add_absence_monitoring_warnings()
-    except Exception, e:
-        send_exception_email(str(traceback.format_exc()))
-        raise
-
-    try:
+        print "Sending emails..."
         send_warning_emails()
     except Exception, e:
         send_exception_email(str(traceback.format_exc()))
