@@ -15,7 +15,7 @@
         </thead>
         {% for note in notes %}
         <tr id="note-{{ note.pk }}">
-            <td><input disabled="true" type="checkbox" {% if note.active %}checked="true"{% endif %}/></td>
+            <td><input class="activate-note" type="checkbox" {% if note.active %}checked="checked"{% endif %}/></td>
             <td>{{ note.dt|date:'Y-m-d H:i:s' }}</td>
             <td><div class="message-column">{{ note|value_of:"get_width_limited_message" }}</div></td>
             <td>
@@ -50,8 +50,25 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+
     <!-- /.modal -->
 </div>
+
+<div class="modal fade" id="activating-note-modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Toggling</h4>
+            </div>
+            <div class="modal-body">
+                <p>Please wait while activating note...</p>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
 
 {% block js %}

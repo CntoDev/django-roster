@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^edit-collection/(?P<member_pk>\d+)/$', note_views.edit_note_collection, name='edit-note-collection'),
     url(r'^edit/(?P<note_pk>\d+)/$', note_views.edit_note, name='edit-note'),
     url(r'^create/(?P<member_pk>\d+)/$', note_views.create_note, name='create-note'),
+    url(r'^activate-note/(?P<pk>\d+)/$', note_views.activate_note, name='activate-note'),
 ]

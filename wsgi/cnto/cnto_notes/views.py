@@ -9,6 +9,31 @@ from cnto_notes.forms import NoteForm
 from models import Note
 
 
+def activate_note(request, pk):
+    """Browse reports
+    """
+
+    success = True
+    if not request.user.is_authenticated():
+        success = False
+    else:
+        notes = Note.objects.filter(active=True)
+        for note in notes:
+            note.active = False
+            note.save()
+
+        try:
+            note = Note.objects.get(pk=pk)
+            note.active = True
+            note.save()
+        except Note.DoesNotExist:
+            success = False
+
+    return JsonResponse({
+        "success": success
+    })
+
+
 def delete_note(request, note_pk):
     """Return the daily process main overview page.
     """

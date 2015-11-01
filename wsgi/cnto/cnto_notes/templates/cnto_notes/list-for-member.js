@@ -1,3 +1,29 @@
+$('.activate-note').on('click', function (e) {
+    e.preventDefault();
+
+    var activateInput = $(this);
+    var initialChecked = !activateInput.prop('checked');
+    var oppositeChecked = !initialChecked;
+
+    if (initialChecked) {
+        return;
+    }
+
+    $('.activate-note').prop('checked', false);
+
+    var acknowledgeUrl = "{% url 'activate-note' 1 %}".replace(1, CNTOUtils.getPKFromElement(activateInput).toString());
+    $('#activating-note-modal').modal('show');
+    $.get(acknowledgeUrl, function (data) {
+        if (data["success"]) {
+            activateInput.prop('checked', oppositeChecked);
+        } else {
+            activateInput.prop('checked', initialChecked);
+        }
+
+        $('#activating-note-modal').modal('hide');
+    });
+});
+
 $('.delete-note').on('click', function (e) {
     e.preventDefault();
     var element = $(this);
