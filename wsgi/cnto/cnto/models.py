@@ -33,6 +33,7 @@ class Rank(models.Model):
 
 class MemberGroup(models.Model):
     name = models.TextField(null=False, unique=True)
+    leader = models.ForeignKey('Member', null=True, default=None)
 
     def __str__(self):
         return self.name

@@ -159,14 +159,17 @@ class DischargedMemberForm(forms.models.ModelForm):
 class MemberGroupForm(forms.models.ModelForm):
     class Meta:
         model = MemberGroup
-        fields = ['name']
+        fields = ['name', 'leader']
 
     name = forms.CharField()
+    leader = forms.ModelChoiceField(queryset=Member.objects.filter(rank__name__iexact="jrnco").order_by("name"),
+                                    required=False)
 
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.layout = Layout(
         Field('name'),
+        Field('leader'),
         FormActions(
             AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
             CancelButton('cancel', 'Cancel', css_class="btn-default"),

@@ -4,6 +4,7 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th>Leader</th>
             <th>Members</th>
             <th></th>
         </tr>
@@ -11,6 +12,7 @@
     {% for group in groups %}
     <tr id="group-{{ group.pk }}">
         <td><a href="{% url 'edit-group' group.pk %}">{{ group.name }}</td>
+        <td>{{ group.leader.name }}</td>
         <td>{{ group|value_of:"member_count" }}</td>
 
         <td>

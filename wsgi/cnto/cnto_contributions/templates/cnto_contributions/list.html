@@ -1,6 +1,6 @@
 {% load cnto_tags %}
 
-<table id="group-list-table" class="table table-striped tablesorter">
+<table id="contribution-list-table" class="table table-striped tablesorter">
     <thead>
     <tr>
         <th>Name</th>
@@ -42,10 +42,10 @@
 <script>
     $(document).ready(function()
         {
-            $("#group-list-table").tablesorter({
+            $("#contribution-list-table").tablesorter({
                 headers: {
                     // assign the secound column (we start counting zero)
-                    2: { sorter: false }
+                    4: { sorter: false }
                 }
             });
         }
