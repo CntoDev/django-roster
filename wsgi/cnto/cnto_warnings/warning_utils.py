@@ -19,7 +19,7 @@ def send_exception_email(exception_message):
     """
     emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
                       tls_port=SMTP_TLS_PORT)
-    emailer.send_message("sakkie99@gmail.com", NOTIFICATION_EMAIL_ADDRESS,
+    emailer.send_message(User.objects.get(name__iexact="admin").email, NOTIFICATION_EMAIL_ADDRESS,
                          NOTIFICATION_EMAIL_SUBJECT_LEAD + " exception",
                          exception_message)
 
