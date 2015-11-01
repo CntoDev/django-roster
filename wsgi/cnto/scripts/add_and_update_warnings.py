@@ -17,7 +17,7 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
 
 import django
 from cnto_warnings.models import MemberWarning
-from cnto_warnings.utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
+from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
     add_and_update_grunt_qualification_due
 
 
