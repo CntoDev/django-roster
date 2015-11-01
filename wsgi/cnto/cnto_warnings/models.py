@@ -43,8 +43,8 @@ class MemberWarning(CreatedModifiedMixin):
         if self.warning_type in [mod_warning_type, grunt_warning_type]:
             recipient_users = [
                 User.objects.get(username__iexact="admin"),
-                # User.objects.get(username__iexact="abuk"),
-                # User.objects.get(username__iexact="john"),
+                User.objects.get(username__iexact="abuk"),
+                User.objects.get(username__iexact="john"),
             ]
 
         if len(recipient_users) > 0:
