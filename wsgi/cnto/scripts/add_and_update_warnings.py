@@ -4,7 +4,6 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
-from utils.emailer import Emailer
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
 
@@ -19,8 +18,7 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
 import django
 from cnto_warnings.models import MemberWarning
 from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
-    add_and_update_grunt_qualification_due
-
+    add_and_update_grunt_qualification_due, send_warning_emails
 
 if __name__ == "__main__":
 
