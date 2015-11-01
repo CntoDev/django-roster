@@ -307,8 +307,6 @@ class Attendance(models.Model):
             return False, "Did not attend enough events %s." % (between_string,)
         if attended_training < min_trainings:
             return False, "Did not attend enough trainings %s." % (between_string,)
-        if attended_other < min_total_events - min_trainings:
-            return False, "Did not attend enough non-training events %s." % (between_string,)
 
         return True, "No attendance issues."
 
