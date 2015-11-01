@@ -72,9 +72,9 @@ def send_warning_emails():
 
     for warning in mod_warnings:
         recipient_users = [
-            User.objects.get(name__iexact="admin"),
-            User.objects.get(name__iexact="abuk"),
-            User.objects.get(name__iexact="john"),
+            User.objects.get(username__iexact="admin"),
+            User.objects.get(username__iexact="abuk"),
+            User.objects.get(username__iexact="john"),
         ]
         recipient_string = recipients_to_recipient_string(recipient_users)
         if recipient_string is not None:
@@ -92,9 +92,9 @@ def send_warning_emails():
 
     for warning in grunt_warnings:
         recipient_users = [
-            User.objects.get(name__iexact="admin"),
-            User.objects.get(name__iexact="abuk"),
-            User.objects.get(name__iexact="john"),
+            User.objects.get(username__iexact="admin"),
+            User.objects.get(username__iexact="abuk"),
+            User.objects.get(username__iexact="john"),
         ]
         recipient_string = recipients_to_recipient_string(recipient_users)
         if recipient_string is not None:
