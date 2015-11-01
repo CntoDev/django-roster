@@ -94,13 +94,13 @@ class Member(models.Model):
         if "rec" not in self.rank.name.lower():
             return "-"
         else:
-            return (self.get_gqf_deadline_dt() - timezone.now().date()).days
+            return (self.get_gqf_deadline_date() - timezone.now().date()).days
 
     def mod_due_days(self):
         if "rec" not in self.rank.name.lower() or self.mods_assessed:
             return "-"
         else:
-            return (self.get_mod_assessment_deadline_dt() - timezone.now().date()).days
+            return (self.get_mod_assessment_deadline_date() - timezone.now().date()).days
 
     def is_absent(self):
         current_dt = timezone.now()
@@ -118,11 +118,11 @@ class Member(models.Model):
 
         return total_absent_duration_days
 
-    def get_gqf_deadline_dt(self):
+    def get_gqf_deadline_date(self):
         absent_days = self.get_total_days_absent()
         return self.join_date + timedelta(days=42) + timedelta(days=absent_days)
 
-    def get_mod_assessment_deadline_dt(self):
+    def get_mod_assessment_deadline_date(self):
         absent_days = self.get_total_days_absent()
         return self.join_date + timedelta(days=14) + timedelta(days=absent_days)
 
@@ -136,8 +136,8 @@ class Member(models.Model):
         """
         current_dt = timezone.now()
 
-        mod_assessment_deadline = self.get_mod_assessment_deadline_dt()
-        if current_dt > mod_assessment_deadline and not self.mods_assessed:
+        mod_assessment_deadline = self.get_mod_assessment_deadline_date()
+        if current_dt.date() > mod_assessment_deadline and not self.mods_assessed:
             # Two weeks mod assessment
             message = "Mod assessment overdue."
             return True, message
@@ -151,8 +151,8 @@ class Member(models.Model):
         """
         current_dt = timezone.now()
 
-        grunt_qualification_deadline = self.get_gqf_deadline_dt()
-        if current_dt > grunt_qualification_deadline:
+        grunt_qualification_deadline = self.get_gqf_deadline_date()
+        if current_dt.date() > grunt_qualification_deadline:
             # Six weeks grunt notice
             message = "Grunt qualification overdue."
             return True, message
