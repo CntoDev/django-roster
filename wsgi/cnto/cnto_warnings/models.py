@@ -38,6 +38,7 @@ class MemberWarning(CreatedModifiedMixin):
         """
         mod_warning_type = MemberWarningType.objects.get(name__iexact="Mod Assessment Due")
         grunt_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Qualification Due")
+        contribution_expiring_type = MemberWarningType.objects.get(name__iexact="Contribution Expiring")
 
         recipient_users = []
         if self.warning_type in [mod_warning_type, grunt_warning_type]:
@@ -45,6 +46,12 @@ class MemberWarning(CreatedModifiedMixin):
                 User.objects.get(username__iexact="admin"),
                 User.objects.get(username__iexact="abuk"),
                 User.objects.get(username__iexact="john"),
+            ]
+        elif self.warning_type == contribution_expiring_type:
+            recipient_users = [
+                User.objects.get(username__iexact="admin"),
+                User.objects.get(username__iexact="clarke"),
+                User.objects.get(username__iexact="ryujin"),
             ]
 
         if len(recipient_users) > 0:
@@ -59,6 +66,7 @@ class MemberWarning(CreatedModifiedMixin):
         """
         mod_warning_type = MemberWarningType.objects.get(name__iexact="Mod Assessment Due")
         grunt_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Qualification Due")
+        contribution_expiring_type = MemberWarningType.objects.get(name__iexact="Contribution Expiring")
 
         subject = None
         body = None
@@ -70,5 +78,8 @@ class MemberWarning(CreatedModifiedMixin):
         elif self.warning_type == grunt_warning_type:
             subject = "Grunt Qualification for %s overdue" % (self.member.name,)
             body = "%s didn't qualify to become a Grunt within 6 weeks of joining our community." % (self.member.name,)
+        elif self.warning_type == contribution_expiring_type:
+            subject = "Contribution for %s expiring" % (self.member.name,)
+            body = "%s" % (self.message,)
 
         return subject, body

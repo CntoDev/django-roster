@@ -4,6 +4,7 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
+import traceback
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
 
@@ -13,12 +14,15 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
     sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'cnto'))
 
     from distutils.sysconfig import get_python_lib
+
     os.environ['PYTHON_EGG_CACHE'] = get_python_lib()
 
 import django
 from cnto_warnings.models import MemberWarning
-from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previous_month, add_and_update_mod_assessment_due, \
-    add_and_update_grunt_qualification_due, send_warning_emails, add_and_update_contribution_about_to_expire
+from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previous_month, \
+    add_and_update_mod_assessment_due, \
+    add_and_update_grunt_qualification_due, send_warning_emails, add_and_update_contribution_about_to_expire, \
+    send_exception_email
 
 if __name__ == "__main__":
 
@@ -42,9 +46,18 @@ if __name__ == "__main__":
     else:
         print "No change to warnings!"
 
-    add_and_update_low_attendace_for_previous_month()
-    add_and_update_mod_assessment_due()
-    add_and_update_grunt_qualification_due()
-    add_and_update_contribution_about_to_expire()
+    try:
+        add_and_update_low_attendace_for_previous_month()
+        add_and_update_mod_assessment_due()
+        add_and_update_grunt_qualification_due()
+        add_and_update_contribution_about_to_expire()
+        raise Exception("WOHOO it works")
+    except Exception, e:
+        send_exception_email(str(traceback.format_exc()))
+        raise
 
-    send_warning_emails()
+    try:
+        send_warning_emails()
+    except Exception, e:
+        send_exception_email(str(traceback.format_exc()))
+        raise

@@ -1,12 +1,27 @@
 import calendar
+from datetime import timedelta
 from django.contrib.auth.models import User
 from django.utils.timezone import datetime
 from django.utils import timezone
 from cnto.models import Member, Event, Attendance
+from cnto_contributions.models import Contribution
 from cnto_warnings.models import MemberWarning, MemberWarningType
 from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS, \
     NOTIFICATION_EMAIL_SUBJECT_LEAD
 from utils.emailer import Emailer
+
+
+def send_exception_email(exception_message):
+    """
+
+    :param exception_message:
+    :return:
+    """
+    emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
+                      tls_port=SMTP_TLS_PORT)
+    emailer.send_message("sakkie99@gmail.com", NOTIFICATION_EMAIL_ADDRESS,
+                         NOTIFICATION_EMAIL_SUBJECT_LEAD + " exception",
+                         exception_message)
 
 
 def create_or_update_warning(member, warning_type, warning_active, message):
@@ -88,12 +103,15 @@ def add_and_update_contribution_about_to_expire():
 
     :return:
     """
+    relevant_expiry_date = timezone.now() + timedelta(days=14)
     contribution_expiry_warning_type = MemberWarningType.objects.get(name__iexact="Contribution Expiring")
-    recruits = Member.recruits()
+    expiring_contributions = Contribution.objects.filter(end_date=relevant_expiry_date)
 
-    for member in recruits:
-        grunt_qualification_due, message = member.is_grunt_qualification_due()
-        create_or_update_warning(member, grunt_qualification_due_warning_type, grunt_qualification_due, message)
+    for contribution in expiring_contributions:
+        create_or_update_warning(contribution.member, contribution_expiry_warning_type,
+                                 True, "%s's %s contributor tag will run out at %s. Send him the stationary PM." % (
+                                     contribution.member.name, contribution.type.name,
+                                     contribution.end_date.strftime("%Y-%m-%d")))
 
 
 def add_and_update_low_attendances_for_month(month_dt):
