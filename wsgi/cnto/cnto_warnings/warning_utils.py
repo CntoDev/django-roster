@@ -83,6 +83,19 @@ def add_and_update_grunt_qualification_due():
         create_or_update_warning(member, grunt_qualification_due_warning_type, grunt_qualification_due, message)
 
 
+def add_and_update_contribution_about_to_expire():
+    """
+
+    :return:
+    """
+    contribution_expiry_warning_type = MemberWarningType.objects.get(name__iexact="Contribution Expiring")
+    recruits = Member.recruits()
+
+    for member in recruits:
+        grunt_qualification_due, message = member.is_grunt_qualification_due()
+        create_or_update_warning(member, grunt_qualification_due_warning_type, grunt_qualification_due, message)
+
+
 def add_and_update_low_attendances_for_month(month_dt):
     """
 
