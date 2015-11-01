@@ -66,6 +66,26 @@ def send_warning_emails():
     emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
                       tls_port=SMTP_TLS_PORT)
 
+    # Mod assessment emails
+    mod_warning_type = MemberWarningType.objects.get(name__iexact="Mod Assessment Due")
+    mod_warnings = MemberWarning.objects.filter(warning_type=mod_warning_type, notified=False, acknowledged=False)
+
+    for warning in mod_warnings:
+        recipient_users = [
+            User.objects.get(name__iexact="admin"),
+            User.objects.get(name__iexact="abuk"),
+            User.objects.get(name__iexact="john"),
+        ]
+        recipient_string = recipients_to_recipient_string(recipient_users)
+        if recipient_string is not None:
+            emailer.send_message(recipient_string, NOTIFICATION_EMAIL_ADDRESS,
+                                 NOTIFICATION_EMAIL_SUBJECT_LEAD + " Mod assessment for %s overdue" % (
+                                     warning.member.name,),
+                                 "%s didn't report to have his mods assessed within two weeks of joining our community." % (warning.member.name,))
+
+            warning.notified = True
+            warning.save()
+
     # Grunt qualification emails
     grunt_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Qualification Due")
     grunt_warnings = MemberWarning.objects.filter(warning_type=grunt_warning_type, notified=False, acknowledged=False)
