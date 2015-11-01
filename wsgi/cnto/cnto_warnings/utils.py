@@ -3,6 +3,8 @@ from django.utils.timezone import datetime
 from django.utils import timezone
 from cnto.models import Member, Event, Attendance
 from cnto_warnings.models import MemberWarning, MemberWarningType
+from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS
+from utils.emailer import Emailer
 
 
 def create_or_update_warning(member, warning_type, warning_active, message):
@@ -35,6 +37,16 @@ def add_and_update_mod_assessment_due():
     for member in recruits:
         mod_assessment_due, message = member.is_mod_assessment_due()
         create_or_update_warning(member, mod_assessment_due_warning_type, mod_assessment_due, message)
+
+
+def send_warning_emails():
+    """
+
+    :return:
+    """
+    emailer = Emailer(host=SMTP_HOST, login_username=SMTP_USERNAME, login_password=SMTP_PASSWORD,
+                      tls_port=SMTP_TLS_PORT)
+    emailer.send_message("sakkie99@gmail.com", NOTIFICATION_EMAIL_ADDRESS, "It works", "Carpe noctem rules!")
 
 
 def add_and_update_grunt_qualification_due():

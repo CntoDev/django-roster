@@ -4,6 +4,8 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
+from utils.emailer import Emailer
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
 
 ## GETTING-STARTED: make sure the next line points to your django project dir:
@@ -44,3 +46,5 @@ if __name__ == "__main__":
     add_and_update_low_attendace_for_previous_month()
     add_and_update_mod_assessment_due()
     add_and_update_grunt_qualification_due()
+
+    send_warning_emails()

@@ -5,4 +5,5 @@
 *.orig
 *~
 .project
+sens_do_not_commit.*
 .pydevproject
