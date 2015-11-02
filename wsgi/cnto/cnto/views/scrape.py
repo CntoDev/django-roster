@@ -58,8 +58,6 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
         # u'Dusky [CNTO - Gnt]': 0.7142857142857143}
         # scrape_stats = {'average_attendance': 0.7795031055900622, 'minutes': 56.0}
 
-        raise Exception("You suck")
-
         try:
             event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                       start_dt__day=start_dt.day)
