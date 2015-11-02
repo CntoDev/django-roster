@@ -1,4 +1,5 @@
 import traceback
+from django.core.exceptions import MultipleObjectsReturned
 
 import pytz
 
@@ -83,7 +84,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                 continue
 
             rank_str = "Rec"
-            if len(username_parts) > 1:
+            if len(username_parts) > 2:
                 rank_str = username_parts[3][0:-1]
             attendance_value = scrape_result[raw_username]
 
@@ -98,6 +99,8 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
             except Member.DoesNotExist:
                 member = Member(name=username, rank=rank)
                 member.save()
+            except MultipleObjectsReturned:
+                raise ValueError("Multiple users found with name %s!" % (username, ))
 
             try:
                 attendance = Attendance.objects.get(event=event, member=member)
