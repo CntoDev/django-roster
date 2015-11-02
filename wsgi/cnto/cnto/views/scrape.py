@@ -17,94 +17,98 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
     """Return the daily process main overview page.
     """
 
-    if not request.user.is_authenticated():
-        return redirect("login")
-    elif not has_permission(request.user, "cnto_edit_events"):
-        return redirect("manage")
-
-    event_type = EventType.objects.get(name__iexact=event_type_name)
-
-    dt = datetime.strptime(dt_string, "%Y-%m-%d")
-
-    start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00),
-                                   timezone.get_default_timezone())
-    pytz.timezone("Europe/Stockholm")
-
-    if int(end_hour) >= 24:
-        end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
-                                     timezone.get_default_timezone())
-        end_dt += timedelta(days=1, hours=int(end_hour) - 24)
-    else:
-        end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
-                                     timezone.get_default_timezone())
-
-    if end_dt < start_dt:
-        end_dt += timedelta(hours=240)
-
     try:
-        scrape_result, scrape_stats = get_all_event_attendances_between(start_dt.astimezone(pytz.utc),
-                                                                        end_dt.astimezone(pytz.utc))
-    except ValueError:
-        traceback.print_exc()
-        scrape_result = {}
-        scrape_stats = {'average_attendance': 0, 'minutes': 0}
+        if not request.user.is_authenticated():
+            return redirect("login")
+        elif not has_permission(request.user, "cnto_edit_events"):
+            return redirect("manage")
 
-    # scrape_result = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 1.0, u'Guilly': 0.42857142857142855,
-    # u'Hellfire [CNTO - SPC]': 1.0, u'Cody [CNTO - Gnt]': 1.0,
-    # u'Ozzie [CNTO - SPC]': 0.7142857142857143, u'Skywalker': 0.6397515527950312,
-    # u'Obi [CNTO - JrNCO]': 0.7142857142857143, u'Zero': 1.0,
-    # u'Chris [CNTO - SPC]': 0.14285714285714285, u'Hateborder [CNTO - Gnt]': 1.0,
-    # u'Dusky [CNTO - Gnt]': 0.7142857142857143}
-    # scrape_stats = {'average_attendance': 0.7795031055900622, 'minutes': 56.0}
+        event_type = EventType.objects.get(name__iexact=event_type_name)
 
-    try:
-        event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
-                                  start_dt__day=start_dt.day)
+        dt = datetime.strptime(dt_string, "%Y-%m-%d")
 
-        event.start_dt = start_dt
-        event.end_dt = end_dt
+        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00),
+                                       timezone.get_default_timezone())
+        pytz.timezone("Europe/Stockholm")
 
-        event.event_type = event_type
-        event.duration_minutes = scrape_stats["minutes"]
-        event.save()
-    except Event.DoesNotExist:
-        event = Event(start_dt=start_dt, end_dt=end_dt,
-                      duration_minutes=scrape_stats["minutes"], event_type=event_type)
-        event.save()
+        if int(end_hour) >= 24:
+            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
+                                         timezone.get_default_timezone())
+            end_dt += timedelta(days=1, hours=int(end_hour) - 24)
+        else:
+            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
+                                         timezone.get_default_timezone())
 
-    previous_attendances = Attendance.objects.filter(event=event)
-    previous_attendances.delete()
-
-    for raw_username in scrape_result:
-        username_parts = raw_username.split(" ")
-        username = username_parts[0]
-        if len(username) == 0:
-            continue
-
-        rank_str = "Rec"
-        if len(username_parts) > 1:
-            rank_str = username_parts[3][0:-1]
-        attendance_value = scrape_result[raw_username]
+        if end_dt < start_dt:
+            end_dt += timedelta(hours=240)
 
         try:
-            rank = Rank.objects.get(name__iexact=rank_str)
-        except Rank.DoesNotExist:
-            rank = Rank(name=rank_str)
-            rank.save()
+            scrape_result, scrape_stats = get_all_event_attendances_between(start_dt.astimezone(pytz.utc),
+                                                                            end_dt.astimezone(pytz.utc))
+        except ValueError:
+            traceback.print_exc()
+            scrape_result = {}
+            scrape_stats = {'average_attendance': 0, 'minutes': 0, "success": True}
+
+        # scrape_result = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 1.0, u'Guilly': 0.42857142857142855,
+        # u'Hellfire [CNTO - SPC]': 1.0, u'Cody [CNTO - Gnt]': 1.0,
+        # u'Ozzie [CNTO - SPC]': 0.7142857142857143, u'Skywalker': 0.6397515527950312,
+        # u'Obi [CNTO - JrNCO]': 0.7142857142857143, u'Zero': 1.0,
+        # u'Chris [CNTO - SPC]': 0.14285714285714285, u'Hateborder [CNTO - Gnt]': 1.0,
+        # u'Dusky [CNTO - Gnt]': 0.7142857142857143}
+        # scrape_stats = {'average_attendance': 0.7795031055900622, 'minutes': 56.0}
+
+        raise Exception("You suck")
 
         try:
-            member = Member.objects.get(name__iexact=username, discharged=False)
-        except Member.DoesNotExist:
-            member = Member(name=username, rank=rank)
-            member.save()
+            event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
+                                      start_dt__day=start_dt.day)
 
-        try:
-            attendance = Attendance.objects.get(event=event, member=member)
-            attendance.attendance = attendance_value
-            attendance.save()
-        except Attendance.DoesNotExist:
-            attendance = Attendance(event=event, member=member,
-                                    attendance=attendance_value)
-            attendance.save()
+            event.start_dt = start_dt
+            event.end_dt = end_dt
 
-    return JsonResponse({"attendance": scrape_result, "stats": scrape_stats})
+            event.event_type = event_type
+            event.duration_minutes = scrape_stats["minutes"]
+            event.save()
+        except Event.DoesNotExist:
+            event = Event(start_dt=start_dt, end_dt=end_dt,
+                          duration_minutes=scrape_stats["minutes"], event_type=event_type)
+            event.save()
+
+        previous_attendances = Attendance.objects.filter(event=event)
+        previous_attendances.delete()
+
+        for raw_username in scrape_result:
+            username_parts = raw_username.split(" ")
+            username = username_parts[0]
+            if len(username) == 0:
+                continue
+
+            rank_str = "Rec"
+            if len(username_parts) > 1:
+                rank_str = username_parts[3][0:-1]
+            attendance_value = scrape_result[raw_username]
+
+            try:
+                rank = Rank.objects.get(name__iexact=rank_str)
+            except Rank.DoesNotExist:
+                rank = Rank(name=rank_str)
+                rank.save()
+
+            try:
+                member = Member.objects.get(name__iexact=username, discharged=False)
+            except Member.DoesNotExist:
+                member = Member(name=username, rank=rank)
+                member.save()
+
+            try:
+                attendance = Attendance.objects.get(event=event, member=member)
+                attendance.attendance = attendance_value
+                attendance.save()
+            except Attendance.DoesNotExist:
+                attendance = Attendance(event=event, member=member,
+                                        attendance=attendance_value)
+                attendance.save()
+        return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
+    except Exception, e:
+        return JsonResponse({"success": False, "error": traceback.format_exc()})

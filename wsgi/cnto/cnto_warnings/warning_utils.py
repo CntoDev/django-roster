@@ -109,7 +109,6 @@ def add_absence_monitoring_warnings():
 
     absences = Absence.objects.filter(concluded=False, deleted=False)
     for absence in absences:
-
         # If the absence doesn't begin that day, it would be useful if notification would appear on warning tab and
         # email on the date when the absence actually begin; i.e. absence start date, with text:
         # "NAME's abesence begin today, please assign him the appropriate tag."
