@@ -95,7 +95,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                 rank.save()
 
             try:
-                member = Member.objects.get(name__iexact=username, discharged=False)
+                member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
             except Member.DoesNotExist:
                 member = Member(name=username, rank=rank)
                 member.save()
