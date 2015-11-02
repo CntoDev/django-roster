@@ -17,18 +17,23 @@ def activate_note(request, pk):
     if not request.user.is_authenticated():
         success = False
     else:
-        notes = Note.objects.filter(active=True)
-        for note in notes:
-            note.active = False
-            note.save()
-
         try:
             note = Note.objects.get(pk=pk)
             note.active = True
             note.save()
         except Note.DoesNotExist:
-            success = False
+            return JsonResponse({
+                "success": False
+            })
 
+        notes = Note.objects.filter(active=True, member=note.member)
+        for note in notes:
+            note.active = False
+            note.save()
+
+        note.active = True
+        note.save()
+        
     return JsonResponse({
         "success": success
     })
