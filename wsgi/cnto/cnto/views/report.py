@@ -40,7 +40,7 @@ def get_summary_data(request):
         total_attendances = 0
         max_attendance = 0
         for event in week_events:
-            event_attendances = Attendance.objects.filter(event=event)
+            event_attendances = Attendance.objects.filter(event=event, member__deleted=False)
             event_attendance_count = len(event_attendances)
             total_attendances += event_attendance_count
             max_attendance = max(max_attendance, event_attendance_count)

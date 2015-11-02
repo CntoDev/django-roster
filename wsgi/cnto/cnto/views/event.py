@@ -123,7 +123,7 @@ def view_event(request, year_string, month_string, day_string):
     try:
         event = Event.objects.get(start_dt__year=selected_dt.year, start_dt__month=selected_dt.month,
                                   start_dt__day=selected_dt.day)
-        attendances = Attendance.objects.filter(event=event)
+        attendances = Attendance.objects.filter(event=event, member__deleted=False)
 
         for attendance in attendances:
             attendance_values.append(
