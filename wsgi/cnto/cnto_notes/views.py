@@ -33,7 +33,7 @@ def activate_note(request, pk):
 
         note.active = True
         note.save()
-        
+
     return JsonResponse({
         "success": success
     })

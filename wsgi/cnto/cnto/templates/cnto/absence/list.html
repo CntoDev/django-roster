@@ -21,8 +21,10 @@
         <td>{{ absence.end_date|date:'Y-m-d' }}</td>
         <td>{{ absence|value_of:"due_days" }}</td>
         <td>
+            <!--
             <a class="delete-absence" href="#"><span class="glyphicon glyphicon-remove-circle"
                                                      aria-hidden="true"></span></a>
+            -->
         </td>
     </tr>
     {% endfor %}
