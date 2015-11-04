@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from cnto.templatetags.cnto_tags import has_permission
 from cnto_contributions.models import Contribution
+from cnto_warnings.models import MemberWarning
 from ..models import Member, MemberGroup, EventType, Absence
 
 
@@ -45,7 +46,8 @@ def management(request):
         "discharges": discharges,
         "groups": groups,
         "active_contributions": active_contributions,
-        "event_types": event_types
+        "event_types": event_types,
+        "warning_count": MemberWarning.objects.filter(acknowledged=False).count()
     }
 
     return render(request, 'cnto/manage/main.html', context)

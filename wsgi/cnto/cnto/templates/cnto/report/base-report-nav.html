@@ -3,6 +3,6 @@
 {% block navbar-list %}
     <li><a href="{% url 'event-browser' %}">Events</a></li>
     <li><a href="{% url 'manage' %}">Manage</a></li>
-    <li><a href="{% url 'list-warnings' %}">Warnings</a></li>
+    <li><a href="{% url 'list-warnings' %}">Warnings{% if warning_count %} ({{ warning_count }}){% endif %}</a></li>
     <li class="active"><a href="{% url 'report-main' %}">Report</a></li>
 {% endblock %}

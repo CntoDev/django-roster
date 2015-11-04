@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.timezone import datetime
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
+from cnto_warnings.models import MemberWarning
 from ..models import Event, Attendance, MemberGroup, EventType
 from django.http import Http404
 from django.template.context_processors import csrf
@@ -141,6 +142,7 @@ def view_event(request, year_string, month_string, day_string):
         pass
 
     context["attendance_values"] = attendance_values
+    context["warning_count"] = MemberWarning.objects.filter(acknowledged=False).count()
 
     return render(request, 'cnto/event/edit.html', context)
 
@@ -172,5 +174,6 @@ def event_browser(request):
     event_data = json.dumps(event_data)
     context["event_data"] = event_data
     context["groups"] = MemberGroup.objects.all()
+    context["warning_count"] = MemberWarning.objects.filter(acknowledged=False).count()
 
     return render(request, 'cnto/event/browser.html', context)

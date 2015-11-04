@@ -5,6 +5,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render_to_response
 from django.template.context_processors import csrf
 from cnto.templatetags.cnto_tags import has_permission
+from cnto_warnings.models import MemberWarning
 from ..models import Member, Rank
 from ..forms import MemberForm, DischargedMemberForm
 
@@ -31,6 +32,14 @@ def delete_member(request, member_pk):
 
 
 def handle_member_change_view(request, edit_mode=False, member=None, recruit_only=False):
+    """
+
+    :param request:
+    :param edit_mode:
+    :param member:
+    :param recruit_only:
+    :return:
+    """
     rec_queryset = Rank.objects.filter(name__iexact="Rec")
 
     if request.POST:
@@ -81,6 +90,7 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
     args["user"] = request.user
     args['form'] = form
     args["edit_mode"] = edit_mode
+    args["warning_count"] = MemberWarning.objects.filter(acknowledged=False).count()
 
     return render_to_response('cnto/member/edit.html', args)
 

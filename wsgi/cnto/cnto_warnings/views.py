@@ -44,7 +44,8 @@ def list_warnings(request):
         return redirect("manage")
 
     context = {
-        "warnings": MemberWarning.objects.filter(acknowledged=False)
+        "warnings": MemberWarning.objects.filter(acknowledged=False),
+        "warning_count": MemberWarning.objects.filter(acknowledged=False).count()
     }
 
     return render(request, 'cnto_warnings/list.html', context)

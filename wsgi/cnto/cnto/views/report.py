@@ -56,7 +56,7 @@ def get_summary_data(request):
         week_end_dt += timedelta(days=7)
 
     return JsonResponse({
-        "event-data": event_data
+        "event-data": event_data,
     })
 
 
@@ -82,7 +82,9 @@ def report_main(request):
     elif not has_permission(request.user, "cnto_view_reports"):
         return redirect("manage")
 
-    context = {}
+    context = {
+        "warning_count": MemberWarning.objects.filter(acknowledged=False).count()
+    }
 
     return render(request, 'cnto/report/report-main.html', context)
 
