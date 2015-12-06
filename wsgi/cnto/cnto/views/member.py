@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.utils import timezone
 from django.http.response import JsonResponse
 
@@ -74,7 +75,8 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
 
             initial = {
                 'rank': rec_rank,
-                'mods_assessed': False
+                'mods_assessed': False,
+                'join_date': timezone.now().date()
             }
             form = MemberForm(initial=initial)
             if recruit_only:

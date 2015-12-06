@@ -66,7 +66,7 @@ class MemberForm(forms.models.ModelForm):
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
                                           empty_label="<Select group>")
     rank = forms.ModelChoiceField(queryset=Rank.objects.all(), empty_label=None)
-    join_date = forms.DateField(initial=timezone.now(), label="Join date", widget=DateTimePicker(options={
+    join_date = forms.DateField(label="Join date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
         "pickTime": False
     }))
