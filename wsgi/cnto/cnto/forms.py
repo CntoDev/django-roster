@@ -10,6 +10,9 @@ from utils.date_utils import dates_overlap
 
 
 class AcceptButton(BaseInput):
+    """None
+
+    """
     input_type = 'submit'
     field_classes = 'btn btn-primary'
 
@@ -59,6 +62,9 @@ class EventTypeForm(forms.models.ModelForm):
 
 
 class MemberForm(forms.models.ModelForm):
+    """None
+
+    """
     class Meta:
         model = Member
         fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'discharged', 'discharge_date', 'email']

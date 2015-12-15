@@ -19,6 +19,7 @@ import cnto_notes.urls as note_urls
 import cnto_users.urls as user_urls
 import cnto_warnings.urls as warning_urls
 import cnto_contributions.urls as contribution_urls
+import cnto_api.urls as api_urls
 
 from views import scrape, login_user, event, member, report, group, manage, absence
 from django.conf.urls import include, url
@@ -73,5 +74,6 @@ urlpatterns = [
     url(r'^notes/', include(note_urls)),
     url(r'^users/', include(user_urls)),
     url(r'^warnings/', include(warning_urls)),
-    url(r'^contributions/', include(contribution_urls))
+    url(r'^contributions/', include(contribution_urls)),
+    url(r'^api/', include(api_urls))
 ]

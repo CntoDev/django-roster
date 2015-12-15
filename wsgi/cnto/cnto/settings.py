@@ -99,6 +99,7 @@ INSTALLED_APPS = (
     'cnto_users',
     'cnto_warnings',
     'cnto_contributions',
+    'cnto_api',
 )
 
 MIDDLEWARE_CLASSES = (
