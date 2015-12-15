@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.utils import timezone
 from django import forms
-
 from bootstrap3_datetime.widgets import DateTimePicker
-from models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Field, BaseInput
+from crispy_forms.layout import Layout, Field, BaseInput
 from crispy_forms.bootstrap import FormActions
+
+from models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
 from utils.date_utils import dates_overlap
 
 
@@ -33,7 +32,9 @@ class EventTypeForm(forms.models.ModelForm):
     name = forms.CharField()
     default_start_hour = forms.IntegerField()
     default_end_hour = forms.IntegerField()
-    minimum_required_attendance_ratio = forms.FloatField()
+    minimum_required_attendance_ratio = forms.FloatField(
+        help_text="Ratio should be between 0.0 and 1.0, where 1.0 = 100% of event duration attended.  Monday and "
+                  "Wednesday Coop events require double the attendance of Friday Coop events.")
     css_class_name = forms.CharField(help_text="Class name may be left blank and is used for calendar styling.")
 
     helper = FormHelper()

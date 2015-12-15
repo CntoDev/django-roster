@@ -319,4 +319,10 @@ class Attendance(models.Model):
         attendance_ratio = self.attendance
         base_required_attendance_ratio = self.event.event_type.minimum_required_attendance_ratio
 
+        event_dow = self.event.start_dt.weekday()
+
+        if self.event.event_type == EventType.objects.get(name__iexact="coop") and event_dow in [0, 2]:
+            # Coop on Mondays and Wednesdays require double the attendance of normal Coops.
+            base_required_attendance_ratio *= 2
+
         return attendance_ratio > base_required_attendance_ratio
