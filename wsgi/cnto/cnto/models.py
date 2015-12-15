@@ -187,7 +187,7 @@ class EventType(models.Model):
     name = models.TextField(null=False)
     default_start_hour = models.IntegerField()
     default_end_hour = models.IntegerField()
-    minimum_required_attendance_minutes = models.IntegerField(null=False)
+    minimum_required_attendance_ratio = models.FloatField(null=False)
     css_class_name = models.TextField(null=False, blank=True)
 
     def lowered_name(self):
@@ -312,8 +312,11 @@ class Attendance(models.Model):
         return True, "No attendance issues."
 
     def was_adequate(self):
-        attendance_minutes = self.event.duration_minutes * self.attendance
-        base_required_attendance_minutes = self.event.event_type.minimum_required_attendance_minutes
-        scaled_half_required_attendance_minutes = self.event.duration_minutes * 0.5
+        """
 
-        return attendance_minutes > min(base_required_attendance_minutes, scaled_half_required_attendance_minutes)
+        :return:
+        """
+        attendance_ratio = self.attendance
+        base_required_attendance_ratio = self.event.event_type.minimum_required_attendance_ratio
+
+        return attendance_ratio > base_required_attendance_ratio

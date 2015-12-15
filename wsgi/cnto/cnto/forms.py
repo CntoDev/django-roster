@@ -23,7 +23,7 @@ class CancelButton(BaseInput):
 class EventTypeForm(forms.models.ModelForm):
     class Meta:
         model = EventType
-        fields = ['name', 'default_start_hour', 'default_end_hour', 'minimum_required_attendance_minutes',
+        fields = ['name', 'default_start_hour', 'default_end_hour', 'minimum_required_attendance_ratio',
                   'css_class_name']
 
     def __init__(self, *args, **kwargs):
@@ -33,7 +33,7 @@ class EventTypeForm(forms.models.ModelForm):
     name = forms.CharField()
     default_start_hour = forms.IntegerField()
     default_end_hour = forms.IntegerField()
-    minimum_required_attendance_minutes = forms.IntegerField()
+    minimum_required_attendance_ratio = forms.FloatField()
     css_class_name = forms.CharField(help_text="Class name may be left blank and is used for calendar styling.")
 
     helper = FormHelper()
@@ -42,7 +42,7 @@ class EventTypeForm(forms.models.ModelForm):
         Field('name'),
         Field('default_start_hour'),
         Field('default_end_hour'),
-        Field('minimum_required_attendance_minutes'),
+        Field('minimum_required_attendance_ratio'),
         Field('css_class_name'),
         FormActions(
             AcceptButton('save_changes', 'Save changes', css_class="btn-primary"),
