@@ -36,8 +36,9 @@ class EventTypeForm(forms.models.ModelForm):
     default_start_hour = forms.IntegerField()
     default_end_hour = forms.IntegerField()
     minimum_required_attendance_ratio = forms.FloatField(
-        help_text="Ratio should be between 0.0 and 1.0, where 1.0 = 100% of event duration attended.  Monday and "
-                  "Wednesday Coop events require double the attendance of Friday Coop events.")
+        help_text="Ratio should be between 0.0 and 1.0, where 1.0 = 100% of event duration attended.  The configured "
+                  "Coop ratio will be used for Friday attendance.  Monday and Wednesday Coop events require double the "
+                  "attendance of Friday Coop events.")
     css_class_name = forms.CharField(help_text="Class name may be left blank and is used for calendar styling.")
 
     helper = FormHelper()
@@ -65,6 +66,7 @@ class MemberForm(forms.models.ModelForm):
     """None
 
     """
+
     class Meta:
         model = Member
         fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'discharged', 'discharge_date', 'email']
