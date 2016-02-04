@@ -299,8 +299,8 @@ class Attendance(models.Model):
 
         attended_total = attended_training + attended_other
 
-        min_total_events = 3
-        min_trainings = 1
+        min_total_events = 2
+        min_trainings = 0
 
         between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))
 
@@ -319,10 +319,9 @@ class Attendance(models.Model):
         attendance_ratio = self.attendance
         base_required_attendance_ratio = self.event.event_type.minimum_required_attendance_ratio
 
-        event_dow = self.event.start_dt.weekday()
-
-        if self.event.event_type == EventType.objects.get(name__iexact="coop") and event_dow in [0, 2]:
-            # Coop on Mondays and Wednesdays require double the attendance of normal Coops.
-            base_required_attendance_ratio *= 2
+        # event_dow = self.event.start_dt.weekday()
+        # if self.event.event_type == EventType.objects.get(name__iexact="coop") and event_dow in [0, 2]:
+        #     # Coop on Mondays and Wednesdays require double the attendance of normal Coops.
+        #     base_required_attendance_ratio *= 2
 
         return attendance_ratio > base_required_attendance_ratio
