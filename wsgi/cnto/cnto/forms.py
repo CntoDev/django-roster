@@ -171,8 +171,9 @@ class MemberGroupForm(forms.models.ModelForm):
         fields = ['name', 'leader']
 
     name = forms.CharField()
-    leader = forms.ModelChoiceField(queryset=Member.objects.filter(rank__name__iexact="jrnco").order_by("name"),
-                                    required=False)
+    leader = forms.ModelChoiceField(
+        queryset=Member.objects.filter(rank__name__iexact="spc", discharged=False).order_by("name"),
+        required=False)
 
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
@@ -184,6 +185,14 @@ class MemberGroupForm(forms.models.ModelForm):
             CancelButton('cancel', 'Cancel', css_class="btn-default"),
         )
     )
+
+    def clean_leader(self):
+        leader = self.cleaned_data['leader']
+        if len(leader.email) == 0:
+            raise forms.ValidationError(
+                "Cannot select a leader with no configured email address!")
+
+        return leader
 
 
 class AbsenceForm(forms.models.ModelForm):
