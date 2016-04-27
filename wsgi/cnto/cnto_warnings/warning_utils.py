@@ -28,6 +28,18 @@ def send_exception_email(exception_message):
                          exception_message)
 
 
+def warning_exists(member, warning_type, message):
+    """
+
+    :return:
+    """
+    try:
+        MemberWarning.objects.get(member=member, warning_type=warning_type, message=message)
+        return True
+    except MemberWarning.DoesNotExist:
+        return False
+
+
 def create_or_update_warning(member, warning_type, warning_active, message):
     """
 
@@ -37,11 +49,11 @@ def create_or_update_warning(member, warning_type, warning_active, message):
     :param message:
     :return:
     """
-    try:
+    if warning_exists(member, warning_type, message):
         warning = MemberWarning.objects.get(member=member, warning_type=warning_type, message=message)
         if not warning_active:
             warning.delete()
-    except MemberWarning.DoesNotExist:
+    else:
         if warning_active:
             warning = MemberWarning(member=member, warning_type=warning_type, message=message)
             warning.save()
@@ -199,26 +211,34 @@ def allocate_ranks_and_add_warnings_for_cycle(cycle_start_dt):
                                                                    min_total_events=min_gnt_event_count)
 
         if member_rank == res_rank and gnt_adequate:
+            rank_message = "%s has been promoted to Grunt due to attending at least %s events between %s and %s." % (
+                member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
+                end_dt.strftime("%Y-%m-%d"))
+
+            if warning_exists(member, res_promoted_warning_type, rank_message):
+                continue
+
             # Promote to grunt
             member.rank = gnt_rank
             member.save()
 
             create_or_update_warning(member, res_promoted_warning_type, True,
-                                     "%s has been promoted to Grunt due to attending at least %s events between %s "
-                                     "and %s." % (
-                                         member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
-                                         end_dt.strftime("%Y-%m-%d")))
+                                     rank_message)
 
         elif member_rank == gnt_rank and not gnt_adequate:
+            rank_message = "%s has been demoted to Reservist due to attending less than %s events between %s and %s." \
+                           % (member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
+                              end_dt.strftime("%Y-%m-%d"))
+
+            if warning_exists(member, gnt_demoted_warning_type, rank_message):
+                continue
+
             # Demote to reservist
             member.rank = res_rank
             member.save()
 
             create_or_update_warning(member, gnt_demoted_warning_type, True,
-                                     "%s has been demoted to Reservist due to attending less than %s events between %s "
-                                     "and %s." % (
-                                         member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
-                                         end_dt.strftime("%Y-%m-%d")))
+                                     rank_message)
 
 
 def allocate_ranks_and_add_warnings_for_previous_cycle():
