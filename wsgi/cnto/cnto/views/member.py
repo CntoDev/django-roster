@@ -60,8 +60,11 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
 
                 form.cleaned_data["rank"] = rec_rank
 
-            if form.cleaned_data["discharged"] and form.cleaned_data["discharge_date"] is None:
-                form.instance.discharge_date = timezone.now()
+            if form.cleaned_data["discharged"]:
+                if form.cleaned_data["discharge_date"] is None:
+                    form.instance.discharge_date = timezone.now()
+
+                form.instance.member_group = None
 
             form.save()
             return redirect('manage')
