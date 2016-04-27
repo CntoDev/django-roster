@@ -172,7 +172,7 @@ class MemberGroupForm(forms.models.ModelForm):
 
     name = forms.CharField()
     leader = forms.ModelChoiceField(
-        queryset=Member.objects.filter(rank__name__iexact="spc", discharged=False).order_by("name"),
+        queryset=Member.qualified_leaders().order_by("name"),
         required=False)
 
     helper = FormHelper()
@@ -188,7 +188,7 @@ class MemberGroupForm(forms.models.ModelForm):
 
     def clean_leader(self):
         leader = self.cleaned_data['leader']
-        if len(leader.email) == 0:
+        if leader.email is None or "@" not in leader.email:
             raise forms.ValidationError(
                 "Cannot select a leader with no configured email address!")
 

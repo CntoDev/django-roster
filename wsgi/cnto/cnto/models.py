@@ -71,6 +71,15 @@ class Member(models.Model):
     deleted = models.BooleanField(default=False, null=False)
 
     @staticmethod
+    def qualified_leaders():
+        rank_list = ['ssgt', 'spc']
+        results = Member.objects.none()
+        for name in rank_list:
+            results |= Member.objects.filter(rank__name__iexact=name, deleted=False, discharged=False)
+
+        return results
+
+    @staticmethod
     def active_members(include_recruits=True):
         members = Member.objects.all().filter(deleted=False, discharged=False)
 
