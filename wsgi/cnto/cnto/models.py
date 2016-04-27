@@ -211,6 +211,7 @@ class Event(models.Model):
 
 class AbsenceType(models.Model):
     name = models.TextField(unique=True)
+    deprecated = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return self.name

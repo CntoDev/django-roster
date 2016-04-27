@@ -191,7 +191,7 @@ class AbsenceForm(forms.models.ModelForm):
         model = Absence
         fields = ['absence_type', 'start_date', 'end_date', 'member', 'concluded']
 
-    absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all())
+    absence_type = forms.ModelChoiceField(queryset=AbsenceType.objects.all().filter(deprecated=False))
 
     start_date = forms.DateField(label="Start date", widget=DateTimePicker(options={
         "format": "YYYY-MM-DD",
