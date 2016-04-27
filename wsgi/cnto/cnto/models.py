@@ -300,7 +300,7 @@ class Attendance(models.Model):
 
         attended_total = attended_training + attended_other
 
-        min_total_events = 2
+        min_total_events = 1
         min_trainings = 0
 
         between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))

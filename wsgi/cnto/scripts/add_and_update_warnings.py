@@ -19,7 +19,7 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
 
 import django
 from cnto_warnings.models import MemberWarning
-from cnto_warnings.warning_utils import add_and_update_low_attendace_for_previous_month, \
+from cnto_warnings.warning_utils import add_and_update_low_attendance_for_previous_cycle, \
     add_and_update_mod_assessment_due, \
     add_and_update_grunt_qualification_due, send_warning_emails, add_and_update_contribution_about_to_expire, \
     send_exception_email, add_absence_monitoring_warnings
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     print "Adding and updating warnings..."
     try:
-        add_and_update_low_attendace_for_previous_month()
+        add_and_update_low_attendance_for_previous_cycle()
         add_and_update_mod_assessment_due()
         add_and_update_grunt_qualification_due()
         add_and_update_contribution_about_to_expire()

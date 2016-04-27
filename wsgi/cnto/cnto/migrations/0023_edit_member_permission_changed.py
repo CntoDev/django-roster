@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 def fix_permission_name(apps, schema_editor):
     Permission = apps.get_model("auth", "Permission")
-    perm = Permission.objects.get(
+    perm, created = Permission.objects.get_or_create(
         codename="cnto_edit_member", content_type__app_label='cnto')
     perm.codename = "cnto_edit_members"
     perm.save()
@@ -14,7 +14,7 @@ def fix_permission_name(apps, schema_editor):
 
 def break_permission_name(apps, schema_editor):
     Permission = apps.get_model("auth", "Permission")
-    perm = Permission.objects.get(
+    perm, created = Permission.objects.get_or_create(
         codename="cnto_edit_members", content_type__app_label='cnto')
     perm.codename = "cnto_edit_member"
     perm.save()

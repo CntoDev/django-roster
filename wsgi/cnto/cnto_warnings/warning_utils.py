@@ -151,7 +151,7 @@ def add_and_update_contribution_about_to_expire():
                                      contribution.end_date.strftime("%Y-%m-%d")))
 
 
-def add_and_update_low_attendances_for_month(month_dt):
+def add_and_update_low_attendances_for_cycle(month_dt):
     """
 
     :param month_dt:
@@ -160,8 +160,9 @@ def add_and_update_low_attendances_for_month(month_dt):
     low_attendance_warning_type = MemberWarningType.objects.get(name__iexact="Low Attendance")
     start_dt = timezone.make_aware(datetime(month_dt.year, month_dt.month, 1, 0, 0),
                                    timezone.get_default_timezone())
-    end_dt = timezone.make_aware(datetime(month_dt.year, month_dt.month,
-                                          calendar.monthrange(month_dt.year, month_dt.month)[1], 23, 59),
+    cycle_end_month_number = month_dt.month + 1
+    end_dt = timezone.make_aware(datetime(month_dt.year, cycle_end_month_number,
+                                          calendar.monthrange(month_dt.year, cycle_end_month_number)[1], 23, 59),
                                  timezone.get_default_timezone())
 
     events = Event.all_for_time_period(start_dt, end_dt)
@@ -174,19 +175,22 @@ def add_and_update_low_attendances_for_month(month_dt):
         create_or_update_warning(member, low_attendance_warning_type, not adequate, message)
 
 
-def add_and_update_low_attendace_for_previous_month():
+def add_and_update_low_attendance_for_previous_cycle():
     """
 
     :return:
     """
     current_dt = timezone.now()
     previous_year_number = current_dt.year
-    previous_month_number = current_dt.month - 1
+    previous_month_number = current_dt.month - 2
 
     if previous_month_number < 1:
-        previous_month_number = 12
+        previous_month_number = 11
         previous_year_number -= 1
 
-    previous_month_start_dt = datetime(previous_year_number, previous_month_number, 1, 0, 0)
+    if previous_month_number % 2 == 0:
+        previous_month_number -= 1
 
-    add_and_update_low_attendances_for_month(previous_month_start_dt)
+    previous_cycle_start_dt = datetime(previous_year_number, previous_month_number, 1, 0, 0)
+
+    add_and_update_low_attendances_for_cycle(previous_cycle_start_dt)

@@ -8,7 +8,7 @@ def add_permission_to_group(apps, schema_editor, permission_name, role_name, wit
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
     try:
-        perm = Permission.objects.get(
+        perm, created = Permission.objects.get_or_create(
             codename=permission_name, content_type__app_label='cnto')
     except Permission.DoesNotExist:
         if with_create_permissions:
