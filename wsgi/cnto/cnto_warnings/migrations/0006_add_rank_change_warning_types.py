@@ -26,7 +26,7 @@ def clear_rank_change_warning_types(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cnto_warnings', '0002_general_warning'),
+        ('cnto_warnings', '0005_add_contribution_warning_types'),
     ]
 
     operations = [
