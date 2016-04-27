@@ -1,9 +1,13 @@
 import calendar
 from datetime import timedelta
+
 from django.contrib.auth.models import User
+
 from django.utils.timezone import datetime
+
 from django.utils import timezone
-from cnto.models import Member, Event, Attendance, Absence
+
+from cnto.models import Member, Event, Attendance, Absence, Rank
 from cnto_contributions.models import Contribution
 from cnto_warnings.models import MemberWarning, MemberWarningType
 from sens_do_not_commit import SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_TLS_PORT, NOTIFICATION_EMAIL_ADDRESS, \
@@ -132,7 +136,7 @@ def add_absence_monitoring_warnings():
             create_or_update_warning(absence.member, absence_violated_type,
                                      True,
                                      "%s didn't reply to the stationary PM within two weeks of the ending date %s." % (
-                                        absence.member.name, absence.end_date.strftime("%Y-%m-%d")))
+                                         absence.member.name, absence.end_date.strftime("%Y-%m-%d")))
 
 
 def add_and_update_contribution_about_to_expire():
@@ -151,19 +155,14 @@ def add_and_update_contribution_about_to_expire():
                                      contribution.end_date.strftime("%Y-%m-%d")))
 
 
-def add_and_update_low_attendances_for_cycle(month_dt):
+def add_and_update_low_attendances_for_cycle(cycle_start_dt):
     """
 
     :param month_dt:
     :return:
     """
     low_attendance_warning_type = MemberWarningType.objects.get(name__iexact="Low Attendance")
-    start_dt = timezone.make_aware(datetime(month_dt.year, month_dt.month, 1, 0, 0),
-                                   timezone.get_default_timezone())
-    cycle_end_month_number = month_dt.month + 1
-    end_dt = timezone.make_aware(datetime(month_dt.year, cycle_end_month_number,
-                                          calendar.monthrange(month_dt.year, cycle_end_month_number)[1], 23, 59),
-                                 timezone.get_default_timezone())
+    start_dt, end_dt = calculate_start_and_end_dt_for_cycle(cycle_start_dt)
 
     events = Event.all_for_time_period(start_dt, end_dt)
 
@@ -175,11 +174,60 @@ def add_and_update_low_attendances_for_cycle(month_dt):
         create_or_update_warning(member, low_attendance_warning_type, not adequate, message)
 
 
-def add_and_update_low_attendance_for_previous_cycle():
-    """
+def allocate_ranks_and_add_warnings_for_cycle(cycle_start_dt):
+    start_dt, end_dt = calculate_start_and_end_dt_for_cycle(cycle_start_dt)
 
-    :return:
-    """
+    gnt_demoted_warning_type = MemberWarningType.objects.get(name__iexact="Grunt Demoted")
+    res_promoted_warning_type = MemberWarningType.objects.get(name__iexact="Reservist Promoted")
+
+    events = Event.all_for_time_period(start_dt, end_dt)
+    event_count = events.count()
+    min_gnt_event_count = round(float(event_count) / 3.0)
+
+    members = Member.active_members(include_recruits=True)
+    gnt_rank = Rank.objects.get(name__iexact="gnt")
+    res_rank = Rank.objects.get(name__iexact="res")
+
+    for member in members:
+        member_rank = member.rank
+
+        if member_rank != gnt_rank and member_rank != res_rank:
+            # Other ranks are not subject to attendance restrictions
+            continue
+
+        gnt_adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt,
+                                                                   min_total_events=min_gnt_event_count)
+
+        if member_rank == res_rank and gnt_adequate:
+            # Promote to grunt
+            member.rank = gnt_rank
+            member.save()
+
+            create_or_update_warning(member, res_promoted_warning_type, True,
+                                     "%s has been promoted to Grunt due to attending at least %s events between %s "
+                                     "and %s." % (
+                                         member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
+                                         end_dt.strftime("%Y-%m-%d")))
+
+        elif member_rank == gnt_rank and not gnt_adequate:
+            # Demote to reservist
+            member.rank = res_rank
+            member.save()
+
+            create_or_update_warning(member, gnt_demoted_warning_type, True,
+                                     "%s has been demoted to Reservist due to attending less than %s events between %s "
+                                     "and %s." % (
+                                         member.name, min_gnt_event_count, start_dt.strftime("%Y-%m-%d"),
+                                         end_dt.strftime("%Y-%m-%d")))
+
+
+def allocate_ranks_and_add_warnings_for_previous_cycle():
+    previous_cycle_start_dt = calculate_previous_cycle_start_dt()
+
+    allocate_ranks_and_add_warnings_for_cycle(previous_cycle_start_dt)
+
+
+def calculate_previous_cycle_start_dt():
     current_dt = timezone.now()
     previous_year_number = current_dt.year
     previous_month_number = current_dt.month - 2
@@ -192,5 +240,25 @@ def add_and_update_low_attendance_for_previous_cycle():
         previous_month_number -= 1
 
     previous_cycle_start_dt = datetime(previous_year_number, previous_month_number, 1, 0, 0)
+    return previous_cycle_start_dt
+
+
+def calculate_start_and_end_dt_for_cycle(month_dt):
+    start_dt = timezone.make_aware(datetime(month_dt.year, month_dt.month, 1, 0, 0),
+                                   timezone.get_default_timezone())
+    cycle_end_month_number = month_dt.month + 1
+    end_dt = timezone.make_aware(datetime(month_dt.year, cycle_end_month_number,
+                                          calendar.monthrange(month_dt.year, cycle_end_month_number)[1], 23, 59),
+                                 timezone.get_default_timezone())
+
+    return start_dt, end_dt
+
+
+def add_and_update_low_attendance_for_previous_cycle():
+    """
+
+    :return:
+    """
+    previous_cycle_start_dt = calculate_previous_cycle_start_dt()
 
     add_and_update_low_attendances_for_cycle(previous_cycle_start_dt)

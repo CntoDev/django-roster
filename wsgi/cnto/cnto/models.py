@@ -267,7 +267,7 @@ class Attendance(models.Model):
         unique_together = ('event', 'member',)
 
     @staticmethod
-    def was_adequate_for_period(member, events, start_dt, end_dt):
+    def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1):
         if member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
@@ -300,7 +300,6 @@ class Attendance(models.Model):
 
         attended_total = attended_training + attended_other
 
-        min_total_events = 1
         min_trainings = 0
 
         between_string = "between %s and %s" % (start_dt.strftime("%Y-%m-%d"), end_dt.strftime("%Y-%m-%d"))

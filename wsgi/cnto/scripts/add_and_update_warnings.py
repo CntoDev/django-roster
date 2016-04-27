@@ -22,7 +22,7 @@ from cnto_warnings.models import MemberWarning
 from cnto_warnings.warning_utils import add_and_update_low_attendance_for_previous_cycle, \
     add_and_update_mod_assessment_due, \
     add_and_update_grunt_qualification_due, send_warning_emails, add_and_update_contribution_about_to_expire, \
-    send_exception_email, add_absence_monitoring_warnings
+    send_exception_email, add_absence_monitoring_warnings, allocate_ranks_and_add_warnings_for_previous_cycle
 
 if __name__ == "__main__":
 
@@ -32,6 +32,7 @@ if __name__ == "__main__":
 
     print "Adding and updating warnings..."
     try:
+        allocate_ranks_and_add_warnings_for_previous_cycle()
         add_and_update_low_attendance_for_previous_cycle()
         add_and_update_mod_assessment_due()
         add_and_update_grunt_qualification_due()
