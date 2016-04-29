@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import timedelta
 from django.db.models import Q
+from cnto import RECRUIT_RANK
 
 
 class CreatedModifiedMixin(models.Model):
@@ -84,14 +85,14 @@ class Member(models.Model):
         members = Member.objects.all().filter(deleted=False, discharged=False)
 
         if not include_recruits:
-            recruit_rank = Rank.objects.get(name__iexact="rec")
+            recruit_rank = Rank.objects.get(name__iexact=RECRUIT_RANK)
             members = members.filter(~Q(rank=recruit_rank))
 
         return members
 
     @staticmethod
     def recruits():
-        return Member.active_members(include_recruits=True).filter(rank__name__iexact="rec")
+        return Member.active_members(include_recruits=True).filter(rank__name__iexact=RECRUIT_RANK)
 
     @staticmethod
     def active_members_after_dt(dt):
@@ -101,13 +102,13 @@ class Member(models.Model):
         return members
 
     def gqf_due_days(self):
-        if "rec" not in self.rank.name.lower():
+        if RECRUIT_RANK not in self.rank.name.lower():
             return "-"
         else:
             return (self.get_gqf_deadline_date() - timezone.now().date()).days
 
     def mod_due_days(self):
-        if "rec" not in self.rank.name.lower() or self.mods_assessed:
+        if RECRUIT_RANK not in self.rank.name.lower() or self.mods_assessed:
             return "-"
         else:
             return (self.get_mod_assessment_deadline_date() - timezone.now().date()).days
@@ -170,7 +171,7 @@ class Member(models.Model):
         return False, None
 
     def get_recruit_warning(self):
-        if "rec" not in self.rank.name.lower():
+        if RECRUIT_RANK not in self.rank.name.lower():
             return False, "Not recruit."
 
         mod_assessment_due, reason = self.is_mod_assessment_due()

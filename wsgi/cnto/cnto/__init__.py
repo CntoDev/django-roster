@@ -1,0 +1,1 @@
+RECRUIT_RANK = "rct"

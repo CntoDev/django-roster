@@ -5,6 +5,7 @@ from django.http.response import JsonResponse
 from django.http import Http404
 from django.shortcuts import redirect, render_to_response
 from django.template.context_processors import csrf
+from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
 from cnto_warnings.models import MemberWarning
 from ..models import Member, Rank
@@ -22,7 +23,7 @@ def delete_member(request, member_pk):
         member = Member.objects.get(pk=member_pk)
 
         if not has_permission(request.user, "cnto_edit_members"):
-            if "rec" not in member.rank.name.lower():
+            if RECRUIT_RANK not in member.rank.name.lower():
                 return redirect("manage")
 
         member.deleted = True
@@ -41,7 +42,7 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
     :param recruit_only:
     :return:
     """
-    rec_queryset = Rank.objects.filter(name__iexact="Rec")
+    rec_queryset = Rank.objects.filter(name__iexact="Rct")
 
     if request.POST:
         form = MemberForm(request.POST, instance=member)
@@ -53,9 +54,9 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
         elif form.is_valid():
             if form.cleaned_data["rank"] is None:
                 try:
-                    rec_rank = Rank.objects.get(name__iexact="Rec")
+                    rec_rank = Rank.objects.get(name__iexact=RECRUIT_RANK)
                 except Rank.DoesNotExist:
-                    rec_rank = Rank(name="Rec")
+                    rec_rank = Rank(name=RECRUIT_RANK)
                     rec_rank.save()
 
                 form.cleaned_data["rank"] = rec_rank
@@ -71,9 +72,9 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
     else:
         if member is None:
             try:
-                rec_rank = Rank.objects.get(name__iexact="Rec")
+                rec_rank = Rank.objects.get(name__iexact=RECRUIT_RANK)
             except Rank.DoesNotExist:
-                rec_rank = Rank(name="Rec")
+                rec_rank = Rank(name=RECRUIT_RANK)
                 rec_rank.save()
 
             initial = {
@@ -154,7 +155,7 @@ def edit_discharged_member(request, pk):
         raise Http404()
 
     if not has_permission(request.user, "cnto_edit_members"):
-        if "rec" not in member.rank.name.lower():
+        if RECRUIT_RANK not in member.rank.name.lower():
             return redirect("manage")
 
     return handle_discharged_member_change_view(request, member=member)
@@ -172,7 +173,7 @@ def edit_member(request, pk):
         raise Http404()
 
     if not has_permission(request.user, "cnto_edit_members"):
-        if "rec" not in member.rank.name.lower():
+        if RECRUIT_RANK not in member.rank.name.lower():
             return redirect("manage")
 
         recruit_only = True

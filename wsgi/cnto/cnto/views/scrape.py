@@ -8,6 +8,7 @@ from django.utils.timezone import datetime, timedelta
 
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
+from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
 
 from utils.attendance_scraper import get_all_event_attendances_between
@@ -83,7 +84,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
             if len(username) == 0:
                 continue
 
-            rank_str = "Rec"
+            rank_str = RECRUIT_RANK
             if len(username_parts) > 2:
                 rank_str = username_parts[3][0:-1]
             attendance_value = scrape_result[raw_username]
