@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import timedelta
 from django.db.models import Q
+
 from cnto import RECRUIT_RANK
 
 
@@ -277,22 +278,26 @@ class Attendance(models.Model):
         unique_together = ('event', 'member',)
 
     @staticmethod
-    def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1):
+    def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1, ignore_absences=True):
         if member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
-        start_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
-                                                           end_date__gte=start_dt.date())
-        end_absences_for_period = Absence.objects.filter(member=member, start_date__lte=end_dt.date(),
-                                                         end_date__gte=end_dt.date())
-        inside_absences_for_period = Absence.objects.filter(member=member, start_date__gte=start_dt.date(),
-                                                            end_date__lte=end_dt.date())
-        overlap_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
+        if not ignore_absences:
+            start_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
+                                                               end_date__gte=start_dt.date())
+            end_absences_for_period = Absence.objects.filter(member=member, start_date__lte=end_dt.date(),
                                                              end_date__gte=end_dt.date())
+            inside_absences_for_period = Absence.objects.filter(member=member, start_date__gte=start_dt.date(),
+                                                                end_date__lte=end_dt.date())
+            overlap_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
+                                                                 end_date__gte=end_dt.date())
 
-        if start_absences_for_period.count() + end_absences_for_period.count() + inside_absences_for_period.count() + \
-            overlap_absences_for_period.count() > 0:
-            return True, "Was marked absent during period."
+            absent_days = (
+                start_absences_for_period.count() + end_absences_for_period.count() +
+                inside_absences_for_period.count() + overlap_absences_for_period.count())
+
+            if absent_days > 0:
+                return True, "Was marked absent during period."
 
         attendances_for_period = Attendance.objects.filter(member=member, event__in=events)
 
