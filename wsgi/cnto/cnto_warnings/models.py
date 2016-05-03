@@ -69,7 +69,7 @@ class MemberWarning(CreatedModifiedMixin):
 
             if self.member.member_group.leader is not None:
                 try:
-                    recipient_users.append(self.member.member_group.leader.email)
+                    recipient_users.append(self.member.member_group.leader)
                 except User.DoesNotExist:
                     print "Could not find user name %s!" % (self.member.member_group.leader.name,)
 
