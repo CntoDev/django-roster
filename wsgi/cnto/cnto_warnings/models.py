@@ -67,7 +67,7 @@ class MemberWarning(CreatedModifiedMixin):
                 User.objects.get(username__iexact="admin"),
             ]
 
-            if self.member.member_group.leader is not None:
+            if self.member.member_group is not None and self.member.member_group.leader is not None:
                 try:
                     recipient_users.append(self.member.member_group.leader)
                 except User.DoesNotExist:
