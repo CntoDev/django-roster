@@ -21,6 +21,9 @@ LOG.setLevel(logging.DEBUG)
 
 MINIMUM_ATTENDANCE_NUMBER = 5
 
+BASE_SERVER_SCRAPE_URL = "http://arma3.swec.se"
+CNTO_SERVER_SCRAPE_URL = BASE_SERVER_SCRAPE_URL + "/server/data/375393"
+
 
 class ScrapeThread(threading.Thread):
     def __init__(self, viewer, start_dt, end_dt):
@@ -50,13 +53,13 @@ class ScrapeThread(threading.Thread):
 def get_url_for_event_page(page_number=1):
     """
     """
-    return "http://arma3.swec.se/server/data/179899?page=%s" % (page_number,)
+    return CNTO_SERVER_SCRAPE_URL + "?page=%s" % (page_number,)
 
 
 def complete_event_url(partial_event_url):
     """
     """
-    return "http://arma3.swec.se" + partial_event_url
+    return BASE_SERVER_SCRAPE_URL + partial_event_url
 
 
 def get_all_events_for_page(page_number=1):
