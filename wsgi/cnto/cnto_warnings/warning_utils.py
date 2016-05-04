@@ -181,7 +181,7 @@ def add_and_update_low_attendances_for_cycle(cycle_start_dt):
     members = Member.active_members(include_recruits=True)
 
     for member in members:
-        adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt)
+        adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt, ignore_absences=False)
 
         create_or_update_warning(member, low_attendance_warning_type, not adequate, message)
 
