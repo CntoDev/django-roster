@@ -130,6 +130,10 @@ class Member(models.Model):
 
         return total_absent_duration_days
 
+    def get_recruit_event_attendance_deadline_and_count(self):
+        absent_days = self.get_total_days_absent()
+        return self.join_date + timedelta(days=60) + timedelta(days=absent_days), 5
+
     def get_gqf_deadline_date(self):
         absent_days = self.get_total_days_absent()
         return self.join_date + timedelta(days=42) + timedelta(days=absent_days)
@@ -278,11 +282,11 @@ class Attendance(models.Model):
         unique_together = ('event', 'member',)
 
     @staticmethod
-    def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1, ignore_absences=True):
+    def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1, adequate_if_absent=False):
         if member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
-        if not ignore_absences:
+        if adequate_if_absent:
             start_absences_for_period = Absence.objects.filter(member=member, start_date__lte=start_dt.date(),
                                                                end_date__gte=start_dt.date())
             end_absences_for_period = Absence.objects.filter(member=member, start_date__lte=end_dt.date(),

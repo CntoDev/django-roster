@@ -167,7 +167,7 @@ def add_and_update_contribution_about_to_expire():
                                      contribution.end_date.strftime("%Y-%m-%d")))
 
 
-def add_and_update_low_attendances_for_cycle(cycle_start_dt):
+def add_and_update_low_member_attendances_for_cycle(cycle_start_dt):
     """
 
     :param month_dt:
@@ -178,10 +178,33 @@ def add_and_update_low_attendances_for_cycle(cycle_start_dt):
 
     events = Event.all_for_time_period(start_dt, end_dt)
 
-    members = Member.active_members(include_recruits=True)
+    members = Member.active_members(include_recruits=False)
 
     for member in members:
-        adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt, ignore_absences=False)
+        adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt,
+                                                               adequate_if_absent=True)
+
+        create_or_update_warning(member, low_attendance_warning_type, not adequate, message)
+
+
+def add_and_update_low_recruit_attendances():
+    """
+
+    :param month_dt:
+    :return:
+    """
+    low_attendance_warning_type = MemberWarningType.objects.get(name__iexact="Low Attendance (Recruit)")
+
+    members = Member.recruits()
+
+    for member in members:
+        start_dt = member.join_date
+        end_dt, event_count = member.get_recruit_event_attendance_deadline_and_count()
+
+        events = Event.all_for_time_period(start_dt, end_dt)
+        adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt,
+                                                               adequate_if_absent=False,
+                                                               min_total_events=event_count)
 
         create_or_update_warning(member, low_attendance_warning_type, not adequate, message)
 
@@ -196,7 +219,7 @@ def allocate_ranks_and_add_warnings_for_cycle(cycle_start_dt):
     event_count = events.count()
     min_gnt_event_count = round(float(event_count) / 3.0)
 
-    members = Member.active_members(include_recruits=True)
+    members = Member.active_members(include_recruits=False)
     gnt_rank = Rank.objects.get(name__iexact="gnt")
     res_rank = Rank.objects.get(name__iexact="res")
 
@@ -208,7 +231,8 @@ def allocate_ranks_and_add_warnings_for_cycle(cycle_start_dt):
             continue
 
         gnt_adequate, message = Attendance.was_adequate_for_period(member, events, start_dt, end_dt,
-                                                                   min_total_events=min_gnt_event_count)
+                                                                   min_total_events=min_gnt_event_count,
+                                                                   adequate_if_absent=False)
 
         if member_rank == res_rank and gnt_adequate:
             rank_message = "%s has been promoted to Grunt due to attending at least %s events between %s and %s." % (
@@ -281,4 +305,4 @@ def add_and_update_low_attendance_for_previous_cycle():
     """
     previous_cycle_start_dt = calculate_previous_cycle_start_dt()
 
-    add_and_update_low_attendances_for_cycle(previous_cycle_start_dt)
+    add_and_update_low_member_attendances_for_cycle(previous_cycle_start_dt)

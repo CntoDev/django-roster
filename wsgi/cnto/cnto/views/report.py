@@ -7,6 +7,7 @@ from django.http.response import JsonResponse
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+
 from django.db.models import Max, Min
 
 from cnto.templatetags.cnto_tags import has_permission
@@ -115,7 +116,7 @@ def get_report_context_for_date_range(start_dt, end_dt):
             for member in members:
                 # print "Reporting member %s..." % (member, )
                 period_attendance_adequate, reason = Attendance.was_adequate_for_period(member, events, start_dt,
-                                                                                        end_dt, ignore_absences=False)
+                                                                                        end_dt, adequate_if_absent=True)
                 attendance_dict[group.name][member.name] = {
                     "attendance_adequate": period_attendance_adequate,
                     "attendances": []
