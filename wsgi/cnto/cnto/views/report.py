@@ -103,8 +103,6 @@ def get_report_context_for_date_range(start_dt, end_dt):
         }
         context["events"] = events_dict
 
-        reservist_absence_type = AbsenceType.objects.get(name__iexact="reservist")
-
         groups = MemberGroup.objects.all().order_by("name")
         all_members = Member.active_members()
 
@@ -128,12 +126,14 @@ def get_report_context_for_date_range(start_dt, end_dt):
 
                 for event in events:
                     try:
-                        if member.join_date > event.start_dt.date():
-                            absence_type = "-"
+                        if member.is_recruit():
+                            if member.mods_assessed:
+                                absence_type = " "
+                            else:
+                                absence_type = "-"
                         else:
-                            absence = Absence.get_absence_for_event(event, member)
-                            if absence.absence_type == reservist_absence_type:
-                                absence_type = "R"
+                            if member.join_date > event.start_dt.date():
+                                absence_type = "-"
                             else:
                                 absence_type = "LOA"
                     except Absence.DoesNotExist:

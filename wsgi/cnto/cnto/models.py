@@ -122,6 +122,9 @@ class Member(models.Model):
 
         return absences.count() > 0
 
+    def is_recruit(self):
+        return RECRUIT_RANK in self.rank.name.lower()
+
     def get_total_days_absent(self):
         absences = Absence.objects.filter(member=self)
         total_absent_duration_days = 0
