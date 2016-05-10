@@ -126,15 +126,13 @@ def get_report_context_for_date_range(start_dt, end_dt):
 
                 for event in events:
                     try:
-                        if member.is_recruit():
-                            if member.mods_assessed:
-                                absence_type = " "
-                            else:
-                                absence_type = "-"
+                        if member.is_recruit() and not member.mods_assessed:
+                            absence_type = "-"
                         else:
                             if member.join_date > event.start_dt.date():
                                 absence_type = "-"
                             else:
+                                Absence.get_absence_for_event(event, member)
                                 absence_type = "LOA"
                     except Absence.DoesNotExist:
                         absence_type = None
