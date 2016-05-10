@@ -70,7 +70,7 @@ def handle_note_change_view(request, edit_mode, note):
                 pass
 
             form.instance.active = True
-            form.instance.dt = timezone.now()
+            # form.instance.dt = timezone.now()
             form.save()
             return redirect('edit-note-collection', note.member.pk)
     else:
