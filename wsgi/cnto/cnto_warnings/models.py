@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from cnto.models import Member, CreatedModifiedMixin
+from cnto.models import Member, CreatedModifiedMixin, MemberGroup
 
 
 def recipients_to_recipient_string(recipient_users):
@@ -48,30 +48,27 @@ class MemberWarning(CreatedModifiedMixin):
 
         :return:
         """
-        recipient_users = []
-        if self.warning_type.is_warning("Mod Assessment Due") or self.warning_type.is_warning(
-            "Grunt Qualification Due"):
-            recipient_users = [
-                User.objects.get(username__iexact="admin"),
-                User.objects.get(username__iexact="abuk"),
-                User.objects.get(username__iexact="john"),
-            ]
-        elif self.warning_type.is_warning("Contribution Expiring"):
-            recipient_users = [
-                User.objects.get(username__iexact="admin"),
-                User.objects.get(username__iexact="clarke"),
-                User.objects.get(username__iexact="ryujin"),
-            ]
+        # if self.warning_type.is_warning("Mod Assessment Due") or self.warning_type.is_warning(
+        #     "Grunt Qualification Due"):
+        #     recipient_users = [
+        #         User.objects.get(username__iexact="admin"),
+        #         User.objects.get(username__iexact="abuk"),
+        #         User.objects.get(username__iexact="john"),
+        #     ]
+        if self.warning_type.is_warning("Contribution Expiring"):
+            member_group = MemberGroup.objects.get(name__iexact="Management")
         else:
-            recipient_users = [
-                User.objects.get(username__iexact="admin"),
-            ]
+            member_group = self.member.member_group
 
-            if self.member.member_group is not None and self.member.member_group.leader is not None:
-                try:
-                    recipient_users.append(self.member.member_group.leader)
-                except User.DoesNotExist:
-                    print "Could not find user name %s!" % (self.member.member_group.leader.name,)
+        recipient_users = [
+            User.objects.get(username__iexact="admin"),
+        ]
+
+        if member_group is not None and member_group.leader is not None:
+            try:
+                recipient_users.append(self.member.member_group.leader)
+            except User.DoesNotExist:
+                print "Could not find user name %s!" % (self.member.member_group.leader.name,)
 
         if len(recipient_users) > 0:
             return recipients_to_recipient_string(recipient_users)
