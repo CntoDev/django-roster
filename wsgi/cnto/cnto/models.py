@@ -286,7 +286,17 @@ class Attendance(models.Model):
 
     @staticmethod
     def was_adequate_for_period(member, events, start_dt, end_dt, min_total_events=1, adequate_if_absent=False):
-        if member.join_date > start_dt.date():
+        """
+
+        :param member:
+        :param events:
+        :param start_dt:
+        :param end_dt:
+        :param min_total_events:
+        :param adequate_if_absent:
+        :return:
+        """
+        if adequate_if_absent and member.join_date > start_dt.date():
             return True, "Was not a member for entire period."
 
         if adequate_if_absent:
