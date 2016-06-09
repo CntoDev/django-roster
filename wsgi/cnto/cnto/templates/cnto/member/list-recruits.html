@@ -6,7 +6,7 @@
             <th>Name</th>
             <th>Joined</th>
             <th>Mods due</th>
-            <th>GQF due</th>
+            <th>RQF due</th>
             <th>Note</th>
             <th></th>
         </tr>
@@ -16,7 +16,7 @@
         <td><a {% if recruit.is_absent %}class="absent-link" {% endif %} href="{% url 'edit-member' recruit.pk %}">{{ recruit.name }}</a></td>
         <td>{{ recruit.join_date|date:'Y-m-d' }}</td>
         <td>{{ recruit|value_of:'mod_due_days' }}</td>
-        <td>{{ recruit|value_of:'gqf_due_days' }}</td>
+        <td>{{ recruit|value_of:'rqf_due_days' }}</td>
         <td>{{ recruit|active_note_message }}</td>
         <td>
             <a href="{% url 'edit-note-collection' recruit.pk %}"><span class="glyphicon glyphicon-pencil"

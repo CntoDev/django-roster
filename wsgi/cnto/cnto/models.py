@@ -102,13 +102,21 @@ class Member(models.Model):
 
         return members
 
-    def gqf_due_days(self):
+    def rqf_due_days(self):
+        """
+
+        :return:
+        """
         if RECRUIT_RANK not in self.rank.name.lower():
             return "-"
         else:
-            return (self.get_gqf_deadline_date() - timezone.now().date()).days
+            return (self.get_rqf_deadline_date() - timezone.now().date()).days
 
     def mod_due_days(self):
+        """
+
+        :return:
+        """
         if RECRUIT_RANK not in self.rank.name.lower() or self.mods_assessed:
             return "-"
         else:
@@ -137,9 +145,13 @@ class Member(models.Model):
         absent_days = self.get_total_days_absent()
         return self.join_date + timedelta(days=60) + timedelta(days=absent_days), 5
 
-    def get_gqf_deadline_date(self):
+    def get_rqf_deadline_date(self):
+        """
+
+        :return:
+        """
         absent_days = self.get_total_days_absent()
-        return self.join_date + timedelta(days=42) + timedelta(days=absent_days)
+        return self.join_date + timedelta(days=56) + timedelta(days=absent_days)
 
     def get_mod_assessment_deadline_date(self):
         absent_days = self.get_total_days_absent()
@@ -170,7 +182,7 @@ class Member(models.Model):
         """
         current_dt = timezone.now()
 
-        grunt_qualification_deadline = self.get_gqf_deadline_date()
+        grunt_qualification_deadline = self.get_rqf_deadline_date()
         if current_dt.date() > grunt_qualification_deadline:
             # Six weeks grunt notice
             message = "Grunt qualification overdue."
