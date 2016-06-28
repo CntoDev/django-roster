@@ -11,6 +11,7 @@ import pytz
 from django.http import Http404
 
 from django.template.context_processors import csrf
+from cnto.views.scrape import list_present_players_on_server, update_attendance_for_current_event
 
 from cnto_warnings.models import MemberWarning
 from ..models import Event, Attendance, MemberGroup, EventType
@@ -148,6 +149,8 @@ def view_event(request, year_string, month_string, day_string):
 
     context["attendance_values"] = attendance_values
     context["warning_count"] = MemberWarning.objects.filter(acknowledged=False).count()
+
+    update_attendance_for_current_event()
 
     return render(request, 'cnto/event/edit.html', context)
 

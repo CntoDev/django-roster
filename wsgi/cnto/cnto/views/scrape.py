@@ -1,16 +1,17 @@
 import traceback
+
+import valve.source.a2s
 from django.core.exceptions import MultipleObjectsReturned
-
 import pytz
-
 from django.utils import timezone
 from django.utils.timezone import datetime, timedelta
-
 from django.http.response import JsonResponse
+
 from django.shortcuts import redirect
+
 from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
-
+from sens_do_not_commit import ARMA3_SERVER_MONITOR
 from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
 
@@ -101,7 +102,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                 member = Member(name=username, rank=rank)
                 member.save()
             except MultipleObjectsReturned:
-                raise ValueError("Multiple users found with name %s!" % (username, ))
+                raise ValueError("Multiple users found with name %s!" % (username,))
 
             try:
                 attendance = Attendance.objects.get(event=event, member=member)
@@ -114,3 +115,100 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
         return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
     except Exception, e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
+
+
+def update_attendance_for_current_event(interval_seconds=300,
+                                        event_type_name="Unknown"):
+    """
+
+    :return:
+    """
+    try:
+        event_type = EventType.objects.get(name__iexact=event_type_name)
+
+        dt = datetime.now()
+
+        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, dt.hour, 00, 00),
+                                       timezone.get_default_timezone())
+
+        current_dt = timezone.make_aware(dt,
+                                         timezone.get_default_timezone())
+        # pytz.timezone("Europe/Stockholm")
+        #
+        # if int(end_hour) >= 24:
+        #     end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
+        #                                  timezone.get_default_timezone())
+        #     end_dt += timedelta(days=1, hours=int(end_hour) - 24)
+        # else:
+        #     end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
+        #                                  timezone.get_default_timezone())
+        #
+        # if end_dt < start_dt:
+        #     end_dt += timedelta(hours=240)
+        #
+        # event_duration_minutes = (end_dt - start_dt).total_seconds() / 60.0
+
+        try:
+            event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
+                                      start_dt__day=start_dt.day)
+
+            event.start_dt = start_dt
+            event.end_dt = current_dt + timedelta(seconds=interval_seconds)
+
+            event.event_type = event_type
+            event.duration_minutes += (event.end_dt - event.start_dt).total_seconds() / 60.0
+            event.save()
+        except Event.DoesNotExist:
+            new_end_dt = current_dt + timedelta(seconds=interval_seconds)
+            event = Event(start_dt=start_dt, end_dt=new_end_dt,
+                          duration_minutes=(new_end_dt - start_dt).total_seconds() / 60.0, event_type=event_type)
+            event.save()
+
+        current_players = list_present_players_on_server()
+        for raw_username in current_players:
+            username_parts = raw_username.split(" ")
+            username = username_parts[0]
+            if len(username) == 0:
+                continue
+
+            rank_str = RECRUIT_RANK
+            if len(username_parts) > 2:
+                rank_str = username_parts[3][0:-1]
+
+            try:
+                rank = Rank.objects.get(name__iexact=rank_str)
+            except Rank.DoesNotExist:
+                rank = Rank(name=rank_str)
+                rank.save()
+
+            try:
+                member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
+            except Member.DoesNotExist:
+                member = Member(name=username, rank=rank)
+                member.save()
+            except MultipleObjectsReturned:
+                raise ValueError("Multiple users found with name %s!" % (username,))
+
+            try:
+                attendance = Attendance.objects.get(event=event, member=member)
+                attendance.attendance_seconds += interval_seconds
+                attendance.save()
+            except Attendance.DoesNotExist:
+                attendance = Attendance(event=event, member=member,
+                                        attendance_seconds=interval_seconds)
+                attendance.save()
+        return JsonResponse({"success": True, "error": None})
+    except Exception, e:
+        return JsonResponse({"success": False, "error": traceback.format_exc()})
+
+
+def list_present_players_on_server():
+    """
+
+    :return:
+    """
+    server = valve.source.a2s.ServerQuerier(ARMA3_SERVER_MONITOR)
+    response = server.get_players()
+    players = [player["name"] for player in response["players"]]
+
+    return players
