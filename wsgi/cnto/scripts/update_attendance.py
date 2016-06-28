@@ -4,12 +4,6 @@ import os
 import sys
 
 ## GETTING-STARTED: make sure the next line points to your settings.py:
-import traceback
-import pytz
-
-from datetime import datetime
-from django.utils import timezone
-from cnto.views.scrape import update_attendance_for_current_event
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cnto.settings'
 
@@ -22,7 +16,11 @@ if 'OPENSHIFT_REPO_DIR' in os.environ:
 
     os.environ['PYTHON_EGG_CACHE'] = get_python_lib()
 
+
 import django
+from datetime import datetime
+from django.utils import timezone
+from cnto.views.scrape import update_attendance_for_current_event
 
 if __name__ == "__main__":
 
@@ -33,6 +31,8 @@ if __name__ == "__main__":
         event_day = current_dt.weekday() == 1 or current_dt.weekday == 4
         event_hour = current_dt.hour >= 20
 
+        print event_day
+        print event_hour
         if event_day and event_hour:
             django.setup()
 
