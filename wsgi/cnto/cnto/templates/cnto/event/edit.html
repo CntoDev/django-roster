@@ -15,98 +15,91 @@
     </ul>
     <form class="highlight">
         {% if event %}
-        <h5>Provide information for re-scrape:</h5>
-        {% else %}
-        <h5>Provide information for new scrape:</h5>
+            <h5>Configure event</h5>
+            <div class="form-group row">
+                <div class="col-xs-1 dropdown">
+                    Event type:
+                </div>
+                <div class="col-xs-1 dropdown">
+                    <button class="btn btn-default" id="event-type-label" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {% if event %}{{ event.event_type.name }}{% else %}Unknown{% endif %} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="event-type-label">
+                        {% for event_type in event_types %}
+                        <li>
+                            <a id="{{ event_type.name}}-{{ event_type.pk }}-{{ event_type.default_start_hour }}-{{ event_type.default_end_hour }}"
+                               class="event-type-selector" href="#">{{ event_type.name }} </a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-1 dropdown">
+                    Start time:
+                </div>
+                <div class="col-xs-1 dropdown">
+                    <button class="btn btn-default" id="start-time-label" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {% if event %}{{ event.event_type.default_start_hour }}h{% else %}20h{% endif %} <span
+                            class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="start-time-label">
+                        <li><a class="start-time-selector" href="#">17h </a></li>
+                        <li><a class="start-time-selector" href="#">18h </a></li>
+                        <li><a class="start-time-selector" href="#">19h </a></li>
+                        <li><a class="start-time-selector" href="#">20h </a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-1 dropdown">
+                    End time:
+                </div>
+                <div class="col-xs-1 dropdown">
+                    <button class="btn btn-default" id="end-time-label" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {% if event %}{{ event.event_type.default_end_hour }}h{% else %}23h{% endif %} <span
+                            class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="start-time-label">
+                        <li><a class="end-time-selector" href="#">20h </a></li>
+                        <li><a class="end-time-selector" href="#">21h </a></li>
+                        <li><a class="end-time-selector" href="#">22h </a></li>
+                        <li><a class="end-time-selector" href="#">23h </a></li>
+                        <li><a class="end-time-selector" href="#">00h </a></li>
+                        <li><a class="end-time-selector" href="#">01h </a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-1">
+                    <button type="button" class="btn btn-primary" id="save-details">Save</button>
+                </div>
+                <div class="col-xs-1">
+                    <a type="submit" href="{% url 'event-browser' %}" class="btn btn-default">Back</a>
+                </div>
+                <div class="col-xs-1">
+                    <button type="button" href="{{ return_url }}" id="delete-event" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
         {% endif %}
-
-
-        <div class="form-group row">
-            <div class="col-xs-1 dropdown">
-                Event type:
-            </div>
-            <div class="col-xs-1 dropdown">
-                <button class="btn btn-default" id="event-type-label" type="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    {% if event %}{{ event.event_type.name }}{% else %}Unknown{% endif %} <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="event-type-label">
-                    {% for event_type in event_types %}
-                    <li>
-                        <a id="{{ event_type.name}}-{{ event_type.pk }}-{{ event_type.default_start_hour }}-{{ event_type.default_end_hour }}"
-                           class="event-type-selector" href="#">{{ event_type.name }} </a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-xs-1 dropdown">
-                Start time:
-            </div>
-            <div class="col-xs-1 dropdown">
-                <button class="btn btn-default" id="start-time-label" type="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    {% if event %}{{ event.event_type.default_start_hour }}h{% else %}20h{% endif %} <span
-                        class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="start-time-label">
-                    <li><a class="start-time-selector" href="#">17h </a></li>
-                    <li><a class="start-time-selector" href="#">18h </a></li>
-                    <li><a class="start-time-selector" href="#">19h </a></li>
-                    <li><a class="start-time-selector" href="#">20h </a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-xs-1 dropdown">
-                End time:
-            </div>
-            <div class="col-xs-1 dropdown">
-                <button class="btn btn-default" id="end-time-label" type="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    {% if event %}{{ event.event_type.default_end_hour }}h{% else %}23h{% endif %} <span
-                        class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="start-time-label">
-                    <li><a class="end-time-selector" href="#">20h </a></li>
-                    <li><a class="end-time-selector" href="#">21h </a></li>
-                    <li><a class="end-time-selector" href="#">22h </a></li>
-                    <li><a class="end-time-selector" href="#">23h </a></li>
-                    <li><a class="end-time-selector" href="#">00h </a></li>
-                    <li><a class="end-time-selector" href="#">01h </a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-xs-1">
-                <button type="button" class="btn btn-primary" id="perform-scrape">Submit</button>
-            </div>
-            <div class="col-xs-1">
-                <a type="submit" href="{% url 'event-browser' %}" class="btn btn-default">Back</a>
-            </div>
-            {% if event %}
-            <div class="col-xs-1">
-                <button type="button" href="{{ return_url }}" id="delete-event" class="btn btn-danger">Delete</button>
-            </div>
-            {% endif %}
-        </div>
     </form>
 
-    <div class="modal fade" id="loading-modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="saving-modal" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Scraping</h4>
+                    <h4 class="modal-title">Saving</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Please wait while scraping...</p>
+                    <p>Please wait while saving...</p>
                 </div>
             </div>
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal -->
 </div>
 {% endblock %}
 
@@ -124,24 +117,21 @@
             }
         });
     });
-    $('#perform-scrape').on('click', function (e) {
+    $('#save-details').on('click', function (e) {
         e.preventDefault();
 
-        $('#loading-modal').modal('show');
+        $('#saving-modal').modal('show');
 
         var eventTypeString = $("#event-type-label").text().replace(/ /g, '');
         var startHourString = $("#start-time-label").text().replace(/ /g, '');
         var endHourString = $("#end-time-label").text().replace(/ /g, '');
         var dateString = "{{ start_date_string }}";
-        var scrapeUrl = "/scrape/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
+        var scrapeUrl = "/save-event/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
 
         $.get(scrapeUrl, function (data) {
             if (!data["success"]) {
-                $('#loading-modal').modal('hide');
+                $('#saving-modal').modal('hide');
                 alert(data["error"]);
-            } else if (data["stats"]["average_attendance"] == 0) {
-                $('#loading-modal').modal('hide');
-                bootbox.alert("No relevant events were found!");
             } else {
                 window.location.reload();
             }

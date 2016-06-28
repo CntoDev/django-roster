@@ -35,8 +35,8 @@ urlpatterns = [
 
     url(r'^event-browser/', event.event_browser, name='event-browser'),
     url(
-        r'^scrape/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(?P<end_hour>[0-9]{2})h/$',
-        scrape.scrape, name='scrape'),
+        r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(?P<end_hour>[0-9]{2})h/$',
+        event.save_event, name='save-event'),
 
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^view-event/([0-9]{4})-([0-9]{2})-([0-9]{2})/$', event.view_event, name='view-event'),
