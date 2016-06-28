@@ -119,7 +119,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
 
 def update_attendance_for_current_event(interval_seconds=300,
                                         event_type_name="Unknown"):
-    """
+    """None
 
     :return:
     """
