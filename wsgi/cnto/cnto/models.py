@@ -280,7 +280,7 @@ class Attendance(models.Model):
         """
         attendances = Attendance.objects.filter(event=event)
         if len(attendances) > 0:
-            average_attendance = sum([attendance.attendance for attendance in attendances]) / len(attendances)
+            average_attendance = sum([attendance.get_attendance_ratio() for attendance in attendances]) / len(attendances)
         else:
             average_attendance = 0
 
@@ -291,7 +291,7 @@ class Attendance(models.Model):
 
     event = models.ForeignKey(Event, null=False)
     member = models.ForeignKey(Member, null=False)
-    attendance = models.FloatField(null=False)
+    attendance_seconds = models.IntegerField(null=False)
 
     class Meta:
         unique_together = ('event', 'member',)
@@ -355,12 +355,20 @@ class Attendance(models.Model):
 
         return True, "No attendance issues."
 
+    def get_attendance_ratio(self):
+        """
+
+        :return:
+        """
+        event_duration_seconds = float((self.event.end_dt - self.event.start_dt).total_seconds())
+        return min(1.0, float(self.attendance_seconds) / event_duration_seconds)
+
     def was_adequate(self):
         """
 
         :return:
         """
-        attendance_ratio = self.attendance
+        attendance_ratio = self.get_attendance_ratio()
         base_required_attendance_ratio = self.event.event_type.minimum_required_attendance_ratio
 
         # event_dow = self.event.start_dt.weekday()

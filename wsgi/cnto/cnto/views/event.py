@@ -133,7 +133,7 @@ def view_event(request, year_string, month_string, day_string):
 
         for attendance in attendances:
             attendance_values.append(
-                (attendance.member.name, "%.2f" % (attendance.attendance * 100.0,),
+                (attendance.member.name, "%.2f" % (attendance.get_attendance_ratio() * 100.0,),
                  not attendance.was_adequate()))
 
         attendance_values.sort(key=lambda x: x[0])
