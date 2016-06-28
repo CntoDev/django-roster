@@ -150,8 +150,6 @@ def view_event(request, year_string, month_string, day_string):
     context["attendance_values"] = attendance_values
     context["warning_count"] = MemberWarning.objects.filter(acknowledged=False).count()
 
-    update_attendance_for_current_event()
-
     return render(request, 'cnto/event/edit.html', context)
 
 
