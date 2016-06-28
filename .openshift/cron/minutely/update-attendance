@@ -1,0 +1,4 @@
+#!/bin/bash
+cd ${OPENSHIFT_REPO_DIR}/wsgi/cnto/scripts
+python update_attendance.py >> ${OPENSHIFT_PYTHON_LOG_DIR}/attendance.log
+
