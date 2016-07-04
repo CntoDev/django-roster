@@ -14,17 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.views.generic.base import RedirectView
+from django.conf.urls import include, url
+from django.contrib import admin
 
 import cnto_notes.urls as note_urls
 import cnto_users.urls as user_urls
 import cnto_warnings.urls as warning_urls
 import cnto_contributions.urls as contribution_urls
 import cnto_api.urls as api_urls
-
 from views import scrape, login_user, event, member, report, group, manage, absence
-from django.conf.urls import include, url
-from django.contrib import admin
-
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/manage/')),
@@ -34,9 +32,14 @@ urlpatterns = [
     url(r'^login/', login_user.login_user, name='login'),
 
     url(r'^event-browser/', event.event_browser, name='event-browser'),
+    # url(
+    #     r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(
+    # ?P<end_hour>[0-9]{2})h/$',
+    #     event.save_event, name='save-event'),
     url(
-        r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(?P<end_hour>[0-9]{2})h/$',
-        event.save_event, name='save-event'),
+        r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/('
+        r'?P<end_hour>[0-9]{2})h/$',
+        scrape.scrape, name='save-event'),
 
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
     url(r'^view-event/([0-9]{4})-([0-9]{2})-([0-9]{2})/$', event.view_event, name='view-event'),
@@ -68,7 +71,8 @@ urlpatterns = [
         report.download_report_for_month, name='download-group-month-csv'),
 
     url(r'^report-main/$', report.report_main, name='report-main'),
-    url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month, name='get-report-body-for-month'),
+    url(r'^get-report-body-for-month/(?P<month_string>\w{4}-\w{2})/$', report.get_report_body_for_month,
+        name='get-report-body-for-month'),
     url(r'^get-summary-data/$', report.get_summary_data, name='get-summary-data'),
 
     url(r'^notes/', include(note_urls)),

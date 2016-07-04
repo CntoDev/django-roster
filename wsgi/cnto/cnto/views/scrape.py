@@ -6,7 +6,6 @@ import pytz
 from django.utils import timezone
 from django.utils.timezone import datetime, timedelta
 from django.http.response import JsonResponse
-
 from django.shortcuts import redirect
 
 from cnto import RECRUIT_RANK
@@ -104,13 +103,14 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
             except MultipleObjectsReturned:
                 raise ValueError("Multiple users found with name %s!" % (username,))
 
+            attendance_seconds = (attendance_value * event.duration_minutes) * 60
             try:
                 attendance = Attendance.objects.get(event=event, member=member)
-                attendance.attendance = attendance_value
+                attendance.attendance_seconds = attendance_seconds
                 attendance.save()
             except Attendance.DoesNotExist:
                 attendance = Attendance(event=event, member=member,
-                                        attendance=attendance_value)
+                                        attendance_seconds=attendance_seconds)
                 attendance.save()
         return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
     except Exception, e:
