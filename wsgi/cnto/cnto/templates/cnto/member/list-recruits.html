@@ -6,7 +6,8 @@
             <th>Name</th>
             <th>Joined</th>
             <th>Mods due</th>
-            <th>RQF due</th>
+            <th>BQF due</th>
+            <th>Events</th>
             <th>Note</th>
             <th></th>
         </tr>
@@ -17,6 +18,7 @@
         <td>{{ recruit.join_date|date:'Y-m-d' }}</td>
         <td>{{ recruit|value_of:'mod_due_days' }}</td>
         <td>{{ recruit|value_of:'rqf_due_days' }}</td>
+        <td>{{ recruit|value_of:'events_attended' }}</td>
         <td>{{ recruit|active_note_message }}</td>
         <td>
             <a href="{% url 'edit-note-collection' recruit.pk %}"><span class="glyphicon glyphicon-pencil"

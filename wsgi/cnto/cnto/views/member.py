@@ -80,6 +80,7 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
             initial = {
                 'rank': rec_rank,
                 'mods_assessed': False,
+                'bqf_assessed': False,
                 'join_date': timezone.now().date()
             }
             form = MemberForm(initial=initial)

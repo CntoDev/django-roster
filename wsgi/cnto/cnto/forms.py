@@ -69,7 +69,8 @@ class MemberForm(forms.models.ModelForm):
 
     class Meta:
         model = Member
-        fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'discharged', 'discharge_date', 'email']
+        fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'bqf_assessed', 'discharged',
+                  'discharge_date', 'email']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
@@ -100,6 +101,7 @@ class MemberForm(forms.models.ModelForm):
         Field('join_date'),
         Field('email'),
         Field('mods_assessed'),
+        Field('bqf_assessed'),
         Field('discharged'),
         Field('discharge_date', type='hidden'),
         FormActions(

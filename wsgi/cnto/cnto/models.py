@@ -70,6 +70,7 @@ class Member(models.Model):
     discharge_date = models.DateField(verbose_name="Discharge date", null=True, default=None)
 
     mods_assessed = models.BooleanField(default=True, null=False)
+    bqf_assessed = models.BooleanField(default=True, null=False)
     deleted = models.BooleanField(default=False, null=False)
 
     @staticmethod
@@ -107,10 +108,18 @@ class Member(models.Model):
 
         :return:
         """
-        if RECRUIT_RANK not in self.rank.name.lower():
+        if RECRUIT_RANK not in self.rank.name.lower() or self.bqf_assessed:
             return "-"
         else:
             return (self.get_rqf_deadline_date() - timezone.now().date()).days
+
+    def events_attended(self):
+        """
+
+        :return:
+        """
+        attendances = Attendance.objects.filter(member=self)
+        return sum([1 if attendance.was_adequate() else 0 for attendance in attendances])
 
     def mod_due_days(self):
         """
@@ -226,8 +235,11 @@ class EventType(models.Model):
 
 class Event(models.Model):
     @staticmethod
-    def all_for_time_period(start_dt, end_dt):
-        return Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt)
+    def all_for_time_period(start_dt, end_dt=None):
+        if end_dt is None:
+            return Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt)
+        else:
+            return Event.objects.filter(start_dt__gte=start_dt)
 
     name = models.TextField()
     event_type = models.ForeignKey(EventType, null=False)

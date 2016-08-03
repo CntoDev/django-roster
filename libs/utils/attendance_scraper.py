@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.timezone import datetime
 from bs4 import BeautifulSoup
 import pytz
+
 from utils.date_utils import dates_overlap
 
 LOG = logging.getLogger("roster-tracker")
