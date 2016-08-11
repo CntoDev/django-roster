@@ -236,7 +236,7 @@ class EventType(models.Model):
 class Event(models.Model):
     @staticmethod
     def all_for_time_period(start_dt, end_dt=None):
-        if end_dt is None:
+        if end_dt is not None:
             return Event.objects.filter(start_dt__gte=start_dt, start_dt__lte=end_dt)
         else:
             return Event.objects.filter(start_dt__gte=start_dt)
