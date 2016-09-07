@@ -218,6 +218,9 @@ def get_attendance_rates_from_event_url(event_url):
             all_player_attendances[player_name] += attendance
 
     max_attendance = max(all_player_attendances[player_name] for player_name in all_player_attendances)
+    if max_attendance < 10e-5:
+        max_attendance = 1.0
+
     for player_name in all_player_attendances:
         all_player_attendances[player_name] /= max_attendance
 
