@@ -63,6 +63,7 @@ class Member(models.Model):
     rank = models.ForeignKey(Rank, null=False)
     member_group = models.ForeignKey(MemberGroup, null=True)
     email = models.EmailField(null=True)
+    bi_name = models.TextField(null=False, unique=False, verbose_name="BI nickname")
 
     join_date = models.DateField(verbose_name="Join date", null=False, default=timezone.now)
 

@@ -70,7 +70,7 @@ class MemberForm(forms.models.ModelForm):
     class Meta:
         model = Member
         fields = ['name', 'member_group', 'rank', 'join_date', 'mods_assessed', 'bqf_assessed', 'discharged',
-                  'discharge_date', 'email']
+                  'discharge_date', 'email', 'bi_name']
 
     name = forms.CharField()
     member_group = forms.ModelChoiceField(queryset=MemberGroup.objects.all(),
@@ -82,6 +82,7 @@ class MemberForm(forms.models.ModelForm):
     }))
 
     email = forms.EmailField(required=False)
+    bi_name = forms.CharField(required=False, label="BI nickname")
 
     mods_assessed = forms.BooleanField(required=False)
     discharged = forms.BooleanField(required=False)
@@ -100,6 +101,7 @@ class MemberForm(forms.models.ModelForm):
         Field('rank'),
         Field('join_date'),
         Field('email'),
+        Field('bi_name'),
         Field('mods_assessed'),
         Field('bqf_assessed'),
         Field('discharged'),
