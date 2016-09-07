@@ -85,7 +85,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                 continue
 
             rank_str = RECRUIT_RANK
-            if len(username_parts) > 2:
+            if len(username_parts) > 3:
                 rank_str = username_parts[3][0:-1]
             attendance_value = scrape_result[raw_username]
 
