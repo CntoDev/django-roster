@@ -10,15 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='GlobalPermission',
-            fields=[
-            ],
-            options={
-                'proxy': True,
-            },
-            bases=('auth.permission',),
-        ),
         migrations.AlterModelOptions(
             name='member',
             options={
