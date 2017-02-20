@@ -44,6 +44,7 @@ ALLOWED_HOSTS = [
 openshift_app_dns = os.environ.get('OPENSHIFT_APP_DNS')
 if openshift_app_dns is not None:
     ALLOWED_HOSTS.append(openshift_app_dns)
+    ALLOWED_HOSTS.append("roster.carpenoctem.co")
 else:
     ALLOWED_HOSTS.append("localhost")
     ALLOWED_HOSTS.append("127.0.0.1")
