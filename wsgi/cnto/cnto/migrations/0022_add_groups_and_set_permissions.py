@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.contrib.contenttypes.models import ContentType
 
 from django.db import migrations
 
@@ -7,9 +8,14 @@ from django.db import migrations
 def add_permission_to_group(apps, schema_editor, permission_name, role_name, with_create_permissions=True):
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    Member = apps.get_model("cnto", "Member")
     try:
+
+        content_type = ContentType.objects.get_for_model(Member)
         perm, created = Permission.objects.get_or_create(
-            codename=permission_name, content_type__app_label='cnto')
+            codename=permission_name,
+            content_type=content_type)
     except Permission.DoesNotExist:
         if with_create_permissions:
             # Manually run create_permissions

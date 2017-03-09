@@ -12,14 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='absence',
-            name='end_dt',
-        ),
-        migrations.RemoveField(
-            model_name='absence',
-            name='start_dt',
-        ),
-        migrations.RemoveField(
             model_name='member',
             name='discharge_dt',
         ),

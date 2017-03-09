@@ -14,22 +14,30 @@ def map_and_create_new_ranks(apps, schema_editor):
         res_type = Rank(name="Res")
         res_type.save()
 
-    ssgt_rank = Rank.objects.get(name__iexact="nco")
-    ssgt_rank.name = "SSgt"
-    ssgt_rank.save()
+    try:
+        ssgt_rank = Rank.objects.get(name__iexact="nco")
+        ssgt_rank.name = "SSgt"
+        ssgt_rank.save()
+    except Rank.DoesNotExist:
+        ssgt_rank = Rank(name="SSgt")
+        ssgt_rank.save()
 
-    srnco_rank = Rank.objects.get(name__iexact="srnco")
-    jrnco_rank = Rank.objects.get(name__iexact="jrnco")
-    Member = apps.get_model("cnto", "Member")
+    try:
+        srnco_rank = Rank.objects.get(name__iexact="srnco")
+        jrnco_rank = Rank.objects.get(name__iexact="jrnco")
 
-    members = Member.objects.all()
-    for member in members:
-        if member.rank == srnco_rank or member.rank == jrnco_rank:
-            member.rank = ssgt_rank
-            member.save()
+        Member = apps.get_model("cnto", "Member")
 
-    srnco_rank.delete()
-    jrnco_rank.delete()
+        members = Member.objects.all()
+        for member in members:
+            if member.rank == srnco_rank or member.rank == jrnco_rank:
+                member.rank = ssgt_rank
+                member.save()
+
+        srnco_rank.delete()
+        jrnco_rank.delete()
+    except Rank.DoesNotExist:
+        pass
 
 
 def unmap_ranks(apps, schema_editor):

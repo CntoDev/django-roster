@@ -6,19 +6,36 @@ from django.db import migrations, models
 
 def fix_permission_name(apps, schema_editor):
     Permission = apps.get_model("auth", "Permission")
-    perm, created = Permission.objects.get_or_create(
-        codename="cnto_edit_member", content_type__app_label='cnto')
-    perm.codename = "cnto_edit_members"
-    perm.save()
+
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    Member = apps.get_model("cnto", "Member")
+    content_type = ContentType.objects.get_for_model(Member)
+
+    try:
+        perm = Permission.objects.get(
+            codename="cnto_edit_member", content_type=content_type)
+
+        perm.codename = "cnto_edit_members"
+        perm.save()
+    except Permission.DoesNotExist:
+        perm = Permission.objects.get(
+            codename="cnto_edit_members", content_type=content_type)
+        assert perm is not None
 
 
 def break_permission_name(apps, schema_editor):
     Permission = apps.get_model("auth", "Permission")
-    perm, created = Permission.objects.get_or_create(
-        codename="cnto_edit_members", content_type__app_label='cnto')
-    perm.codename = "cnto_edit_member"
-    perm.save()
 
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    Member = apps.get_model("cnto", "Member")
+    content_type = ContentType.objects.get_for_model(Member)
+    try:
+        perm = Permission.objects.get(
+            codename="cnto_edit_members", content_type=content_type)
+        perm.codename = "cnto_edit_member"
+        perm.save()
+    except Permission.DoesNotExist:
+        pass
 
 class Migration(migrations.Migration):
 
