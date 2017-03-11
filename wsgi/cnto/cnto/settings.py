@@ -45,6 +45,7 @@ openshift_app_dns = os.environ.get('OPENSHIFT_APP_DNS')
 if openshift_app_dns is not None:
     ALLOWED_HOSTS.append(openshift_app_dns)
     ALLOWED_HOSTS.append("roster.carpenoctem.co")
+    ALLOWED_HOSTS.append("169.0.54.150")
 else:
     ALLOWED_HOSTS.append("localhost")
     ALLOWED_HOSTS.append("127.0.0.1")
@@ -137,6 +138,8 @@ WSGI_APPLICATION = 'cnto.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+from sens_do_not_commit import POSTGRES_DB_URL, POSTGRES_DB_NAME
+
 DATABASES = {}
 if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
     url = urlparse.urlparse(os.environ.get('OPENSHIFT_MYSQL_DB_URL'))
@@ -160,6 +163,18 @@ elif 'OPENSHIFT_POSTGRESQL_DB_URL' in os.environ:
         'PASSWORD': url.password,
         'HOST': url.hostname,
         'PORT': url.port,
+        }
+elif POSTGRES_DB_URL is not None:
+    url = urlparse.urlparse(POSTGRES_DB_URL)
+
+    DATABASES['default'] = {
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django-roster',
+        'USER': 'django',
+        'PASSWORD': 'django;',
+        'HOST': 'localhost',
+        # 'PORT': url.port,
+        'PORT': '',
         }
 
 else:

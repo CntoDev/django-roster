@@ -212,3 +212,7 @@ def list_present_players_on_server():
     players = [player["name"] for player in response["players"]]
 
     return players
+
+
+if __name__ == "__main__":
+    print "YES"
