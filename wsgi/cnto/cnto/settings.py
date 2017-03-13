@@ -49,6 +49,8 @@ if openshift_app_dns is not None:
 else:
     ALLOWED_HOSTS.append("localhost")
     ALLOWED_HOSTS.append("127.0.0.1")
+ALLOWED_HOSTS.append('cnto-roster.project.local')
+ALLOWED_HOSTS.append('roster.carpenoctem.co')
 
 if openshift_app_dns is None:
     LOGGING = {

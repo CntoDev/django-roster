@@ -1,4 +1,3 @@
 #!/bin/bash
-cd ${OPENSHIFT_REPO_DIR}/wsgi/cnto/scripts
-python update_attendance.py >> ${OPENSHIFT_PYTHON_LOG_DIR}/attendance.log
-
+cd /home/carpenoctem/django-roster/wsgi/cnto/scripts
+python update_attendance.py >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log
