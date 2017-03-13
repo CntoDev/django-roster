@@ -117,22 +117,18 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
         return JsonResponse({"success": False, "error": traceback.format_exc()})
 
 
-def update_attendance_for_current_event(interval_seconds=300,
-                                        event_type_name="Unknown"):
+def update_attendance_for_current_event(update_interval_seconds=300, event_type_name="Unknown", event_start_hour=20):
     """None
 
     :return:
     """
     try:
-        event_type = EventType.objects.get(name__iexact=event_type_name)
-
         dt = datetime.now()
 
-        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, dt.hour, 00, 00),
+        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, event_start_hour, 00, 00),
                                        timezone.get_default_timezone())
 
-        current_dt = timezone.make_aware(dt,
-                                         timezone.get_default_timezone())
+        current_dt = timezone.make_aware(dt, timezone.get_default_timezone())
         # pytz.timezone("Europe/Stockholm")
         #
         # if int(end_hour) >= 24:
@@ -148,21 +144,27 @@ def update_attendance_for_current_event(interval_seconds=300,
         #
         # event_duration_minutes = (end_dt - start_dt).total_seconds() / 60.0
 
+        end_dt = current_dt + timedelta(seconds=update_interval_seconds)
+        duration_minutes = (end_dt - start_dt).total_seconds() / 60.0
+
         try:
             event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                       start_dt__day=start_dt.day)
 
-            event.start_dt = start_dt
-            event.end_dt = current_dt + timedelta(seconds=interval_seconds)
-
-            event.event_type = event_type
-            event.duration_minutes += (event.end_dt - event.start_dt).total_seconds() / 60.0
-            event.save()
         except Event.DoesNotExist:
-            new_end_dt = current_dt + timedelta(seconds=interval_seconds)
-            event = Event(start_dt=start_dt, end_dt=new_end_dt,
-                          duration_minutes=(new_end_dt - start_dt).total_seconds() / 60.0, event_type=event_type)
-            event.save()
+            event_type = EventType.objects.get(name__iexact=event_type_name)
+
+            event = Event(start_dt=start_dt, end_dt=end_dt, duration_minutes=duration_minutes, event_type=event_type)
+
+        if event is None:
+            raise ValueError("Could find appropriate event starting at %s", start_dt)
+
+        event.start_dt = start_dt
+        event.end_dt = end_dt
+
+        event.duration_minutes = duration_minutes
+
+        event.save()
 
         current_players = list_present_players_on_server()
         for raw_username in current_players:
@@ -191,11 +193,11 @@ def update_attendance_for_current_event(interval_seconds=300,
 
             try:
                 attendance = Attendance.objects.get(event=event, member=member)
-                attendance.attendance_seconds += interval_seconds
+                attendance.attendance_seconds += update_interval_seconds
                 attendance.save()
             except Attendance.DoesNotExist:
                 attendance = Attendance(event=event, member=member,
-                                        attendance_seconds=interval_seconds)
+                                        attendance_seconds=update_interval_seconds)
                 attendance.save()
         return JsonResponse({"success": True, "error": None})
     except Exception, e:
