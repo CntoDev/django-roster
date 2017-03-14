@@ -150,6 +150,7 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
         try:
             event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                       start_dt__day=start_dt.day)
+            end_dt = max(event.end_dt, end_dt)
 
         except Event.DoesNotExist:
             event_type = EventType.objects.get(name__iexact=event_type_name)
