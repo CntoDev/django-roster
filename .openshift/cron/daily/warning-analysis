@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/.bashrc
+workon django-roster
 date >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log
 cd /home/carpenoctem/django-roster/wsgi/cnto/scripts
 python add_and_update_warnings.py >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log

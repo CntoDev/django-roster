@@ -1,3 +1,5 @@
 #!/bin/bash
+source ~/.bashrc
+workon django-roster
 cd /home/carpenoctem/django-roster/wsgi/cnto/scripts
 python update_attendance.py >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log

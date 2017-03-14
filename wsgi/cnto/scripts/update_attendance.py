@@ -25,6 +25,8 @@ from cnto.views.scrape import update_attendance_for_current_event
 if __name__ == "__main__":
 
     dt = datetime.now()
+    # print "Update attendance %s" % (dt, )
+    # print "TZ %s" % (timezone.make_aware(dt, timezone.get_default_timezone()), )
 
     weekdays_to_monitor = [1, 4]
     event_start_hour = 20
