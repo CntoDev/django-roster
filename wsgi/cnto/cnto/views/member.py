@@ -1,11 +1,12 @@
-from datetime import timedelta
 from django.utils import timezone
 from django.http.response import JsonResponse
-
 from django.http import Http404
 from django.shortcuts import redirect, render_to_response
+
 from django.template.context_processors import csrf
+
 from cnto import RECRUIT_RANK
+from cnto.forms import MergeMemberIntoForm
 from cnto.templatetags.cnto_tags import has_permission
 from cnto_warnings.models import MemberWarning
 from ..models import Member, Rank
@@ -102,6 +103,41 @@ def handle_member_change_view(request, edit_mode=False, member=None, recruit_onl
     return render_to_response('cnto/member/edit.html', args)
 
 
+def handle_merge_member_into_view(request, member=None):
+    """
+
+    :param request:
+    :param member:
+    :return:
+    """
+    if request.POST:
+        form = MergeMemberIntoForm(request.POST)
+        if request.POST.get("cancel"):
+            return redirect('manage')
+        elif form.is_valid():
+            from_member = form.cleaned_data["from_member"]
+            into_member = form.cleaned_data["into_member"]
+
+            into_member.merge_from(from_member)
+
+            return redirect('manage')
+    else:
+        if member is None:
+            form = MergeMemberIntoForm()
+        else:
+            form = MergeMemberIntoForm(initial={
+                "from_member": member
+            })
+
+    args = {}
+    args.update(csrf(request))
+
+    args["user"] = request.user
+    args['form'] = form
+
+    return render_to_response('cnto/member/merge_into.html', args)
+
+
 def handle_discharged_member_change_view(request, member):
     if request.POST:
         form = DischargedMemberForm(request.POST, instance=member)
@@ -133,6 +169,20 @@ def create_member(request):
         return redirect("manage")
 
     return handle_member_change_view(request)
+
+
+def merge_member_into(request, member_pk):
+    """View Member
+    """
+    if not request.user.is_authenticated():
+        return redirect("login")
+
+    try:
+        member = Member.objects.get(pk=member_pk)
+    except Member.DoesNotExist:
+        raise Http404()
+
+    return handle_merge_member_into_view(request, member=member)
 
 
 def create_recruit(request):

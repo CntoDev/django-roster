@@ -50,6 +50,8 @@ urlpatterns = [
 
     url(r'^manage/$', manage.management, name='manage'),
 
+    url(r'^merge-member-into/(?P<member_pk>\d+)/$', member.merge_member_into,
+        name='merge-member-into'),
     url(r'^delete-member/(\d+)/$', member.delete_member, name='delete-member'),
     url(r'^edit-member/(?P<pk>\d+)/$', member.edit_member, name='edit-member'),
     url(r'^edit-discharged-member/(?P<pk>\d+)/$', member.edit_discharged_member, name='edit-discharged-member'),

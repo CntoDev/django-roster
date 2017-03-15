@@ -11,10 +11,10 @@
                 <a href="{% url 'edit-note-collection' form.instance.pk %}" class="btn btn-default">Notes</a>
                 <a href="{% url 'edit-absences' form.instance.pk %}" class="btn btn-default">Absences</a>
                 <a href="{% url 'list-warnings-for-member' form.instance.pk %}" class="btn btn-default">Warnings</a>
+                <a href="{% url 'merge-member-into' form.instance.pk %}" class="btn btn-default">Merge Into</a>
                 {% if user|has_permission:"cnto_edit_contributions" %}
                     <a href="{% url 'edit-contributions-for-member' form.instance.pk %}" class="btn btn-default">Contributions</a>
                 {% endif %}
-                <a href="{% url 'merge-member-into' form.instance.pk %}" class="btn btn-warning">Merge Into</a>
             </div>
         </div>
     {% else %}

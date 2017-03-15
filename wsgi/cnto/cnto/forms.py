@@ -62,6 +62,43 @@ class EventTypeForm(forms.models.ModelForm):
         return name
 
 
+class MergeMemberIntoForm(forms.Form):
+    """None
+
+    """
+
+    from_member = forms.ModelChoiceField(queryset=Member.objects.all().order_by('name'),
+                                         empty_label="<Select member>", required=True)
+
+    into_member = forms.ModelChoiceField(queryset=Member.objects.all().order_by('name'),
+                                         empty_label="<Select member>", required=True,
+                                         help_text="This is the member that will remain after merge. The 'from' "
+                                                   "member will be deleted, "
+                                                   "but all of the information associated with that member will be "
+                                                   "merged into this member.")
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.layout = Layout(
+        Field('from_member'),
+        Field('into_member'),
+        FormActions(
+            AcceptButton('save_changes', 'Merge'),
+            CancelButton('cancel', 'Cancel'),
+        )
+    )
+
+    def clean_into_member(self):
+        from_member = self.cleaned_data['from_member']
+        into_member = self.cleaned_data['into_member']
+
+        if from_member == into_member:
+            raise forms.ValidationError(
+                "Cannot merge member into itself!")
+
+        return into_member
+
+
 class MemberForm(forms.models.ModelForm):
     """None
 
@@ -192,6 +229,9 @@ class MemberGroupForm(forms.models.ModelForm):
 
     def clean_leader(self):
         leader = self.cleaned_data['leader']
+        if leader is None:
+            return None
+
         if leader.email is None or "@" not in leader.email:
             raise forms.ValidationError(
                 "Cannot select a leader with no configured email address!")

@@ -104,6 +104,55 @@ class Member(models.Model):
 
         return members
 
+    def merge_from(self, from_member):
+        """
+
+        :param from_member:
+        :return:
+        """
+        if self.rank == RECRUIT_RANK and from_member.rank != RECRUIT_RANK:
+            self.rank = from_member.rank
+
+        if self.email is None and from_member.email is not None:
+            self.email = from_member.email
+
+        if self.bi_name is None and from_member.bi_name is not None:
+            self.bi_name = from_member.bi_name
+
+        self.join_date = min(self.join_date, from_member.join_date)
+
+        if not self.mods_assessed and from_member.mods_assessed:
+            self.mods_assessed = True
+
+        if not self.bqf_assessed and from_member.bqf_assessed:
+            self.bqf_assessed = True
+
+        self.save()
+
+        # Transfer absences
+        absences = Absence.objects.filter(member=from_member)
+        for absence in absences:
+            absence.member = self
+            absence.save()
+
+        # Merge attendance
+        attendances = Attendance.objects.filter(member=from_member)
+        for attendance in attendances:
+            try:
+                # Merge
+                existing_attendance = Attendance.objects.get(member=self, event=attendance.event)
+
+                existing_attendance.attendance_seconds = max(existing_attendance.attendance_seconds,
+                                                             attendance.attendance_seconds)
+                existing_attendance.save()
+            except Attendance.DoesNotExist:
+                # Simply transfer
+                attendance.member = self
+                attendance.save()
+
+        from_member.deleted = True
+        from_member.save()
+
     def rqf_due_days(self):
         """
 
@@ -293,7 +342,8 @@ class Attendance(models.Model):
         """
         attendances = Attendance.objects.filter(event=event)
         if len(attendances) > 0:
-            average_attendance = sum([attendance.get_attendance_ratio() for attendance in attendances]) / len(attendances)
+            average_attendance = sum([attendance.get_attendance_ratio() for attendance in attendances]) / len(
+                attendances)
         else:
             average_attendance = 0
 
