@@ -169,15 +169,11 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
 
         current_players = list_present_players_on_server()
         for raw_username in current_players:
-            username_parts = raw_username.split(" ")
-            username = username_parts[0]
+            username = raw_username
             if len(username) == 0:
                 continue
 
             rank_str = RECRUIT_RANK
-            if len(username_parts) > 2:
-                rank_str = username_parts[3][0:-1]
-
             try:
                 rank = Rank.objects.get(name__iexact=rank_str)
             except Rank.DoesNotExist:
