@@ -70,7 +70,7 @@ class MergeMemberIntoForm(forms.Form):
     from_member = forms.ModelChoiceField(queryset=Member.objects.all().order_by('name'),
                                          empty_label="<Select member>", required=True)
 
-    into_member = forms.ModelChoiceField(queryset=Member.active_members(),
+    into_member = forms.ModelChoiceField(queryset=Member.active_members().order_by('name'),
                                          empty_label="<Select member>", required=True,
                                          help_text="This is the member that will remain after merge. The 'from' "
                                                    "member will be deleted, "
