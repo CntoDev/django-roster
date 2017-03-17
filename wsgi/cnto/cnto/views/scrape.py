@@ -169,7 +169,11 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
 
         current_players = list_present_players_on_server()
         for raw_username in current_players:
-            username = raw_username
+            username_parts = raw_username.split(" ")
+            # Filter tags
+            username_parts = [username_part for username_part in username_parts if username_part[0] != "["]
+            username = " ".join(username_parts)
+
             if len(username) == 0:
                 continue
 
