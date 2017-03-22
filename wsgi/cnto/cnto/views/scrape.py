@@ -88,41 +88,43 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                           duration_minutes=scrape_stats["minutes"], event_type=event_type)
             event.save()
 
-        previous_attendances = Attendance.objects.filter(event=event)
-        previous_attendances.delete()
+        if len(scrape_result) > 0:
+            # Only do something when data was collected.
+            
+            previous_attendances = Attendance.objects.filter(event=event)
+            previous_attendances.delete()
+            for raw_username in scrape_result:
+                username = interpret_raw_username(raw_username)
 
-        for raw_username in scrape_result:
-            username = interpret_raw_username(raw_username)
+                if len(username) == 0:
+                    continue
 
-            if len(username) == 0:
-                continue
+                rank_str = RECRUIT_RANK
+                attendance_value = scrape_result[raw_username]
 
-            rank_str = RECRUIT_RANK
-            attendance_value = scrape_result[raw_username]
+                try:
+                    rank = Rank.objects.get(name__iexact=rank_str)
+                except Rank.DoesNotExist:
+                    rank = Rank(name=rank_str)
+                    rank.save()
 
-            try:
-                rank = Rank.objects.get(name__iexact=rank_str)
-            except Rank.DoesNotExist:
-                rank = Rank(name=rank_str)
-                rank.save()
+                try:
+                    member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
+                except Member.DoesNotExist:
+                    member = Member(name=username, rank=rank)
+                    member.save()
+                except MultipleObjectsReturned:
+                    raise ValueError("Multiple users found with name %s!" % (username,))
 
-            try:
-                member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
-            except Member.DoesNotExist:
-                member = Member(name=username, rank=rank)
-                member.save()
-            except MultipleObjectsReturned:
-                raise ValueError("Multiple users found with name %s!" % (username,))
-
-            attendance_seconds = (attendance_value * event.duration_minutes) * 60
-            try:
-                attendance = Attendance.objects.get(event=event, member=member)
-                attendance.attendance_seconds = attendance_seconds
-                attendance.save()
-            except Attendance.DoesNotExist:
-                attendance = Attendance(event=event, member=member,
-                                        attendance_seconds=attendance_seconds)
-                attendance.save()
+                attendance_seconds = (attendance_value * event.duration_minutes) * 60
+                try:
+                    attendance = Attendance.objects.get(event=event, member=member)
+                    attendance.attendance_seconds = attendance_seconds
+                    attendance.save()
+                except Attendance.DoesNotExist:
+                    attendance = Attendance(event=event, member=member,
+                                            attendance_seconds=attendance_seconds)
+                    attendance.save()
         return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
     except Exception, e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
