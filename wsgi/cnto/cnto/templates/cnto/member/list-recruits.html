@@ -6,8 +6,10 @@
             <th>Name</th>
             <th>Joined</th>
             <th>Mods due</th>
-            <th>BQF due</th>
+            <th>Deadline</th>
+            <th>BQF</th>
             <th>Events</th>
+            <th>Ready</th>
             <th>Note</th>
             <th></th>
         </tr>
@@ -18,7 +20,9 @@
         <td>{{ recruit.join_date|date:'Y-m-d' }}</td>
         <td>{{ recruit|value_of:'mod_due_days' }}</td>
         <td>{{ recruit|value_of:'rqf_due_days' }}</td>
+        <td>{% if recruit.bqf_assessed %}<span class="glyphicon glyphicon-ok"></span{% endif %}</td>
         <td>{{ recruit|value_of:'events_attended' }}</td>
+        <td>{% if recruit|value_of:'ready_for_promotion' %}<span class="glyphicon glyphicon-ok"></span{% endif %}</td>
         <td>{{ recruit|active_note_message }}</td>
         <td>
             <a href="{% url 'edit-note-collection' recruit.pk %}"><span class="glyphicon glyphicon-pencil"
@@ -52,7 +56,7 @@
         {
             $("#recruit-list-table").tablesorter({
                 headers: {
-                    5: { sorter: false }
+                    7: { sorter: false }
                 }
             });
         }

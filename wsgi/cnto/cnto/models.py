@@ -32,6 +32,13 @@ class Rank(models.Model):
     def lowered_name(self):
         return self.name.lower()
 
+    def is_recruit(self):
+        """
+
+        :return:
+        """
+        return RECRUIT_RANK in self.name.lower()
+
 
 class MemberGroup(models.Model):
     name = models.TextField(null=False, unique=True)
@@ -104,13 +111,24 @@ class Member(models.Model):
 
         return members
 
+    def ready_for_promotion(self):
+        """
+
+        :return:
+        """
+        if not self.rank.is_recruit():
+            return True
+
+        ready = self.events_attended() >= 5 and self.bqf_assessed
+        return ready
+
     def merge_from(self, from_member):
         """
 
         :param from_member:
         :return:
         """
-        if self.rank == RECRUIT_RANK and from_member.rank != RECRUIT_RANK:
+        if self.rank.is_recruit() and not from_member.rank.is_recruit():
             self.rank = from_member.rank
 
         if self.email is None and from_member.email is not None:
@@ -158,10 +176,7 @@ class Member(models.Model):
 
         :return:
         """
-        if RECRUIT_RANK not in self.rank.name.lower() or self.bqf_assessed:
-            return "-"
-        else:
-            return (self.get_rqf_deadline_date() - timezone.now().date()).days
+        return (self.get_rqf_deadline_date() - timezone.now().date()).days
 
     def events_attended(self):
         """
@@ -176,7 +191,7 @@ class Member(models.Model):
 
         :return:
         """
-        if RECRUIT_RANK not in self.rank.name.lower() or self.mods_assessed:
+        if not self.rank.is_recruit() or self.mods_assessed:
             return "-"
         else:
             return (self.get_mod_assessment_deadline_date() - timezone.now().date()).days
@@ -244,13 +259,13 @@ class Member(models.Model):
         grunt_qualification_deadline = self.get_rqf_deadline_date()
         if current_dt.date() > grunt_qualification_deadline:
             # Six weeks grunt notice
-            message = "Grunt qualification overdue."
+            message = "Promotion deadline reached."
             return True, message
 
         return False, None
 
     def get_recruit_warning(self):
-        if RECRUIT_RANK not in self.rank.name.lower():
+        if not self.rank.is_recruit():
             return False, "Not recruit."
 
         mod_assessment_due, reason = self.is_mod_assessment_due()
