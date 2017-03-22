@@ -15,6 +15,19 @@ from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
 
 
+def interpret_raw_username(raw_username):
+    """
+
+    :param raw_username:
+    :return:
+    """
+    username_parts = raw_username.split(" ")
+    # Filter tags
+    username_parts = [username_part for username_part in username_parts if username_part[0] != "["]
+    username = " ".join(username_parts)
+    return username
+
+
 def scrape(request, event_type_name, dt_string, start_hour, end_hour):
     """Return the daily process main overview page.
     """
@@ -79,14 +92,12 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
         previous_attendances.delete()
 
         for raw_username in scrape_result:
-            username_parts = raw_username.split(" ")
-            username = username_parts[0]
+            username = interpret_raw_username(raw_username)
+
             if len(username) == 0:
                 continue
 
             rank_str = RECRUIT_RANK
-            if len(username_parts) > 3:
-                rank_str = username_parts[3][0:-1]
             attendance_value = scrape_result[raw_username]
 
             try:
@@ -169,10 +180,7 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
 
         current_players = list_present_players_on_server()
         for raw_username in current_players:
-            username_parts = raw_username.split(" ")
-            # Filter tags
-            username_parts = [username_part for username_part in username_parts if username_part[0] != "["]
-            username = " ".join(username_parts)
+            username = interpret_raw_username(raw_username)
 
             if len(username) == 0:
                 continue
