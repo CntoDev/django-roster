@@ -55,7 +55,9 @@
     $(document).ready(function()
         {
             $("#recruit-list-table").tablesorter({
-                emptyTo: 'bottom'
+                headers: {
+                    8: { sorter: false }
+                },
             });
         }
     );
