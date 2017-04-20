@@ -12,16 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='absence',
-            name='end_date',
-            field=models.DateField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='absence',
-            name='start_date',
-            field=models.DateField(default=django.utils.timezone.now),
-        ),
         migrations.AddField(
             model_name='member',
             name='discharge_date',
