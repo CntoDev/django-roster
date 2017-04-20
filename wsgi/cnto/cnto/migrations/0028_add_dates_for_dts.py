@@ -12,17 +12,15 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='absence',
             name='end_date',
             field=models.DateField(default=django.utils.timezone.now),
-            preserve_default=False,
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='absence',
             name='start_date',
             field=models.DateField(default=django.utils.timezone.now),
-            preserve_default=False,
         ),
         migrations.AddField(
             model_name='member',
