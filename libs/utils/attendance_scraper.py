@@ -1,6 +1,6 @@
 import traceback
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import threading
 
 from django.utils import timezone
@@ -46,7 +46,7 @@ class ScrapeThread(threading.Thread):
                                                       int(scrape_stats["minutes"] * scrape_stats["average_attendance"]),
                                                       int(scrape_stats["minutes"])))
 
-        except Exception, e:
+        except Exception as e:
             self._viewer.show_message_signal.emit("Error", str(traceback.format_exc()))
         self._viewer.busy_signal.emit(False)
 
@@ -68,7 +68,7 @@ def get_all_events_for_page(page_number=1):
     """
     event_url = get_url_for_event_page(page_number)
     LOG.info("Loading all events for page %s...", event_url)
-    page_file = urllib.urlopen(event_url)
+    page_file = urllib.request.urlopen(event_url)
     # page_file = open("temp.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
 
@@ -165,7 +165,7 @@ def get_attendance_rates_from_event_url(event_url):
     """
     """
     LOG.info("Loading event attendance rates from %s...", event_url)
-    page_file = urllib.urlopen(event_url)
+    page_file = urllib.request.urlopen(event_url)
     # page_file = open("event.html", "r") 
     soup = BeautifulSoup(page_file, "lxml")
 
@@ -276,7 +276,7 @@ if __name__ == "__main__":
     end_dt = datetime(2015, 10, 1, 18, 40, 00)
 
     overall_attendances = get_all_event_attendances_between(start_dt, end_dt)
-    print overall_attendances
+    print(overall_attendances)
     # overall_attendances = {u'Spartak [CNTO - Gnt]': 1.0, u'Chypsa [CNTO - Gnt]': 0.27631578947368424,
     # u'Anders [CNTO - SPC]': 0.7236842105263158, u'Guilly': 0.7236842105263158, u'Hellfire [CNTO - SPC]': 1.0,
     # u'Rush [CNTO - Gnt]': 0.7236842105263158, u'Hateborder [CNTO - Gnt]': 0.7236842105263158, u'Peltier [CNTO -

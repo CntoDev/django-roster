@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import urlparse
+import urllib.parse
 import sys
 
 from socket import gethostname
@@ -144,7 +144,7 @@ from sens_do_not_commit import POSTGRES_DB_URL, POSTGRES_DB_NAME
 
 DATABASES = {}
 if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
-    url = urlparse.urlparse(os.environ.get('OPENSHIFT_MYSQL_DB_URL'))
+    url = urllib.parse.urlparse(os.environ.get('OPENSHIFT_MYSQL_DB_URL'))
 
     DATABASES['default'] = {
         'ENGINE' : 'django.db.backends.mysql',
@@ -156,7 +156,7 @@ if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
         }
 
 elif 'OPENSHIFT_POSTGRESQL_DB_URL' in os.environ:
-    url = urlparse.urlparse(os.environ.get('OPENSHIFT_POSTGRESQL_DB_URL'))
+    url = urllib.parse.urlparse(os.environ.get('OPENSHIFT_POSTGRESQL_DB_URL'))
 
     DATABASES['default'] = {
         'ENGINE' : 'django.db.backends.postgresql_psycopg2',
@@ -167,7 +167,7 @@ elif 'OPENSHIFT_POSTGRESQL_DB_URL' in os.environ:
         'PORT': url.port,
         }
 elif POSTGRES_DB_URL is not None:
-    url = urlparse.urlparse(POSTGRES_DB_URL)
+    url = urllib.parse.urlparse(POSTGRES_DB_URL)
 
     DATABASES['default'] = {
         'ENGINE' : 'django.db.backends.postgresql_psycopg2',

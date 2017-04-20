@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 from django.utils import timezone
@@ -16,7 +16,7 @@ def set_default_absence_concluded_state(apps, schema_editor):
             absence.concluded = True
 
         # Without a save, this migration doesn't actually do anything!
-    print "Done"
+    print("Done")
 
 
 def clear_default_absence_concluded_state(apps, schema_editor):

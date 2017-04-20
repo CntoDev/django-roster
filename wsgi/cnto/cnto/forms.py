@@ -5,7 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, BaseInput
 from crispy_forms.bootstrap import FormActions
 
-from models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
+from .models import Member, MemberGroup, Rank, EventType, Absence, AbsenceType
 from utils.date_utils import dates_overlap
 
 

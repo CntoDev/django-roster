@@ -22,7 +22,7 @@ import cnto_users.urls as user_urls
 import cnto_warnings.urls as warning_urls
 import cnto_contributions.urls as contribution_urls
 import cnto_api.urls as api_urls
-from views import scrape, login_user, event, member, report, group, manage, absence
+from .views import scrape, login_user, event, member, report, group, manage, absence
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/manage/')),

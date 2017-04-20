@@ -126,7 +126,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                                             attendance_seconds=attendance_seconds)
                     attendance.save()
         return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
-    except Exception, e:
+    except Exception as e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
 
 
@@ -211,7 +211,7 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
                                         attendance_seconds=update_interval_seconds)
                 attendance.save()
         return JsonResponse({"success": True, "error": None})
-    except Exception, e:
+    except Exception as e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
 
 
@@ -228,4 +228,4 @@ def list_present_players_on_server():
 
 
 if __name__ == "__main__":
-    print "YES"
+    print("YES")
