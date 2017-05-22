@@ -52,6 +52,12 @@ else:
 ALLOWED_HOSTS.append('cnto-roster.project.local')
 ALLOWED_HOSTS.append('roster.carpenoctem.co')
 
+# Production-specific settings
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 if openshift_app_dns is None:
     LOGGING = {
         'version': 1,
