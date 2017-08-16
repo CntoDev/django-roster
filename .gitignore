@@ -1,5 +1,7 @@
 *.py[co]
 *.sw[po]
+.coverage
+*.log
 .idea
 *.bak
 *.orig
@@ -7,4 +9,6 @@
 .project
 sens_do_not_commit.*
 .pydevproject
+.venv
 __pycache__
+.ropeproject
