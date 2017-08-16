@@ -140,7 +140,11 @@ WSGI_APPLICATION = 'cnto.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-from sens_do_not_commit import POSTGRES_DB_URL, POSTGRES_DB_NAME
+try:
+    from sens_do_not_commit import POSTGRES_DB_URL, POSTGRES_DB_NAME
+except ImportError:
+    POSTGRES_DB_URL = None
+    POSTGRES_DB_NAME = None
 
 DATABASES = {}
 if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
