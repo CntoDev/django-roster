@@ -10,7 +10,10 @@ from django.shortcuts import redirect
 
 from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
-from sens_do_not_commit import ARMA3_SERVER_MONITOR
+try:
+    from sens_do_not_commit import ARMA3_SERVER_MONITOR
+except ImportError:
+    ARMA3_SERVER_MONITOR = ("localhost", 2303)
 from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
 
