@@ -12,7 +12,7 @@ class ContributionType(models.Model):
 class Contribution(models.Model):
     class Meta:
         permissions = (
-            ("cnto_edit_contributions", u"Edit contributions"),
+            ("cnto_edit_contributions", "Edit contributions"),
         )
 
     member = models.ForeignKey(Member, null=False)

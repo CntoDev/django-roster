@@ -6,7 +6,7 @@ from django.template.context_processors import csrf
 from cnto.models import Member
 from cnto_notes.forms import NoteForm
 
-from models import Note
+from .models import Note
 
 
 def activate_note(request, pk):
@@ -46,7 +46,7 @@ def delete_note(request, note_pk):
     if not request.user.is_authenticated():
         return redirect("login")
 
-    print "Deleting %s" % (note_pk, )
+    print("Deleting %s" % (note_pk, ))
 
     try:
         note = Note.objects.get(pk=note_pk)

@@ -10,7 +10,10 @@ from django.shortcuts import redirect
 
 from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
-from sens_do_not_commit import ARMA3_SERVER_MONITOR
+try:
+    from sens_do_not_commit import ARMA3_SERVER_MONITOR
+except ImportError:
+    ARMA3_SERVER_MONITOR = ("localhost", 2303)
 from utils.attendance_scraper import get_all_event_attendances_between
 from ..models import Event, Member, Rank, Attendance, EventType
 
@@ -126,7 +129,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
                                             attendance_seconds=attendance_seconds)
                     attendance.save()
         return JsonResponse({"attendance": scrape_result, "stats": scrape_stats, "success": True})
-    except Exception, e:
+    except Exception as e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
 
 
@@ -211,7 +214,7 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
                                         attendance_seconds=update_interval_seconds)
                 attendance.save()
         return JsonResponse({"success": True, "error": None})
-    except Exception, e:
+    except Exception as e:
         return JsonResponse({"success": False, "error": traceback.format_exc()})
 
 
@@ -228,4 +231,4 @@ def list_present_players_on_server():
 
 
 if __name__ == "__main__":
-    print "YES"
+    print("YES")

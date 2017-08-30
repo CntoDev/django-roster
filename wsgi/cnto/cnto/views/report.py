@@ -160,7 +160,7 @@ def get_report_context_for_date_range(start_dt, end_dt):
         context["start_dt"] = start_dt.strftime("%Y-%m-%d")
         context["end_dt"] = end_dt.strftime("%Y-%m-%d")
     except Exception:
-        print str(traceback.format_exc())
+        print(str(traceback.format_exc()))
         raise
 
     return context
