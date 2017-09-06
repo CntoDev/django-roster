@@ -56,7 +56,7 @@ class MemberWarning(CreatedModifiedMixin):
         #         User.objects.get(username__iexact="john"),
         #     ]
         if self.warning_type.is_warning("Contribution Expiring"):
-            member_group = MemberGroup.objects.get(name__iexact="Management")
+            member_group = MemberGroup.objects.get(name__iexact="Finances")
         else:
             member_group = self.member.member_group
 
