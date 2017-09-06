@@ -1,22 +1,17 @@
 import json
-from datetime import timedelta
 import traceback
 
 from django.utils import timezone
 from django.utils.timezone import datetime
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
-import pytz
-
 from django.http import Http404
-
 from django.template.context_processors import csrf
-from cnto.views.scrape import list_present_players_on_server, update_attendance_for_current_event
-
 from cnto_warnings.models import MemberWarning
 from ..models import Event, Attendance, MemberGroup, EventType
 from cnto.templatetags.cnto_tags import has_permission
 from ..forms import EventTypeForm
+from utils.date_utils import calculate_dt_from_strings
 
 
 def delete_event_type(request, event_type_pk):
@@ -185,7 +180,7 @@ def event_browser(request):
     return render(request, 'cnto/event/browser.html', context)
 
 
-def save_event(request, event_type_name, dt_string, start_hour, end_hour):
+def save_event(request, event_type_name, dt_string, start_time_string, end_time_string):
     """Return the daily process main overview page.
     """
 
@@ -197,22 +192,8 @@ def save_event(request, event_type_name, dt_string, start_hour, end_hour):
 
         event_type = EventType.objects.get(name__iexact=event_type_name)
 
-        dt = datetime.strptime(dt_string, "%Y-%m-%d")
-
-        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00),
-                                       timezone.get_default_timezone())
-        pytz.timezone("Europe/Stockholm")
-
-        if int(end_hour) >= 24:
-            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
-                                         timezone.get_default_timezone())
-            end_dt += timedelta(days=1, hours=int(end_hour) - 24)
-        else:
-            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
-                                         timezone.get_default_timezone())
-
-        if end_dt < start_dt:
-            end_dt += timedelta(hours=240)
+        start_dt = calculate_dt_from_strings(dt_string, start_time_string)
+        end_dt = calculate_dt_from_strings(dt_string, end_time_string)
 
         event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                   start_dt__day=start_dt.day)

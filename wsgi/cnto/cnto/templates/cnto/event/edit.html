@@ -46,14 +46,15 @@
             <div class="col-xs-1 dropdown">
                 <button class="btn btn-default" id="start-time-label" type="button" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
-                    {% if event %}{{ event.event_type.default_start_hour }}h{% else %}20h{% endif %} <span
+                    {% if event %}{{ event.event_type.default_start_hour }}h00{% else %}20h00{% endif %} <span
                         class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="start-time-label">
-                    <li><a class="start-time-selector" href="#">17h </a></li>
-                    <li><a class="start-time-selector" href="#">18h </a></li>
-                    <li><a class="start-time-selector" href="#">19h </a></li>
-                    <li><a class="start-time-selector" href="#">20h </a></li>
+                    <li><a class="start-time-selector" href="#">19h00 </a></li>
+                    <li><a class="start-time-selector" href="#">19h30 </a></li>
+                    <li><a class="start-time-selector" href="#">20h00 </a></li>
+                    <li><a class="start-time-selector" href="#">20h30 </a></li>
+                    <li><a class="start-time-selector" href="#">21h00 </a></li>
                 </ul>
             </div>
         </div>
@@ -64,16 +65,19 @@
             <div class="col-xs-1 dropdown">
                 <button class="btn btn-default" id="end-time-label" type="button" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
-                    {% if event %}{{ event.event_type.default_end_hour }}h{% else %}23h{% endif %} <span
+                    {% if event %}{{ event.event_type.default_end_hour }}h00{% else %}23h00{% endif %} <span
                         class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="start-time-label">
-                    <li><a class="end-time-selector" href="#">20h </a></li>
-                    <li><a class="end-time-selector" href="#">21h </a></li>
-                    <li><a class="end-time-selector" href="#">22h </a></li>
-                    <li><a class="end-time-selector" href="#">23h </a></li>
-                    <li><a class="end-time-selector" href="#">00h </a></li>
-                    <li><a class="end-time-selector" href="#">01h </a></li>
+                    <li><a class="end-time-selector" href="#">21h00 </a></li>
+                    <li><a class="end-time-selector" href="#">21h30 </a></li>
+                    <li><a class="end-time-selector" href="#">22h00 </a></li>
+                    <li><a class="end-time-selector" href="#">22h30 </a></li>
+                    <li><a class="end-time-selector" href="#">23h00 </a></li>
+                    <li><a class="end-time-selector" href="#">23h30 </a></li>
+                    <li><a class="end-time-selector" href="#">00h00 </a></li>
+                    <li><a class="end-time-selector" href="#">00h30 </a></li>
+                    <li><a class="end-time-selector" href="#">01h00 </a></li>
                 </ul>
             </div>
         </div>

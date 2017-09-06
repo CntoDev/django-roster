@@ -7,9 +7,10 @@ from django.utils import timezone
 from django.utils.timezone import datetime, timedelta
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
-
 from cnto import RECRUIT_RANK
 from cnto.templatetags.cnto_tags import has_permission
+from utils.date_utils import calculate_dt_from_strings
+
 try:
     from sens_do_not_commit import ARMA3_SERVER_MONITOR
 except ImportError:
@@ -31,7 +32,7 @@ def interpret_raw_username(raw_username):
     return username
 
 
-def scrape(request, event_type_name, dt_string, start_hour, end_hour):
+def scrape(request, event_type_name, dt_string, start_time_string, end_time_string):
     """Return the daily process main overview page.
     """
 
@@ -43,22 +44,11 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
 
         event_type = EventType.objects.get(name__iexact=event_type_name)
 
-        dt = datetime.strptime(dt_string, "%Y-%m-%d")
-
-        start_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(start_hour), 00, 00),
-                                       timezone.get_default_timezone())
-        pytz.timezone("Europe/Stockholm")
-
-        if int(end_hour) >= 24:
-            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, 0, 0, 0),
-                                         timezone.get_default_timezone())
-            end_dt += timedelta(days=1, hours=int(end_hour) - 24)
-        else:
-            end_dt = timezone.make_aware(datetime(dt.year, dt.month, dt.day, int(end_hour), 00, 00),
-                                         timezone.get_default_timezone())
+        start_dt = calculate_dt_from_strings(dt_string, start_time_string)
+        end_dt = calculate_dt_from_strings(dt_string, end_time_string)
 
         if end_dt < start_dt:
-            end_dt += timedelta(hours=240)
+            end_dt += timedelta(hours=24)
 
         try:
             scrape_result, scrape_stats = get_all_event_attendances_between(start_dt.astimezone(pytz.utc),
@@ -93,7 +83,7 @@ def scrape(request, event_type_name, dt_string, start_hour, end_hour):
 
         if len(scrape_result) > 0:
             # Only do something when data was collected.
-            
+
             previous_attendances = Attendance.objects.filter(event=event)
             previous_attendances.delete()
             for raw_username in scrape_result:

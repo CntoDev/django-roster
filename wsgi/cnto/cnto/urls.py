@@ -32,17 +32,13 @@ urlpatterns = [
     url(r'^login/', login_user.login_user, name='login'),
 
     url(r'^event-browser/', event.event_browser, name='event-browser'),
-    # url(
-    #     r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/(
-    # ?P<end_hour>[0-9]{2})h/$',
-    #     event.save_event, name='save-event'),
     url(
-        r'^scrape-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/('
-        r'?P<end_hour>[0-9]{2})h/$',
+        r'^scrape-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_time_string>[0-9]{2}h[0-9]{2})/('
+        r'?P<end_time_string>[0-9]{2}h[0-9]{2})/$',
         scrape.scrape, name='scrape-event'),
     url(
-        r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_hour>[0-9]{2})h/('
-        r'?P<end_hour>[0-9]{2})h/$',
+        r'^save-event/(?P<event_type_name>\w+)/(?P<dt_string>\w{4}-\w{2}-\w{2})/(?P<start_time_string>[0-9]{2}h[0-9]{2})/('
+        r'?P<end_time_string>[0-9]{2}h[0-9]{2})/$',
         event.save_event, name='save-event'),
 
     url(r'^view-event/([0-9]{4})/([0-9]{2})/([0-9]{2})/$', event.view_event, name='view-event'),
