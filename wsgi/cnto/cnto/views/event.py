@@ -7,6 +7,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from django.http import Http404
 from django.template.context_processors import csrf
+from datetime import timedelta
 from cnto_warnings.models import MemberWarning
 from ..models import Event, Attendance, MemberGroup, EventType
 from cnto.templatetags.cnto_tags import has_permission
@@ -194,6 +195,9 @@ def save_event(request, event_type_name, dt_string, start_time_string, end_time_
 
         start_dt = calculate_dt_from_strings(dt_string, start_time_string)
         end_dt = calculate_dt_from_strings(dt_string, end_time_string)
+
+        if end_dt < start_dt:
+            end_dt += timedelta(hours=24)
 
         event = Event.objects.get(start_dt__year=start_dt.year, start_dt__month=start_dt.month,
                                   start_dt__day=start_dt.day)
