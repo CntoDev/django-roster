@@ -99,7 +99,7 @@
         </div>
     </form>
 
-    <div class="modal fade" id="loading-modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="scraping-modal" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -107,6 +107,22 @@
                 </div>
                 <div class="modal-body">
                     <p>Please wait while scraping...</p>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <!-- /.modal -->
+    <div class="modal fade" id="saving-modal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Saving</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please wait while saving...</p>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -125,8 +141,16 @@
             if (result) {
                 var deleteUrl = "/delete-event/{{ event.pk }}";
                 $('#delete-modal').modal('show');
-                $.get(deleteUrl, function (data) {
+
+                $.ajax({
+                  url: deleteUrl,
+                  success: function(data) {
                     window.location = "{% url 'event-browser' %}";
+                  },
+                  error: function(xhr, status, error) {
+                    $('#delete-modal').modal('hide');
+                    alert(deleteUrl + ": " + error);
+                  }
                 });
             }
         });
@@ -134,7 +158,7 @@
     $('#save-event').on('click', function (e) {
         e.preventDefault();
 
-        $('#loading-modal').modal('show');
+        $('#saving-modal').modal('show');
 
         var eventTypeString = $("#event-type-label").text().replace(/ /g, '');
         var startHourString = $("#start-time-label").text().replace(/ /g, '');
@@ -142,19 +166,21 @@
         var dateString = "{{ start_date_string }}";
         var saveUrl = "/save-event/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
 
-        $.get(saveUrl, function (data) {
-            if (!data["success"]) {
-                $('#loading-modal').modal('hide');
-                alert(data["error"]);
-            } else {
-                window.location.reload();
-            }
+        $.ajax({
+          url: saveUrl,
+          success: function(data) {
+            window.location.reload();
+          },
+          error: function(xhr, status, error) {
+            $('#saving-modal').modal('hide');
+            alert(saveUrl + ": " + error);
+          }
         });
     });
     $('#perform-scrape').on('click', function (e) {
         e.preventDefault();
 
-        $('#loading-modal').modal('show');
+        $('#scraping-modal').modal('show');
 
         var eventTypeString = $("#event-type-label").text().replace(/ /g, '');
         var startHourString = $("#start-time-label").text().replace(/ /g, '');
@@ -162,16 +188,21 @@
         var dateString = "{{ start_date_string }}";
         var scrapeUrl = "/scrape-event/" + eventTypeString + "/" + dateString + "/" + startHourString + "/" + endHourString;
 
-        $.get(scrapeUrl, function (data) {
-            if (!data["success"]) {
-                $('#loading-modal').modal('hide');
-                alert(data["error"]);
-            } else if (data["stats"]["average_attendance"] == 0) {
-                $('#loading-modal').modal('hide');
+
+        $.ajax({
+          url: scrapeUrl,
+          success: function(data) {
+            if (data["stats"]["average_attendance"] == 0) {
+                $('#scraping-modal').modal('hide');
                 bootbox.alert("No relevant events were found!");
             } else {
                 window.location.reload();
             }
+          },
+          error: function(xhr, status, error) {
+            $('#scraping-modal').modal('hide');
+            alert(data["error"]);
+          }
         });
     });
     $(".event-type-selector").click(function (e) {
@@ -179,8 +210,8 @@
         //do something
         var idParts = $(this).attr("id").split("-");
         $("#event-type-label").html(idParts[0] + ' <span class="caret"></span>');
-        $("#start-time-label").html(idParts[2] + 'h <span class="caret"></span>');
-        $("#end-time-label").html(idParts[3] + 'h <span class="caret"></span>');
+        $("#start-time-label").html(idParts[2] + 'h00 <span class="caret"></span>');
+        $("#end-time-label").html(idParts[3] + 'h00 <span class="caret"></span>');
     });
     $(".start-time-selector").click(function (e) {
         e.preventDefault();
@@ -194,7 +225,9 @@
     });
 
     $(document).ready(function () {
-        $('#loading-modal').modal({ show: false})
+        $('#delete-modal').modal({ show: false})
+        $('#scraping-modal').modal({ show: false})
+        $('#saving-modal').modal({ show: false})
     });
 
 

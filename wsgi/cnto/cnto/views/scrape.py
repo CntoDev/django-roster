@@ -87,6 +87,9 @@ def scrape(request, event_type_name, dt_string, start_time_string, end_time_stri
             previous_attendances = Attendance.objects.filter(event=event)
             previous_attendances.delete()
             for raw_username in scrape_result:
+                if len(raw_username.strip()) == 0:
+                    continue
+
                 username = interpret_raw_username(raw_username)
 
                 if len(username) == 0:
@@ -175,6 +178,9 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
 
         current_players = list_present_players_on_server()
         for raw_username in current_players:
+            if len(raw_username.strip()) == 0:
+                continue
+
             username = interpret_raw_username(raw_username)
 
             if len(username) == 0:
