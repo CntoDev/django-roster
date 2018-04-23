@@ -1,8 +1,15 @@
 {% extends "cnto/base-with-nav.html" %}
+{% load cnto_tags %}
 
 {% block navbar-list %}
+    {% if user.is_superuser or user|has_permission:"cnto_view_events" %}
     <li><a href="{% url 'event-browser' %}">Events</a></li>
+    {% endif %}
+    {% if user.is_superuser or user|has_permission:"cnto_edit_members" or user|has_permission:"cnto_view_absentees" %}
     <li><a href="{% url 'manage' %}">Manage</a></li>
+    {% endif %}
+    {% if user.is_superuser or user|has_permission:"cnto_view_reports" %}
     <li><a href="{% url 'list-warnings' %}">Warnings{% if warning_count %} ({{ warning_count }}){% endif %}</a></li>
     <li class="active"><a href="{% url 'report-main' %}">Report</a></li>
+    {% endif %}
 {% endblock %}

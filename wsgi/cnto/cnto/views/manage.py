@@ -13,6 +13,9 @@ def management(request):
     if not request.user.is_authenticated():
         return redirect("login")
 
+    if not has_permission(request.user, "cnto_edit_members") and not has_permission(request.user, "cnto_view_absentees"):
+        return redirect("report-main")
+
     recruits = sorted(Member.recruits(), key=lambda x: x.name.lower())
     discharges = sorted(Member.objects.all().filter(discharged=True, deleted=False), key=lambda x: x.name.lower())
 
