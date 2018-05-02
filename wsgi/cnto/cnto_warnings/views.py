@@ -44,7 +44,10 @@ def list_warnings(request):
         return redirect("manage")
 
     context = {
-        "warnings": MemberWarning.objects.filter(acknowledged=False),
+        "warnings": MemberWarning.objects.filter(acknowledged=False).select_related(
+            'member',
+            'member__member_group',
+        ),
         "warning_count": MemberWarning.objects.filter(acknowledged=False).count()
     }
 
