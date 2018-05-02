@@ -7,7 +7,7 @@ from cnto.models import Member
 
 
 class Note(models.Model):
-    member = models.ForeignKey(Member, null=False)
+    member = models.ForeignKey(Member, null=False, related_name="notes")
     message = models.TextField(null=False)
     dt = models.DateTimeField(verbose_name="Note date", null=False, default=timezone.now)
     active = models.BooleanField(default=True)
@@ -42,4 +42,5 @@ class Note(models.Model):
 
         return final_message
 
-
+    def __str__(self):
+        return self.message

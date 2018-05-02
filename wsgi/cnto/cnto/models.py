@@ -183,7 +183,7 @@ class Member(models.Model):
 
         :return:
         """
-        attendances = Attendance.objects.filter(member=self)
+        attendances = self.attendances.all()
         return sum([1 if attendance.was_adequate() else 0 for attendance in attendances])
 
     def mod_due_days(self):
@@ -198,7 +198,7 @@ class Member(models.Model):
 
     def is_absent(self):
         current_dt = timezone.now()
-        absences = Absence.objects.filter(deleted=False, concluded=False, member=self,
+        absences = self.absences.filter(deleted=False, concluded=False,
                                           start_date__lte=current_dt.date(),
                                           end_date__gte=current_dt.date())
 
@@ -325,7 +325,7 @@ class AbsenceType(models.Model):
 
 
 class Absence(models.Model):
-    member = models.ForeignKey(Member, null=False)
+    member = models.ForeignKey(Member, null=False, related_name="absences")
     absence_type = models.ForeignKey(AbsenceType, null=False)
 
     start_date = models.DateField(null=False)
@@ -368,7 +368,7 @@ class Attendance(models.Model):
         }
 
     event = models.ForeignKey(Event, null=False)
-    member = models.ForeignKey(Member, null=False)
+    member = models.ForeignKey(Member, null=False, related_name="attendances")
     attendance_seconds = models.IntegerField(null=False)
 
     class Meta:
