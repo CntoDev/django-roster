@@ -12,6 +12,7 @@ $('.activate-note').on('click', function (e) {
     $('.activate-note').prop('checked', false);
 
     var acknowledgeUrl = "{% url 'activate-note' 1 %}".replace(1, CNTOUtils.getPKFromElement(activateInput).toString());
+
     $('#activating-note-modal').modal('show');
     $.get(acknowledgeUrl, function (data) {
         if (data["success"]) {

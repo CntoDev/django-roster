@@ -13,26 +13,23 @@ def activate_note(request, pk):
     """Browse reports
     """
 
-    success = True
-    if not request.user.is_authenticated():
-        success = False
-    else:
+    success = False
+    if request.user.is_authenticated():
         try:
+            note = Note.objects.get(pk=pk)
+
+            notes = Note.objects.filter(active=True, member=note.member)
+            for note in notes:
+                note.active = False
+                note.save()
+
             note = Note.objects.get(pk=pk)
             note.active = True
             note.save()
+            success = True
+
         except Note.DoesNotExist:
-            return JsonResponse({
-                "success": False
-            })
-
-        notes = Note.objects.filter(active=True, member=note.member)
-        for note in notes:
-            note.active = False
-            note.save()
-
-        note.active = True
-        note.save()
+            pass
 
     return JsonResponse({
         "success": success
@@ -45,8 +42,6 @@ def delete_note(request, note_pk):
 
     if not request.user.is_authenticated():
         return redirect("login")
-
-    print("Deleting %s" % (note_pk, ))
 
     try:
         note = Note.objects.get(pk=note_pk)

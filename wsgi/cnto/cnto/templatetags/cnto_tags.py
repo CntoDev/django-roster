@@ -16,7 +16,7 @@ def value_of(value, arg):
 @register.filter(name='active_note_message')
 def active_note_message(member):
     try:
-        member_note = Note.objects.get(member=member, active=True)
+        member_note = member.notes.get(active=True)
         note_message = member_note.message
         message_length_limit = 70
         if len(note_message) > message_length_limit:
