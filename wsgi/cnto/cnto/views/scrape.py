@@ -26,8 +26,11 @@ def interpret_raw_username(raw_username):
     :return:
     """
     username_parts = raw_username.split(" ")
+
     # Filter tags
-    username_parts = [username_part for username_part in username_parts if username_part[0] != "["]
+    username_parts = [username_part.strip() for username_part in username_parts if
+                      len(username_part) > 0 and username_part[0] != "["]
+
     username = " ".join(username_parts)
     return username
 

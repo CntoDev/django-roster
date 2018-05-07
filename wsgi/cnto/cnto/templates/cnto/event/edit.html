@@ -192,6 +192,7 @@
         $.ajax({
           url: scrapeUrl,
           success: function(data) {
+            console.log(data);
             if (data["stats"]["average_attendance"] == 0) {
                 $('#scraping-modal').modal('hide');
                 bootbox.alert("No relevant events were found!");
