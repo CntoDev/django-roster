@@ -1,6 +1,7 @@
 import json
 import traceback
 
+from django.db import models
 from django.utils import timezone
 from django.utils.timezone import datetime
 from django.http.response import JsonResponse
@@ -160,8 +161,12 @@ def event_browser(request):
     context = {}
 
     event_data = {}
-    for event in Event.objects.all():
-        stats = Attendance.get_stats_for_event(event)
+    for event in Event.objects.all().select_related(
+        'event_type',
+    ).prefetch_related(
+        models.Prefetch('attendees', queryset=Attendance.objects.all()),
+    ):
+        stats = event.get_stats()
 
         start_dt = event.start_dt
         end_dt = event.end_dt

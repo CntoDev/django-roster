@@ -183,7 +183,7 @@ class Member(models.Model):
 
         :return:
         """
-        attendances = Attendance.objects.filter(member=self)
+        attendances = self.attendances.all()
         return sum([1 if attendance.was_adequate() else 0 for attendance in attendances])
 
     def mod_due_days(self):
@@ -198,7 +198,7 @@ class Member(models.Model):
 
     def is_absent(self):
         current_dt = timezone.now()
-        absences = Absence.objects.filter(deleted=False, concluded=False, member=self,
+        absences = self.absences.filter(deleted=False, concluded=False,
                                           start_date__lte=current_dt.date(),
                                           end_date__gte=current_dt.date())
 
@@ -312,6 +312,19 @@ class Event(models.Model):
     end_dt = models.DateTimeField(null=False)
     duration_minutes = models.IntegerField(null=False)
 
+    def get_stats(self):
+        attendances = self.attendees.all()
+        if len(attendances) > 0:
+            average_attendance = sum([attendance.get_attendance_ratio() for attendance in attendances]) / len(
+                attendances)
+        else:
+            average_attendance = 0
+
+        return {
+            "duration_minutes": self.duration_minutes, "average_attendance": average_attendance,
+            "player_count": len(attendances)
+        }
+
     def lowered_name(self):
         return self.name.lower()
 
@@ -325,7 +338,7 @@ class AbsenceType(models.Model):
 
 
 class Absence(models.Model):
-    member = models.ForeignKey(Member, null=False)
+    member = models.ForeignKey(Member, null=False, related_name="absences")
     absence_type = models.ForeignKey(AbsenceType, null=False)
 
     start_date = models.DateField(null=False)
@@ -348,27 +361,8 @@ class Absence(models.Model):
 
 
 class Attendance(models.Model):
-    @staticmethod
-    def get_stats_for_event(event):
-        """
-
-        :param event:
-        :return:
-        """
-        attendances = Attendance.objects.filter(event=event)
-        if len(attendances) > 0:
-            average_attendance = sum([attendance.get_attendance_ratio() for attendance in attendances]) / len(
-                attendances)
-        else:
-            average_attendance = 0
-
-        return {
-            "duration_minutes": event.duration_minutes, "average_attendance": average_attendance,
-            "player_count": len(attendances)
-        }
-
-    event = models.ForeignKey(Event, null=False)
-    member = models.ForeignKey(Member, null=False)
+    event = models.ForeignKey(Event, null=False, related_name="attendees")
+    member = models.ForeignKey(Member, null=False, related_name="attendances")
     attendance_seconds = models.IntegerField(null=False)
 
     class Meta:

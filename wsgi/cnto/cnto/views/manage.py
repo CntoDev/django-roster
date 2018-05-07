@@ -1,9 +1,11 @@
+from django.db import models
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from cnto.templatetags.cnto_tags import has_permission
 from cnto_contributions.models import Contribution
 from cnto_warnings.models import MemberWarning
-from ..models import Member, MemberGroup, EventType, Absence
+from cnto_notes.models import Note
+from ..models import Member, MemberGroup, EventType, Absence, Attendance
 
 
 def management(request):
@@ -16,32 +18,60 @@ def management(request):
     if not has_permission(request.user, "cnto_edit_members") and not has_permission(request.user, "cnto_view_absentees"):
         return redirect("report-main")
 
-    recruits = sorted(Member.recruits(), key=lambda x: x.name.lower())
-    discharges = sorted(Member.objects.all().filter(discharged=True, deleted=False), key=lambda x: x.name.lower())
+    recruits = Member.recruits().order_by('name').select_related(
+            'rank',
+            'member_group',
+    ).prefetch_related(
+            models.Prefetch('attendances', queryset=Attendance.objects.all().select_related(
+                'event',
+                'event__event_type',
+            )),
+            models.Prefetch('notes', queryset=Note.objects.order_by('-id')),
+    )
+    discharges = Member.objects.all().filter(discharged=True, deleted=False).order_by('name').select_related(
+            'rank',
+            'member_group',
+    ).prefetch_related(
+            models.Prefetch('notes', queryset=Note.objects.order_by('-id')),
+    )
 
     members = []
     if has_permission(request.user, "cnto_edit_members"):
-        members = sorted(Member.active_members(), key=lambda x: x.name.lower())
+        members = Member.active_members().order_by('name').select_related(
+            'rank',
+            'member_group',
+        ).prefetch_related(
+            models.Prefetch('notes', queryset=Note.objects.order_by('-id')),
+        )
 
     absentees = []
     if has_permission(request.user, "cnto_view_absentees"):
-        absentees = sorted(
-            Absence.objects.all().filter(member__discharged=False, concluded=False, deleted=False),
-            key=lambda x: x.end_date)
+        absentees = Absence.objects.all().filter(
+            member__discharged=False,
+            concluded=False,
+            deleted=False,
+        ).order_by('end_date').select_related(
+            'absence_type',
+            'member',
+            'member__member_group',
+        )
 
     groups = []
     if has_permission(request.user, "cnto_edit_groups"):
-        groups = sorted(MemberGroup.objects.all(), key=lambda x: x.name.lower())
+        groups = MemberGroup.objects.all().order_by('name')
 
     event_types = []
     if has_permission(request.user, "cnto_edit_event_types"):
-        event_types = sorted(EventType.objects.all(), key=lambda x: x.name.lower())
+        event_types = EventType.objects.all().order_by('name')
 
     active_contributions = []
     if has_permission(request.user, "cnto_edit_contributions"):
-        active_contributions = sorted(Contribution.objects.filter(end_date__gte=timezone.now().date()),
-                                      key=lambda x: x.end_date, reverse=True)
-
+        active_contributions = Contribution.objects.filter(
+            end_date__gte=timezone.now().date(),
+        ).order_by('end_date').select_related(
+            'type',
+            'member',
+        )
     context = {
         "members": members,
         "recruits": recruits,
