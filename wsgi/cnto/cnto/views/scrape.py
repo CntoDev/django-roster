@@ -98,18 +98,18 @@ def scrape(request, event_type_name, dt_string, start_time_string, end_time_stri
                 if len(username) == 0:
                     continue
 
-                rank_str = RECRUIT_RANK
                 attendance_value = scrape_result[raw_username]
-
-                try:
-                    rank = Rank.objects.get(name__iexact=rank_str)
-                except Rank.DoesNotExist:
-                    rank = Rank(name=rank_str)
-                    rank.save()
 
                 try:
                     member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
                 except Member.DoesNotExist:
+                    rank_str = RECRUIT_RANK
+                    try:
+                        rank = Rank.objects.get(name__iexact=rank_str)
+                    except Rank.DoesNotExist:
+                        rank = Rank(name=rank_str)
+                        rank.save()
+
                     member = Member(name=username, rank=rank)
                     member.save()
                 except MultipleObjectsReturned:
@@ -189,16 +189,16 @@ def update_attendance_for_current_event(update_interval_seconds=300, event_type_
             if len(username) == 0:
                 continue
 
-            rank_str = RECRUIT_RANK
-            try:
-                rank = Rank.objects.get(name__iexact=rank_str)
-            except Rank.DoesNotExist:
-                rank = Rank(name=rank_str)
-                rank.save()
-
             try:
                 member = Member.objects.get(name__iexact=username, discharged=False, deleted=False)
             except Member.DoesNotExist:
+                rank_str = RECRUIT_RANK
+                try:
+                    rank = Rank.objects.get(name__iexact=rank_str)
+                except Rank.DoesNotExist:
+                    rank = Rank(name=rank_str)
+                    rank.save()
+
                 member = Member(name=username, rank=rank)
                 member.save()
             except MultipleObjectsReturned:
