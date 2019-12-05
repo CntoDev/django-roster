@@ -18,7 +18,7 @@ ptyprocess==0.5.1
 Pygments==2.2.0
 python-valve==0.1.1
 pytz==2016.10
-requests==2.13.0
+requests==2.20.0
 scandir==1.5
 simplegeneric==0.8.1
 traitlets==4.3.2
