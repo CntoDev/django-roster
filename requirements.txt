@@ -1,7 +1,7 @@
 backports.shutil-get-terminal-size==1.0.0
 beautifulsoup4==4.5.3
 decorator==4.0.11
-Django==1.8.4
+Django==1.11.28
 django-bootstrap3-datetimepicker==2.2.3
 django-braces==1.11.0
 django-crispy-forms==1.6.1
