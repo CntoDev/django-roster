@@ -2,4 +2,4 @@
 source ~/.bashrc
 workon django-roster
 cd /home/carpenoctem/django-roster/wsgi/cnto
-PYTHONPATH=`pwd` python scripts/update_attendance.py >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log
+PYTHONPATH=`pwd`:/home/carpenoctem/django-roster/libs python scripts/update_attendance.py >> /home/carpenoctem/django-roster/wsgi/cnto/warnings.log
