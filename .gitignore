@@ -12,3 +12,4 @@ sens_do_not_commit.*
 .venv
 __pycache__
 .ropeproject
+wsgi/static/
